@@ -4,6 +4,12 @@ use crate::raw_ffi;
 use core::ffi::c_void;
 use core::ptr;
 
+/// `BNNSGraphOptimizationPreference` constants.
+pub mod graph_optimization_preference {
+    pub const PERFORMANCE: u32 = 0;
+    pub const IR_SIZE: u32 = 1;
+}
+
 /// Thin owner for the deprecated-but-still-available BNNS filter APIs.
 pub struct Filter {
     ptr: raw_ffi::BNNSFilter,
@@ -75,11 +81,39 @@ impl Filter {
     }
 }
 
+/// Owned BNNS Graph compile-options handle backed by the Swift bridge.
+pub struct GraphCompileOptions {
+    ptr: *mut c_void,
+}
+
+unsafe impl Send for GraphCompileOptions {}
+unsafe impl Sync for GraphCompileOptions {}
+
+impl Drop for GraphCompileOptions {
+    fn drop(&mut self) {
+        if !self.ptr.is_null() {
+            // SAFETY: `ptr` is an opaque Swift object retained by the bridge.
+            unsafe { bridge::acc_release_handle(self.ptr) };
+            self.ptr = ptr::null_mut();
+        }
+    }
+}
+
 fn activation_result(status: i32) -> Result<()> {
     if status == 0 {
         Ok(())
     } else {
         Err(Error::BnnsStatus(status))
+    }
+}
+
+fn graph_result(ok: bool) -> Result<()> {
+    if ok {
+        Ok(())
+    } else {
+        Err(Error::OperationFailed(
+            "BNNS Graph compile options are unavailable on this macOS version",
+        ))
     }
 }
 
@@ -96,6 +130,58 @@ fn apply_activation(
     let status = unsafe { f(values.as_ptr(), out.as_mut_ptr(), values.len()) };
     activation_result(status)?;
     Ok(out)
+}
+
+impl GraphCompileOptions {
+    #[must_use]
+    pub fn new() -> Option<Self> {
+        // SAFETY: Pure constructor over the current runtime environment.
+        let ptr = unsafe { bridge::acc_bnns_graph_compile_options_create() };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Self { ptr })
+        }
+    }
+
+    pub fn set_target_single_thread(&mut self, value: bool) -> Result<()> {
+        // SAFETY: `self.ptr` is a live bridge handle.
+        graph_result(unsafe {
+            bridge::acc_bnns_graph_compile_options_set_target_single_thread(self.ptr, value)
+        })
+    }
+
+    #[must_use]
+    pub fn target_single_thread(&self) -> bool {
+        // SAFETY: `self.ptr` is a live bridge handle.
+        unsafe { bridge::acc_bnns_graph_compile_options_get_target_single_thread(self.ptr) }
+    }
+
+    pub fn set_generate_debug_info(&mut self, value: bool) -> Result<()> {
+        // SAFETY: `self.ptr` is a live bridge handle.
+        graph_result(unsafe {
+            bridge::acc_bnns_graph_compile_options_set_generate_debug_info(self.ptr, value)
+        })
+    }
+
+    #[must_use]
+    pub fn generate_debug_info(&self) -> bool {
+        // SAFETY: `self.ptr` is a live bridge handle.
+        unsafe { bridge::acc_bnns_graph_compile_options_get_generate_debug_info(self.ptr) }
+    }
+
+    pub fn set_optimization_preference(&mut self, preference: u32) -> Result<()> {
+        // SAFETY: `self.ptr` is a live bridge handle.
+        graph_result(unsafe {
+            bridge::acc_bnns_graph_compile_options_set_optimization_preference(self.ptr, preference)
+        })
+    }
+
+    #[must_use]
+    pub fn optimization_preference(&self) -> u32 {
+        // SAFETY: `self.ptr` is a live bridge handle.
+        unsafe { bridge::acc_bnns_graph_compile_options_get_optimization_preference(self.ptr) }
+    }
 }
 
 /// Apply BNNS `ReLU` activation to a vector.

@@ -164,10 +164,14 @@ impl BiquadSetup {
     }
 }
 
-type BinaryVectorOp = unsafe extern "C" fn(*const f32, *const f32, *mut f32, usize) -> bool;
-type ReduceOp = unsafe extern "C" fn(*const f32, *mut f32, usize) -> bool;
+type BinaryVectorOpF32 = unsafe extern "C" fn(*const f32, *const f32, *mut f32, usize) -> bool;
+type BinaryVectorOpF64 = unsafe extern "C" fn(*const f64, *const f64, *mut f64, usize) -> bool;
+type ReduceOpF32 = unsafe extern "C" fn(*const f32, *mut f32, usize) -> bool;
+type ReduceOpF64 = unsafe extern "C" fn(*const f64, *mut f64, usize) -> bool;
+type WindowOpF32 = unsafe extern "C" fn(*mut f32, usize, i32) -> bool;
+type WindowOpF64 = unsafe extern "C" fn(*mut f64, usize, i32) -> bool;
 
-fn binary_vector_op(a: &[f32], b: &[f32], f: BinaryVectorOp) -> Result<Vec<f32>> {
+fn binary_vector_op_f32(a: &[f32], b: &[f32], f: BinaryVectorOpF32) -> Result<Vec<f32>> {
     if a.len() != b.len() {
         return Err(Error::InvalidLength {
             expected: a.len(),
@@ -185,7 +189,25 @@ fn binary_vector_op(a: &[f32], b: &[f32], f: BinaryVectorOp) -> Result<Vec<f32>>
     }
 }
 
-fn reduce_f32(values: &[f32], f: ReduceOp) -> Result<f32> {
+fn binary_vector_op_f64(a: &[f64], b: &[f64], f: BinaryVectorOpF64) -> Result<Vec<f64>> {
+    if a.len() != b.len() {
+        return Err(Error::InvalidLength {
+            expected: a.len(),
+            actual: b.len(),
+        });
+    }
+
+    let mut out = vec![0.0_f64; a.len()];
+    // SAFETY: All slices are valid for `a.len()` contiguous `f64` elements.
+    let ok = unsafe { f(a.as_ptr(), b.as_ptr(), out.as_mut_ptr(), a.len()) };
+    if ok {
+        Ok(out)
+    } else {
+        Err(Error::OperationFailed("vDSP vector operation failed"))
+    }
+}
+
+fn reduce_f32(values: &[f32], f: ReduceOpF32) -> Result<f32> {
     if values.is_empty() {
         return Err(Error::InvalidLength {
             expected: 1,
@@ -203,12 +225,62 @@ fn reduce_f32(values: &[f32], f: ReduceOp) -> Result<f32> {
     }
 }
 
+fn reduce_f64(values: &[f64], f: ReduceOpF64) -> Result<f64> {
+    if values.is_empty() {
+        return Err(Error::InvalidLength {
+            expected: 1,
+            actual: 0,
+        });
+    }
+
+    let mut out = 0.0_f64;
+    // SAFETY: The slice is valid for `values.len()` contiguous `f64` elements.
+    let ok = unsafe { f(values.as_ptr(), &mut out, values.len()) };
+    if ok {
+        Ok(out)
+    } else {
+        Err(Error::OperationFailed("vDSP reduction failed"))
+    }
+}
+
+#[must_use]
+fn window_f32(length: usize, flags: i32, f: WindowOpF32) -> Vec<f32> {
+    let mut out = vec![0.0_f32; length];
+    if length == 0 {
+        return out;
+    }
+
+    // SAFETY: `out` is valid for `length` contiguous `f32` values.
+    let _ = unsafe { f(out.as_mut_ptr(), length, flags) };
+    out
+}
+
+#[must_use]
+fn window_f64(length: usize, flags: i32, f: WindowOpF64) -> Vec<f64> {
+    let mut out = vec![0.0_f64; length];
+    if length == 0 {
+        return out;
+    }
+
+    // SAFETY: `out` is valid for `length` contiguous `f64` values.
+    let _ = unsafe { f(out.as_mut_ptr(), length, flags) };
+    out
+}
+
 pub fn add_f32(a: &[f32], b: &[f32]) -> Result<Vec<f32>> {
-    binary_vector_op(a, b, bridge::acc_vdsp_add_f32)
+    binary_vector_op_f32(a, b, bridge::acc_vdsp_add_f32)
+}
+
+pub fn add_f64(a: &[f64], b: &[f64]) -> Result<Vec<f64>> {
+    binary_vector_op_f64(a, b, bridge::acc_vdsp_add_f64)
 }
 
 pub fn sub_f32(a: &[f32], b: &[f32]) -> Result<Vec<f32>> {
-    binary_vector_op(a, b, bridge::acc_vdsp_sub_f32)
+    binary_vector_op_f32(a, b, bridge::acc_vdsp_sub_f32)
+}
+
+pub fn sub_f64(a: &[f64], b: &[f64]) -> Result<Vec<f64>> {
+    binary_vector_op_f64(a, b, bridge::acc_vdsp_sub_f64)
 }
 
 pub fn dot_f32(a: &[f32], b: &[f32]) -> Result<f32> {
@@ -229,42 +301,72 @@ pub fn dot_f32(a: &[f32], b: &[f32]) -> Result<f32> {
     }
 }
 
+pub fn dot_f64(a: &[f64], b: &[f64]) -> Result<f64> {
+    if a.len() != b.len() {
+        return Err(Error::InvalidLength {
+            expected: a.len(),
+            actual: b.len(),
+        });
+    }
+
+    let mut out = 0.0_f64;
+    // SAFETY: The slices are valid for `a.len()` contiguous `f64` elements.
+    let ok = unsafe { bridge::acc_vdsp_dot_f64(a.as_ptr(), b.as_ptr(), &mut out, a.len()) };
+    if ok {
+        Ok(out)
+    } else {
+        Err(Error::OperationFailed("vDSP dot-product failed"))
+    }
+}
+
 pub fn max_f32(values: &[f32]) -> Result<f32> {
     reduce_f32(values, bridge::acc_vdsp_max_f32)
+}
+
+pub fn max_f64(values: &[f64]) -> Result<f64> {
+    reduce_f64(values, bridge::acc_vdsp_max_f64)
 }
 
 pub fn min_f32(values: &[f32]) -> Result<f32> {
     reduce_f32(values, bridge::acc_vdsp_min_f32)
 }
 
+pub fn min_f64(values: &[f64]) -> Result<f64> {
+    reduce_f64(values, bridge::acc_vdsp_min_f64)
+}
+
 pub fn mean_f32(values: &[f32]) -> Result<f32> {
     reduce_f32(values, bridge::acc_vdsp_mean_f32)
+}
+
+pub fn mean_f64(values: &[f64]) -> Result<f64> {
+    reduce_f64(values, bridge::acc_vdsp_mean_f64)
 }
 
 pub fn sum_f32(values: &[f32]) -> Result<f32> {
     reduce_f32(values, bridge::acc_vdsp_sum_f32)
 }
 
+pub fn sum_f64(values: &[f64]) -> Result<f64> {
+    reduce_f64(values, bridge::acc_vdsp_sum_f64)
+}
+
 #[must_use]
 pub fn hamming_window(length: usize, flags: i32) -> Vec<f32> {
-    let mut out = vec![0.0_f32; length];
-    if length == 0 {
-        return out;
-    }
+    window_f32(length, flags, bridge::acc_vdsp_hamming_window)
+}
 
-    // SAFETY: `out` is valid for `length` contiguous `f32` values.
-    let _ = unsafe { bridge::acc_vdsp_hamming_window(out.as_mut_ptr(), length, flags) };
-    out
+#[must_use]
+pub fn hamming_window_f64(length: usize, flags: i32) -> Vec<f64> {
+    window_f64(length, flags, bridge::acc_vdsp_hamming_window_f64)
 }
 
 #[must_use]
 pub fn blackman_window(length: usize, flags: i32) -> Vec<f32> {
-    let mut out = vec![0.0_f32; length];
-    if length == 0 {
-        return out;
-    }
+    window_f32(length, flags, bridge::acc_vdsp_blackman_window)
+}
 
-    // SAFETY: `out` is valid for `length` contiguous `f32` values.
-    let _ = unsafe { bridge::acc_vdsp_blackman_window(out.as_mut_ptr(), length, flags) };
-    out
+#[must_use]
+pub fn blackman_window_f64(length: usize, flags: i32) -> Vec<f64> {
+    window_f64(length, flags, bridge::acc_vdsp_blackman_window_f64)
 }

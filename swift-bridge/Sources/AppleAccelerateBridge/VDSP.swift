@@ -103,6 +103,20 @@ public func accVdspAddF32(
     return true
 }
 
+@_cdecl("acc_vdsp_add_f64")
+public func accVdspAddF64(
+    _ a: UnsafePointer<Double>?,
+    _ b: UnsafePointer<Double>?,
+    _ output: UnsafeMutablePointer<Double>?,
+    _ length: Int
+) -> Bool {
+    guard let a, let b, let output else {
+        return false
+    }
+    vDSP_vaddD(a, 1, b, 1, output, 1, vDSP_Length(length))
+    return true
+}
+
 @_cdecl("acc_vdsp_sub_f32")
 public func accVdspSubF32(
     _ a: UnsafePointer<Float>?,
@@ -114,6 +128,20 @@ public func accVdspSubF32(
         return false
     }
     vDSP_vsub(b, 1, a, 1, output, 1, vDSP_Length(length))
+    return true
+}
+
+@_cdecl("acc_vdsp_sub_f64")
+public func accVdspSubF64(
+    _ a: UnsafePointer<Double>?,
+    _ b: UnsafePointer<Double>?,
+    _ output: UnsafeMutablePointer<Double>?,
+    _ length: Int
+) -> Bool {
+    guard let a, let b, let output else {
+        return false
+    }
+    vDSP_vsubD(b, 1, a, 1, output, 1, vDSP_Length(length))
     return true
 }
 
@@ -131,6 +159,20 @@ public func accVdspDotF32(
     return true
 }
 
+@_cdecl("acc_vdsp_dot_f64")
+public func accVdspDotF64(
+    _ a: UnsafePointer<Double>?,
+    _ b: UnsafePointer<Double>?,
+    _ output: UnsafeMutablePointer<Double>?,
+    _ length: Int
+) -> Bool {
+    guard let a, let b, let output else {
+        return false
+    }
+    vDSP_dotprD(a, 1, b, 1, output, vDSP_Length(length))
+    return true
+}
+
 @_cdecl("acc_vdsp_max_f32")
 public func accVdspMaxF32(
     _ input: UnsafePointer<Float>?,
@@ -141,6 +183,19 @@ public func accVdspMaxF32(
         return false
     }
     vDSP_maxv(input, 1, output, vDSP_Length(length))
+    return true
+}
+
+@_cdecl("acc_vdsp_max_f64")
+public func accVdspMaxF64(
+    _ input: UnsafePointer<Double>?,
+    _ output: UnsafeMutablePointer<Double>?,
+    _ length: Int
+) -> Bool {
+    guard let input, let output else {
+        return false
+    }
+    vDSP_maxvD(input, 1, output, vDSP_Length(length))
     return true
 }
 
@@ -157,6 +212,19 @@ public func accVdspMinF32(
     return true
 }
 
+@_cdecl("acc_vdsp_min_f64")
+public func accVdspMinF64(
+    _ input: UnsafePointer<Double>?,
+    _ output: UnsafeMutablePointer<Double>?,
+    _ length: Int
+) -> Bool {
+    guard let input, let output else {
+        return false
+    }
+    vDSP_minvD(input, 1, output, vDSP_Length(length))
+    return true
+}
+
 @_cdecl("acc_vdsp_mean_f32")
 public func accVdspMeanF32(
     _ input: UnsafePointer<Float>?,
@@ -167,6 +235,19 @@ public func accVdspMeanF32(
         return false
     }
     vDSP_meanv(input, 1, output, vDSP_Length(length))
+    return true
+}
+
+@_cdecl("acc_vdsp_mean_f64")
+public func accVdspMeanF64(
+    _ input: UnsafePointer<Double>?,
+    _ output: UnsafeMutablePointer<Double>?,
+    _ length: Int
+) -> Bool {
+    guard let input, let output else {
+        return false
+    }
+    vDSP_meanvD(input, 1, output, vDSP_Length(length))
     return true
 }
 
@@ -183,6 +264,19 @@ public func accVdspSumF32(
     return true
 }
 
+@_cdecl("acc_vdsp_sum_f64")
+public func accVdspSumF64(
+    _ input: UnsafePointer<Double>?,
+    _ output: UnsafeMutablePointer<Double>?,
+    _ length: Int
+) -> Bool {
+    guard let input, let output else {
+        return false
+    }
+    vDSP_sveD(input, 1, output, vDSP_Length(length))
+    return true
+}
+
 @_cdecl("acc_vdsp_hamming_window")
 public func accVdspHammingWindow(_ output: UnsafeMutablePointer<Float>?, _ length: Int, _ flags: Int32) -> Bool {
     guard let output else {
@@ -192,11 +286,37 @@ public func accVdspHammingWindow(_ output: UnsafeMutablePointer<Float>?, _ lengt
     return true
 }
 
+@_cdecl("acc_vdsp_hamming_window_f64")
+public func accVdspHammingWindowF64(
+    _ output: UnsafeMutablePointer<Double>?,
+    _ length: Int,
+    _ flags: Int32
+) -> Bool {
+    guard let output else {
+        return false
+    }
+    vDSP_hamm_windowD(output, vDSP_Length(length), flags)
+    return true
+}
+
 @_cdecl("acc_vdsp_blackman_window")
 public func accVdspBlackmanWindow(_ output: UnsafeMutablePointer<Float>?, _ length: Int, _ flags: Int32) -> Bool {
     guard let output else {
         return false
     }
     vDSP_blkman_window(output, vDSP_Length(length), flags)
+    return true
+}
+
+@_cdecl("acc_vdsp_blackman_window_f64")
+public func accVdspBlackmanWindowF64(
+    _ output: UnsafeMutablePointer<Double>?,
+    _ length: Int,
+    _ flags: Int32
+) -> Bool {
+    guard let output else {
+        return false
+    }
+    vDSP_blkman_windowD(output, vDSP_Length(length), flags)
     return true
 }

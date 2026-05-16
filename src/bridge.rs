@@ -23,14 +23,23 @@ unsafe extern "C" {
         length: usize,
     ) -> bool;
     pub fn acc_vdsp_add_f32(a: *const f32, b: *const f32, output: *mut f32, length: usize) -> bool;
+    pub fn acc_vdsp_add_f64(a: *const f64, b: *const f64, output: *mut f64, length: usize) -> bool;
     pub fn acc_vdsp_sub_f32(a: *const f32, b: *const f32, output: *mut f32, length: usize) -> bool;
+    pub fn acc_vdsp_sub_f64(a: *const f64, b: *const f64, output: *mut f64, length: usize) -> bool;
     pub fn acc_vdsp_dot_f32(a: *const f32, b: *const f32, output: *mut f32, length: usize) -> bool;
+    pub fn acc_vdsp_dot_f64(a: *const f64, b: *const f64, output: *mut f64, length: usize) -> bool;
     pub fn acc_vdsp_max_f32(input: *const f32, output: *mut f32, length: usize) -> bool;
+    pub fn acc_vdsp_max_f64(input: *const f64, output: *mut f64, length: usize) -> bool;
     pub fn acc_vdsp_min_f32(input: *const f32, output: *mut f32, length: usize) -> bool;
+    pub fn acc_vdsp_min_f64(input: *const f64, output: *mut f64, length: usize) -> bool;
     pub fn acc_vdsp_mean_f32(input: *const f32, output: *mut f32, length: usize) -> bool;
+    pub fn acc_vdsp_mean_f64(input: *const f64, output: *mut f64, length: usize) -> bool;
     pub fn acc_vdsp_sum_f32(input: *const f32, output: *mut f32, length: usize) -> bool;
+    pub fn acc_vdsp_sum_f64(input: *const f64, output: *mut f64, length: usize) -> bool;
     pub fn acc_vdsp_hamming_window(output: *mut f32, length: usize, flags: i32) -> bool;
+    pub fn acc_vdsp_hamming_window_f64(output: *mut f64, length: usize, flags: i32) -> bool;
     pub fn acc_vdsp_blackman_window(output: *mut f32, length: usize, flags: i32) -> bool;
+    pub fn acc_vdsp_blackman_window_f64(output: *mut f64, length: usize, flags: i32) -> bool;
 
     pub fn acc_vforce_sin_f32(input: *const f32, output: *mut f32, length: usize) -> bool;
     pub fn acc_vforce_cos_f32(input: *const f32, output: *mut f32, length: usize) -> bool;
@@ -70,6 +79,22 @@ unsafe extern "C" {
 
     pub fn acc_bnns_relu_f32(input: *const f32, output: *mut f32, length: usize) -> i32;
     pub fn acc_bnns_sigmoid_f32(input: *const f32, output: *mut f32, length: usize) -> i32;
+    pub fn acc_bnns_graph_compile_options_create() -> *mut c_void;
+    pub fn acc_bnns_graph_compile_options_set_target_single_thread(
+        handle: *mut c_void,
+        value: bool,
+    ) -> bool;
+    pub fn acc_bnns_graph_compile_options_get_target_single_thread(handle: *mut c_void) -> bool;
+    pub fn acc_bnns_graph_compile_options_set_generate_debug_info(
+        handle: *mut c_void,
+        value: bool,
+    ) -> bool;
+    pub fn acc_bnns_graph_compile_options_get_generate_debug_info(handle: *mut c_void) -> bool;
+    pub fn acc_bnns_graph_compile_options_set_optimization_preference(
+        handle: *mut c_void,
+        preference: u32,
+    ) -> bool;
+    pub fn acc_bnns_graph_compile_options_get_optimization_preference(handle: *mut c_void) -> u32;
 
     pub fn acc_sparse_dot_dense_f32(
         nz: u64,
@@ -92,6 +117,34 @@ unsafe extern "C" {
         indices: *const i64,
         dense: *mut f32,
     ) -> bool;
+    pub fn acc_sparse_matrix_f32_create(rows: u64, columns: u64) -> *mut c_void;
+    pub fn acc_sparse_matrix_f32_set_property(handle: *mut c_void, property: i32) -> i32;
+    pub fn acc_sparse_matrix_f32_insert_entry(
+        handle: *mut c_void,
+        value: f32,
+        row: i64,
+        column: i64,
+    ) -> i32;
+    pub fn acc_sparse_matrix_f32_commit(handle: *mut c_void) -> i32;
+    pub fn acc_sparse_matrix_f32_rows(handle: *mut c_void) -> u64;
+    pub fn acc_sparse_matrix_f32_columns(handle: *mut c_void) -> u64;
+    pub fn acc_sparse_matrix_f32_nonzero_count(handle: *mut c_void) -> i64;
+    pub fn acc_sparse_matrix_f32_triangular_solve_vector(
+        handle: *mut c_void,
+        transpose: i32,
+        alpha: f32,
+        values: *mut f32,
+        length: u64,
+    ) -> i32;
+    pub fn acc_sparse_matrix_f32_triangular_solve_matrix(
+        handle: *mut c_void,
+        order: i32,
+        transpose: i32,
+        rhs_count: u64,
+        alpha: f32,
+        values: *mut f32,
+        ldb: u64,
+    ) -> i32;
 
     pub fn acc_vimage_rotate_argb8888(
         src_data: *mut c_void,
@@ -140,6 +193,100 @@ unsafe extern "C" {
         dst_width: usize,
         dst_height: usize,
         dst_row_bytes: usize,
+        flags: u32,
+    ) -> isize;
+    pub fn acc_vimage_alpha_blend_argb8888(
+        src_top_data: *mut c_void,
+        src_top_width: usize,
+        src_top_height: usize,
+        src_top_row_bytes: usize,
+        src_bottom_data: *mut c_void,
+        src_bottom_width: usize,
+        src_bottom_height: usize,
+        src_bottom_row_bytes: usize,
+        dst_data: *mut c_void,
+        dst_width: usize,
+        dst_height: usize,
+        dst_row_bytes: usize,
+        flags: u32,
+    ) -> isize;
+    pub fn acc_vimage_clip_to_alpha_argb8888(
+        src_data: *mut c_void,
+        src_width: usize,
+        src_height: usize,
+        src_row_bytes: usize,
+        dst_data: *mut c_void,
+        dst_width: usize,
+        dst_height: usize,
+        dst_row_bytes: usize,
+        flags: u32,
+    ) -> isize;
+    pub fn acc_vimage_premultiply_argb8888(
+        src_data: *mut c_void,
+        src_width: usize,
+        src_height: usize,
+        src_row_bytes: usize,
+        dst_data: *mut c_void,
+        dst_width: usize,
+        dst_height: usize,
+        dst_row_bytes: usize,
+        flags: u32,
+    ) -> isize;
+    pub fn acc_vimage_unpremultiply_argb8888(
+        src_data: *mut c_void,
+        src_width: usize,
+        src_height: usize,
+        src_row_bytes: usize,
+        dst_data: *mut c_void,
+        dst_width: usize,
+        dst_height: usize,
+        dst_row_bytes: usize,
+        flags: u32,
+    ) -> isize;
+    pub fn acc_vimage_convert_planar8_to_argb8888(
+        src_alpha_data: *mut c_void,
+        src_alpha_width: usize,
+        src_alpha_height: usize,
+        src_alpha_row_bytes: usize,
+        src_red_data: *mut c_void,
+        src_red_width: usize,
+        src_red_height: usize,
+        src_red_row_bytes: usize,
+        src_green_data: *mut c_void,
+        src_green_width: usize,
+        src_green_height: usize,
+        src_green_row_bytes: usize,
+        src_blue_data: *mut c_void,
+        src_blue_width: usize,
+        src_blue_height: usize,
+        src_blue_row_bytes: usize,
+        dst_data: *mut c_void,
+        dst_width: usize,
+        dst_height: usize,
+        dst_row_bytes: usize,
+        flags: u32,
+    ) -> isize;
+    pub fn acc_vimage_convert_argb8888_to_planar8(
+        src_data: *mut c_void,
+        src_width: usize,
+        src_height: usize,
+        src_row_bytes: usize,
+        dst_alpha_data: *mut c_void,
+        dst_alpha_width: usize,
+        dst_alpha_height: usize,
+        dst_alpha_row_bytes: usize,
+        dst_red_data: *mut c_void,
+        dst_red_width: usize,
+        dst_red_height: usize,
+        dst_red_row_bytes: usize,
+        dst_green_data: *mut c_void,
+        dst_green_width: usize,
+        dst_green_height: usize,
+        dst_green_row_bytes: usize,
+        dst_blue_data: *mut c_void,
+        dst_blue_width: usize,
+        dst_blue_height: usize,
+        dst_blue_row_bytes: usize,
         flags: u32,
     ) -> isize;
 

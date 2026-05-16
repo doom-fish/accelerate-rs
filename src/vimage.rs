@@ -19,6 +19,16 @@ fn vimage_result(status: isize) -> Result<()> {
     }
 }
 
+fn ensure_same_dimensions(lhs: &ImageBuffer<'_>, rhs: &ImageBuffer<'_>) -> Result<()> {
+    if lhs.width() == rhs.width() && lhs.height() == rhs.height() {
+        Ok(())
+    } else {
+        Err(Error::InvalidValue(
+            "vImage buffers must share the same width and height",
+        ))
+    }
+}
+
 /// Borrowed wrapper around a caller-owned image buffer.
 pub struct ImageBuffer<'a> {
     data: *mut u8,
@@ -175,6 +185,192 @@ pub fn contrast_stretch_planar8(
             dst.width(),
             dst.height(),
             dst.row_bytes(),
+            flags,
+        )
+    };
+    vimage_result(status)
+}
+
+pub fn alpha_blend_argb8888(
+    src_top: &ImageBuffer<'_>,
+    src_bottom: &ImageBuffer<'_>,
+    dst: &mut ImageBuffer<'_>,
+    flags: u32,
+) -> Result<()> {
+    ensure_same_dimensions(src_top, src_bottom)?;
+    ensure_same_dimensions(src_top, dst)?;
+
+    // SAFETY: Buffers share a common geometry and remain valid for the duration of the call.
+    let status = unsafe {
+        bridge::acc_vimage_alpha_blend_argb8888(
+            src_top.data_ptr(),
+            src_top.width(),
+            src_top.height(),
+            src_top.row_bytes(),
+            src_bottom.data_ptr(),
+            src_bottom.width(),
+            src_bottom.height(),
+            src_bottom.row_bytes(),
+            dst.data_ptr(),
+            dst.width(),
+            dst.height(),
+            dst.row_bytes(),
+            flags,
+        )
+    };
+    vimage_result(status)
+}
+
+pub fn clip_to_alpha_argb8888(
+    src: &ImageBuffer<'_>,
+    dst: &mut ImageBuffer<'_>,
+    flags: u32,
+) -> Result<()> {
+    ensure_same_dimensions(src, dst)?;
+
+    // SAFETY: Buffers share a common geometry and remain valid for the duration of the call.
+    let status = unsafe {
+        bridge::acc_vimage_clip_to_alpha_argb8888(
+            src.data_ptr(),
+            src.width(),
+            src.height(),
+            src.row_bytes(),
+            dst.data_ptr(),
+            dst.width(),
+            dst.height(),
+            dst.row_bytes(),
+            flags,
+        )
+    };
+    vimage_result(status)
+}
+
+pub fn premultiply_argb8888(
+    src: &ImageBuffer<'_>,
+    dst: &mut ImageBuffer<'_>,
+    flags: u32,
+) -> Result<()> {
+    ensure_same_dimensions(src, dst)?;
+
+    // SAFETY: Buffers share a common geometry and remain valid for the duration of the call.
+    let status = unsafe {
+        bridge::acc_vimage_premultiply_argb8888(
+            src.data_ptr(),
+            src.width(),
+            src.height(),
+            src.row_bytes(),
+            dst.data_ptr(),
+            dst.width(),
+            dst.height(),
+            dst.row_bytes(),
+            flags,
+        )
+    };
+    vimage_result(status)
+}
+
+pub fn unpremultiply_argb8888(
+    src: &ImageBuffer<'_>,
+    dst: &mut ImageBuffer<'_>,
+    flags: u32,
+) -> Result<()> {
+    ensure_same_dimensions(src, dst)?;
+
+    // SAFETY: Buffers share a common geometry and remain valid for the duration of the call.
+    let status = unsafe {
+        bridge::acc_vimage_unpremultiply_argb8888(
+            src.data_ptr(),
+            src.width(),
+            src.height(),
+            src.row_bytes(),
+            dst.data_ptr(),
+            dst.width(),
+            dst.height(),
+            dst.row_bytes(),
+            flags,
+        )
+    };
+    vimage_result(status)
+}
+
+pub fn convert_planar8_to_argb8888(
+    src_alpha: &ImageBuffer<'_>,
+    src_red: &ImageBuffer<'_>,
+    src_green: &ImageBuffer<'_>,
+    src_blue: &ImageBuffer<'_>,
+    dst: &mut ImageBuffer<'_>,
+    flags: u32,
+) -> Result<()> {
+    ensure_same_dimensions(src_alpha, src_red)?;
+    ensure_same_dimensions(src_alpha, src_green)?;
+    ensure_same_dimensions(src_alpha, src_blue)?;
+    ensure_same_dimensions(src_alpha, dst)?;
+
+    // SAFETY: Buffers share a common geometry and remain valid for the duration of the call.
+    let status = unsafe {
+        bridge::acc_vimage_convert_planar8_to_argb8888(
+            src_alpha.data_ptr(),
+            src_alpha.width(),
+            src_alpha.height(),
+            src_alpha.row_bytes(),
+            src_red.data_ptr(),
+            src_red.width(),
+            src_red.height(),
+            src_red.row_bytes(),
+            src_green.data_ptr(),
+            src_green.width(),
+            src_green.height(),
+            src_green.row_bytes(),
+            src_blue.data_ptr(),
+            src_blue.width(),
+            src_blue.height(),
+            src_blue.row_bytes(),
+            dst.data_ptr(),
+            dst.width(),
+            dst.height(),
+            dst.row_bytes(),
+            flags,
+        )
+    };
+    vimage_result(status)
+}
+
+pub fn convert_argb8888_to_planar8(
+    src: &ImageBuffer<'_>,
+    dst_alpha: &mut ImageBuffer<'_>,
+    dst_red: &mut ImageBuffer<'_>,
+    dst_green: &mut ImageBuffer<'_>,
+    dst_blue: &mut ImageBuffer<'_>,
+    flags: u32,
+) -> Result<()> {
+    ensure_same_dimensions(src, dst_alpha)?;
+    ensure_same_dimensions(src, dst_red)?;
+    ensure_same_dimensions(src, dst_green)?;
+    ensure_same_dimensions(src, dst_blue)?;
+
+    // SAFETY: Buffers share a common geometry and remain valid for the duration of the call.
+    let status = unsafe {
+        bridge::acc_vimage_convert_argb8888_to_planar8(
+            src.data_ptr(),
+            src.width(),
+            src.height(),
+            src.row_bytes(),
+            dst_alpha.data_ptr(),
+            dst_alpha.width(),
+            dst_alpha.height(),
+            dst_alpha.row_bytes(),
+            dst_red.data_ptr(),
+            dst_red.width(),
+            dst_red.height(),
+            dst_red.row_bytes(),
+            dst_green.data_ptr(),
+            dst_green.width(),
+            dst_green.height(),
+            dst_green.row_bytes(),
+            dst_blue.data_ptr(),
+            dst_blue.width(),
+            dst_blue.height(),
+            dst_blue.row_bytes(),
             flags,
         )
     };

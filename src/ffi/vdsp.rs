@@ -51,12 +51,30 @@ unsafe extern "C" {
         c_stride: vDSP_Stride,
         length: vDSP_Length,
     );
+    pub fn vDSP_vaddD(
+        a: *const f64,
+        a_stride: vDSP_Stride,
+        b: *const f64,
+        b_stride: vDSP_Stride,
+        c: *mut f64,
+        c_stride: vDSP_Stride,
+        length: vDSP_Length,
+    );
     pub fn vDSP_vsub(
         b: *const f32,
         b_stride: vDSP_Stride,
         a: *const f32,
         a_stride: vDSP_Stride,
         c: *mut f32,
+        c_stride: vDSP_Stride,
+        length: vDSP_Length,
+    );
+    pub fn vDSP_vsubD(
+        b: *const f64,
+        b_stride: vDSP_Stride,
+        a: *const f64,
+        a_stride: vDSP_Stride,
+        c: *mut f64,
         c_stride: vDSP_Stride,
         length: vDSP_Length,
     );
@@ -68,15 +86,49 @@ unsafe extern "C" {
         result: *mut f32,
         length: vDSP_Length,
     );
+    pub fn vDSP_dotprD(
+        a: *const f64,
+        a_stride: vDSP_Stride,
+        b: *const f64,
+        b_stride: vDSP_Stride,
+        result: *mut f64,
+        length: vDSP_Length,
+    );
     pub fn vDSP_maxv(input: *const f32, stride: vDSP_Stride, result: *mut f32, length: vDSP_Length);
+    pub fn vDSP_maxvD(
+        input: *const f64,
+        stride: vDSP_Stride,
+        result: *mut f64,
+        length: vDSP_Length,
+    );
     pub fn vDSP_minv(input: *const f32, stride: vDSP_Stride, result: *mut f32, length: vDSP_Length);
+    pub fn vDSP_minvD(
+        input: *const f64,
+        stride: vDSP_Stride,
+        result: *mut f64,
+        length: vDSP_Length,
+    );
     pub fn vDSP_meanv(
         input: *const f32,
         stride: vDSP_Stride,
         result: *mut f32,
         length: vDSP_Length,
     );
+    pub fn vDSP_meanvD(
+        input: *const f64,
+        stride: vDSP_Stride,
+        result: *mut f64,
+        length: vDSP_Length,
+    );
     pub fn vDSP_sve(input: *const f32, stride: vDSP_Stride, result: *mut f32, length: vDSP_Length);
+    pub fn vDSP_sveD(
+        input: *const f64,
+        stride: vDSP_Stride,
+        result: *mut f64,
+        length: vDSP_Length,
+    );
     pub fn vDSP_hamm_window(output: *mut f32, length: vDSP_Length, flags: i32);
+    pub fn vDSP_hamm_windowD(output: *mut f64, length: vDSP_Length, flags: i32);
     pub fn vDSP_blkman_window(output: *mut f32, length: vDSP_Length, flags: i32);
+    pub fn vDSP_blkman_windowD(output: *mut f64, length: vDSP_Length, flags: i32);
 }

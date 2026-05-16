@@ -46,4 +46,41 @@ unsafe extern "C" {
         dest: *const vImage_Buffer,
         flags: vImage_Flags,
     ) -> vImage_Error;
+    pub fn vImageAlphaBlend_ARGB8888(
+        src_top: *const vImage_Buffer,
+        src_bottom: *const vImage_Buffer,
+        dest: *const vImage_Buffer,
+        flags: vImage_Flags,
+    ) -> vImage_Error;
+    pub fn vImageClipToAlpha_ARGB8888(
+        src: *const vImage_Buffer,
+        dest: *const vImage_Buffer,
+        flags: vImage_Flags,
+    ) -> vImage_Error;
+    pub fn vImagePremultiplyData_ARGB8888(
+        src: *const vImage_Buffer,
+        dest: *const vImage_Buffer,
+        flags: vImage_Flags,
+    ) -> vImage_Error;
+    pub fn vImageUnpremultiplyData_ARGB8888(
+        src: *const vImage_Buffer,
+        dest: *const vImage_Buffer,
+        flags: vImage_Flags,
+    ) -> vImage_Error;
+    pub fn vImageConvert_Planar8toARGB8888(
+        src_a: *const vImage_Buffer,
+        src_r: *const vImage_Buffer,
+        src_g: *const vImage_Buffer,
+        src_b: *const vImage_Buffer,
+        dest: *const vImage_Buffer,
+        flags: vImage_Flags,
+    ) -> vImage_Error;
+    pub fn vImageConvert_ARGB8888toPlanar8(
+        src_argb: *const vImage_Buffer,
+        dest_a: *const vImage_Buffer,
+        dest_r: *const vImage_Buffer,
+        dest_g: *const vImage_Buffer,
+        dest_b: *const vImage_Buffer,
+        flags: vImage_Flags,
+    ) -> vImage_Error;
 }

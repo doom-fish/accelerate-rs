@@ -6,13 +6,14 @@ Notes:
 - `simd` is intentionally excluded: the crate's `simd` module wraps Swift's `simd`, not `Accelerate.framework`.
 - `raw-ffi` is included in VERIFIED/EXEMPT because the instructions require auditing all public `src/**/*.rs` exports, including feature-gated ones.
 - Apple now deprecates large parts of classic CBLAS/LAPACK/LinearAlgebra and legacy BNNS layer-builder APIs; those rows are EXEMPT and do not count toward coverage.
-- Largest current gap families: vImage (608), vDSP (463), Sparse (343), vForce (79), BNNS (77), vBigNum (77), vBasicOps (63), vfp (45).
+- Largest current gap families: vImage (602), vDSP (454), Sparse (330), vForce (79), vBigNum (77), BNNS (68), vBasicOps (63), vfp (45).
+- Remaining unwrapped surface is now intentionally low-priority long-tail work: more vImage format permutations, specialized vDSP transform families, broader sparse matrix construction/query helpers, and BNNS Graph execution/runtime APIs.
 
 SDK_PUBLIC_SYMBOLS: 3764
-VERIFIED: 36
-GAPS: 1760
+VERIFIED: 73
+GAPS: 1723
 EXEMPT: 1968
-COVERAGE_PCT: 2.00%
+COVERAGE_PCT: 4.06%
 
 ## 🟢 VERIFIED
 
@@ -54,619 +55,650 @@ COVERAGE_PCT: 2.00%
 | vvlogf | function | vecLib/vForce.h | ffi::vvlogf (raw-ffi), log_f32 |
 | vvsinf | function | vecLib/vForce.h | ffi::vvsinf (raw-ffi), sin_f32 |
 | vvsqrtf | function | vecLib/vForce.h | ffi::vvsqrtf (raw-ffi), sqrt_f32 |
+| vImageAlphaBlend_ARGB8888 | function | vImage/Alpha.h | alpha_blend_argb8888, ffi::vImageAlphaBlend_ARGB8888 (raw-ffi) |
+| vImageClipToAlpha_ARGB8888 | function | vImage/Alpha.h | clip_to_alpha_argb8888, ffi::vImageClipToAlpha_ARGB8888 (raw-ffi) |
+| vImagePremultiplyData_ARGB8888 | function | vImage/Alpha.h | ffi::vImagePremultiplyData_ARGB8888 (raw-ffi), premultiply_argb8888 |
+| vImageUnpremultiplyData_ARGB8888 | function | vImage/Alpha.h | ffi::vImageUnpremultiplyData_ARGB8888 (raw-ffi), unpremultiply_argb8888 |
+| vImageConvert_ARGB8888toPlanar8 | function | vImage/Conversion.h | convert_argb8888_to_planar8, ffi::vImageConvert_ARGB8888toPlanar8 (raw-ffi) |
+| vImageConvert_Planar8toARGB8888 | function | vImage/Conversion.h | convert_planar8_to_argb8888, ffi::vImageConvert_Planar8toARGB8888 (raw-ffi) |
+| BNNSGraphCompileOptionsDestroy | function | vecLib/BNNS/bnns_graph.h | BnnsGraphCompileOptions::drop (via bridge), ffi::BNNSGraphCompileOptionsDestroy (raw-ffi) |
+| BNNSGraphCompileOptionsGetGenerateDebugInfo | function | vecLib/BNNS/bnns_graph.h | BnnsGraphCompileOptions::generate_debug_info, ffi::BNNSGraphCompileOptionsGetGenerateDebugInfo (raw-ffi) |
+| BNNSGraphCompileOptionsGetOptimizationPreference | function | vecLib/BNNS/bnns_graph.h | BnnsGraphCompileOptions::optimization_preference, ffi::BNNSGraphCompileOptionsGetOptimizationPreference (raw-ffi) |
+| BNNSGraphCompileOptionsGetTargetSingleThread | function | vecLib/BNNS/bnns_graph.h | BnnsGraphCompileOptions::target_single_thread, ffi::BNNSGraphCompileOptionsGetTargetSingleThread (raw-ffi) |
+| BNNSGraphCompileOptionsMakeDefault | function | vecLib/BNNS/bnns_graph.h | BnnsGraphCompileOptions::new, ffi::BNNSGraphCompileOptionsMakeDefault (raw-ffi) |
+| BNNSGraphCompileOptionsSetGenerateDebugInfo | function | vecLib/BNNS/bnns_graph.h | BnnsGraphCompileOptions::set_generate_debug_info, ffi::BNNSGraphCompileOptionsSetGenerateDebugInfo (raw-ffi) |
+| BNNSGraphCompileOptionsSetOptimizationPreference | function | vecLib/BNNS/bnns_graph.h | BnnsGraphCompileOptions::set_optimization_preference, ffi::BNNSGraphCompileOptionsSetOptimizationPreference (raw-ffi) |
+| BNNSGraphCompileOptionsSetTargetSingleThread | function | vecLib/BNNS/bnns_graph.h | BnnsGraphCompileOptions::set_target_single_thread, ffi::BNNSGraphCompileOptionsSetTargetSingleThread (raw-ffi) |
+| bnns_graph_compile_options_t | typedef | vecLib/BNNS/bnns_graph.h | BnnsGraphCompileOptions, ffi::bnns_graph_compile_options_t (raw-ffi) |
+| sparse_commit | function | vecLib/Sparse/BLAS.h | SparseMatrixF32::commit, ffi::sparse_commit (raw-ffi) |
+| sparse_get_matrix_nonzero_count | function | vecLib/Sparse/BLAS.h | SparseMatrixF32::nonzero_count, ffi::sparse_get_matrix_nonzero_count (raw-ffi) |
+| sparse_get_matrix_number_of_columns | function | vecLib/Sparse/BLAS.h | SparseMatrixF32::columns, ffi::sparse_get_matrix_number_of_columns (raw-ffi) |
+| sparse_get_matrix_number_of_rows | function | vecLib/Sparse/BLAS.h | SparseMatrixF32::rows, ffi::sparse_get_matrix_number_of_rows (raw-ffi) |
+| sparse_insert_entry_float | function | vecLib/Sparse/BLAS.h | SparseMatrixF32::insert_entry, ffi::sparse_insert_entry_float (raw-ffi) |
+| sparse_matrix_create_float | function | vecLib/Sparse/BLAS.h | SparseMatrixF32::new, ffi::sparse_matrix_create_float (raw-ffi) |
+| sparse_matrix_destroy | function | vecLib/Sparse/BLAS.h | SparseMatrixF32::drop (via bridge), ffi::sparse_matrix_destroy (raw-ffi) |
+| sparse_matrix_triangular_solve_dense_float | function | vecLib/Sparse/BLAS.h | SparseMatrixF32::triangular_solve_matrix_row_major, ffi::sparse_matrix_triangular_solve_dense_float (raw-ffi) |
+| sparse_set_matrix_property | function | vecLib/Sparse/BLAS.h | SparseMatrixF32::set_property, ffi::sparse_set_matrix_property (raw-ffi) |
+| sparse_vector_triangular_solve_dense_float | function | vecLib/Sparse/BLAS.h | SparseMatrixF32::triangular_solve_vector, ffi::sparse_vector_triangular_solve_dense_float (raw-ffi) |
+| sparse_matrix_float | typedef | vecLib/Sparse/Types.h | SparseMatrixF32, ffi::sparse_matrix_float (raw-ffi) |
+| sparse_matrix_property | typedef | vecLib/Sparse/Types.h | ffi::sparse_matrix_property (raw-ffi), sparse_matrix_property |
+| sparse_status | typedef | vecLib/Sparse/Types.h | ffi::sparse_status (raw-ffi), sparse_status |
+| vDSP_blkman_windowD | function | vecLib/vDSP.h | blackman_window_f64, ffi::vDSP_blkman_windowD (raw-ffi) |
+| vDSP_dotprD | function | vecLib/vDSP.h | dot_f64, ffi::vDSP_dotprD (raw-ffi) |
+| vDSP_hamm_windowD | function | vecLib/vDSP.h | ffi::vDSP_hamm_windowD (raw-ffi), hamming_window_f64 |
+| vDSP_maxvD | function | vecLib/vDSP.h | ffi::vDSP_maxvD (raw-ffi), max_f64 |
+| vDSP_meanvD | function | vecLib/vDSP.h | ffi::vDSP_meanvD (raw-ffi), mean_f64 |
+| vDSP_minvD | function | vecLib/vDSP.h | ffi::vDSP_minvD (raw-ffi), min_f64 |
+| vDSP_sveD | function | vecLib/vDSP.h | ffi::vDSP_sveD (raw-ffi), sum_f64 |
+| vDSP_vaddD | function | vecLib/vDSP.h | add_f64, ffi::vDSP_vaddD (raw-ffi) |
+| vDSP_vsubD | function | vecLib/vDSP.h | ffi::vDSP_vsubD (raw-ffi), sub_f64 |
 
 ## 🔴 GAPS
 
 | Symbol | Kind | Header | Notes |
 | --- | --- | --- | --- |
-| vImageAlphaBlend_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAlphaBlend_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAlphaBlend_NonpremultipliedToPremultiplied_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAlphaBlend_NonpremultipliedToPremultiplied_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAlphaBlend_NonpremultipliedToPremultiplied_Planar8 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAlphaBlend_NonpremultipliedToPremultiplied_PlanarF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAlphaBlend_Planar8 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAlphaBlend_PlanarF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageClipToAlpha_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageClipToAlpha_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageClipToAlpha_Planar8 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageClipToAlpha_PlanarF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageClipToAlpha_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageClipToAlpha_RGBAFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlendDarken_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlendLighten_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlendMultiply_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlendScreen_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlendWithPermute_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlendWithPermute_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlend_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlend_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlend_BGRA8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlend_BGRAFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlend_Planar8 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedAlphaBlend_PlanarF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedConstAlphaBlend_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedConstAlphaBlend_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedConstAlphaBlend_Planar8 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultipliedConstAlphaBlend_PlanarF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_ARGB16Q12 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_ARGB16U | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_Planar8 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_PlanarF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_RGBA16F | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_RGBA16Q12 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_RGBA16U | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePremultiplyData_RGBAFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_ARGB16Q12 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_ARGB16U | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_Planar8 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_PlanarF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_RGBA16F | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_RGBA16Q12 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_RGBA16U | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImageUnpremultiplyData_RGBAFFFF | function | vImage/Alpha.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePNGDecompressionFilter | function | vImage/BasicImageTypes.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBufferFill_ARGB16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBufferFill_ARGB16S | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBufferFill_ARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBufferFill_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBufferFill_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBufferFill_CbCr16S | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBufferFill_CbCr16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBufferFill_CbCr8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageByteSwap_Planar16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageClip_PlanarF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_12UTo16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16Fto16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16Fto16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16Q12to16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16Q12to16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16Q12to8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16Q12toF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16SToF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16UTo12U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16UToF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16UToPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16Uto16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_16Uto16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_420Yp8_Cb8_Cr8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_420Yp8_CbCr8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_422CbYpCrYp16ToARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_422CbYpCrYp16ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_422CbYpCrYp8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_422CbYpCrYp8_AA8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_422CrYpCbYpCbYpCbYpCrYpCrYp10ToARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_422CrYpCbYpCbYpCbYpCrYpCrYp10ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_422YpCbYpCr8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_444AYpCbCr16ToARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_444AYpCbCr16ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_444AYpCbCr8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_444CbYpCrA8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_444CrYpCb10ToARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_444CrYpCb10ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_444CrYpCb8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_8to16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB1555toARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB1555toPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB1555toRGB565 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16Q12To422CrYpCbYpCbYpCbYpCrYpCrYp10 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16Q12To444CrYpCb10 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16Q12ToARGB2101010 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16Q12ToRGBA1010102 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16Q12ToXRGB2101010 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16UTo422CbYpCrYp16 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16UTo444AYpCbCr16 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16UToARGB2101010 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16UToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16UToRGBA1010102 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16UToXRGB2101010 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16UtoARGB8888_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16UtoPlanar16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB16UtoRGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB2101010ToARGB16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB2101010ToARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB2101010ToARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB2101010ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB2101010ToARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To420Yp8_Cb8_Cr8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To420Yp8_CbCr8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To422CbYpCrYp16 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To422CbYpCrYp8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To422CbYpCrYp8_AA8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To422CrYpCbYpCbYpCbYpCrYpCrYp10 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To422YpCbYpCr8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To444AYpCbCr16 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To444AYpCbCr8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To444CbYpCrA8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To444CrYpCb10 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888To444CrYpCb8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888ToARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888ToARGB2101010 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888ToRGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888ToRGBA1010102 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888ToXRGB2101010 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888toARGB1555 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888toARGB1555_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888toPlanar16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888toPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888toPlanarF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888toRGB565 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888toRGB565_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGB8888toRGB888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGBFFFFToARGB2101010 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGBFFFFToXRGB2101010 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGBFFFFtoARGB8888_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGBFFFFtoPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGBFFFFtoPlanarF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGBFFFFtoRGBFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ARGBToYpCbCr_GenerateConversion | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_BGRA16UtoRGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_BGRA8888toRGB565 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_BGRA8888toRGB565_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_BGRA8888toRGB888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_BGRAFFFFtoRGBFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_BGRX8888ToPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_BGRXFFFFToPlanarF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ChunkyToPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_ChunkyToPlanarF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_FTo16S | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_FTo16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Fto16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Indexed1toPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Indexed2toPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Indexed4toPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar16FtoPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar16FtoPlanarF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar16Q12toARGB16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar16Q12toARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar16Q12toRGB16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar16Q12toRGB888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar16UtoARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar16UtoPlanar8_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar16UtoRGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar1toPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar2toPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar4toPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8To16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8ToARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8ToBGRX8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8ToBGRXFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8ToXRGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8ToXRGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toARGB1555 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toIndexed1 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toIndexed2 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toIndexed4 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toPlanar1 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toPlanar16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toPlanar2 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toPlanar4 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toPlanarF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toRGB565 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_Planar8toRGB888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarFToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarFToBGRX8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarFToBGRXFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarFToXRGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarFToXRGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarFtoARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarFtoPlanar16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarFtoPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarFtoPlanar8_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarFtoRGBFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarToChunky8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_PlanarToChunkyF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB16UToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB16UtoARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB16UtoBGRA16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB16UtoPlanar16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB16UtoRGB888_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB16UtoRGBA16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB565toARGB1555 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB565toARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB565toBGRA8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB565toPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB565toRGB888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB565toRGBA5551 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB565toRGBA8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB888toARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB888toBGRA8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB888toPlanar16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB888toPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB888toRGB565_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGB888toRGBA8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA1010102ToARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA1010102ToARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA1010102ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA16UtoRGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA5551toRGB565 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA5551toRGBA8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA8888toRGB565 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA8888toRGB565_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA8888toRGB888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA8888toRGBA5551 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBA8888toRGBA5551_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBAFFFFtoRGBFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBFFFtoARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBFFFtoBGRAFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBFFFtoPlanarF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBFFFtoRGB888_dithered | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_RGBFFFtoRGBAFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_XRGB2101010ToARGB16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_XRGB2101010ToARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_XRGB2101010ToARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_XRGB2101010ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_XRGB2101010ToARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_XRGB8888ToPlanar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_XRGBFFFFToPlanarF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_YpCbCrToARGB_GenerateConversion | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCopyBuffer | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageExtractChannel_ARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageExtractChannel_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageExtractChannel_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_ARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_ARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_ARGB8888ToRGB888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_ARGBFFFFToRGBFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_BGRA8888ToRGB888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_BGRAFFFFToRGBFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_RGBA16Q12 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_RGBA16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_RGBA8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_RGBA8888ToRGB888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_RGBAFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFlatten_RGBAFFFFToRGBFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannelsWithPixel_ARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannelsWithPixel_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannelsWithPixel_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannelsWithScalar_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannelsWithScalar_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannelsWithScalar_Planar16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannelsWithScalar_Planar16S | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannelsWithScalar_Planar16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannelsWithScalar_Planar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannelsWithScalar_PlanarF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannels_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageOverwriteChannels_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePermuteChannelsWithMaskedInsert_ARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePermuteChannelsWithMaskedInsert_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePermuteChannelsWithMaskedInsert_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePermuteChannels_ARGB16F | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePermuteChannels_ARGB16U | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePermuteChannels_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePermuteChannels_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePermuteChannels_RGB888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSelectChannels_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSelectChannels_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageTableLookUp_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageTableLookUp_Planar8 | function | vImage/Conversion.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBoxConvolve_Planar8 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolveFloatKernel_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolveMultiKernel_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolveMultiKernel_ARGBFFFF | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolveWithBias_ARGB16F | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolveWithBias_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolveWithBias_ARGBFFFF | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolveWithBias_Planar16F | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolveWithBias_Planar8 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolveWithBias_PlanarF | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolve_ARGB16F | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolve_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolve_ARGBFFFF | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolve_Planar16F | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolve_Planar8 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvolve_PlanarF | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRichardsonLucyDeConvolve_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRichardsonLucyDeConvolve_ARGBFFFF | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRichardsonLucyDeConvolve_Planar8 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRichardsonLucyDeConvolve_PlanarF | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSepConvolve_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSepConvolve_Planar16F | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSepConvolve_Planar16U | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSepConvolve_Planar8 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSepConvolve_Planar8to16U | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSepConvolve_PlanarF | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageTentConvolve_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageTentConvolve_Planar8 | function | vImage/Convolution.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpCG_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpCG_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpCG_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpCG_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpCG_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpCG_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpD_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpD_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpD_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpD_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpD_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpD_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpD_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpD_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarpD_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarp_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarp_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarp_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarp_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarp_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarp_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarp_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarp_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageAffineWarp_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageDestroyResamplingFilter | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageGetPerspectiveWarp | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageGetResamplingFilterExtent | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageGetResamplingFilterSize | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalReflect_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalReflect_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalReflect_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalReflect_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalReflect_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalReflect_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalReflect_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalReflect_Planar16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalReflect_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalReflect_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_CbCr16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_CbCr16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShearD_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_CbCr16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_CbCr16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_CbCr8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_Planar16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_Planar16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHorizontalShear_XRGB2101010W | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageNewResamplingFilter | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageNewResamplingFilterForFunctionUsingBuffer | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePerspectiveWarp_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePerspectiveWarp_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePerspectiveWarp_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePerspectiveWarp_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePerspectiveWarp_Planar16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePerspectiveWarp_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate90_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate90_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate90_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate90_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate90_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate90_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate90_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate90_Planar16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate90_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate90_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRotate_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_CbCr16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_CbCr8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_Planar16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_Planar16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageScale_XRGB2101010W | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalReflect_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalReflect_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalReflect_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalReflect_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalReflect_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalReflect_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalReflect_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalReflect_Planar16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalReflect_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalReflect_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_CbCr16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_CbCr16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShearD_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_ARGB16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_ARGB16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_ARGB16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_CbCr16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_CbCr16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_CbCr16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_CbCr8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_Planar16F | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_Planar16S | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_Planar16U | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_Planar8 | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_PlanarF | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageVerticalShear_XRGB2101010W | function | vImage/Geometry.h | No wrapper; crate only exposes four vImage image ops |
-| vImageContrastStretch_ARGB8888 | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageContrastStretch_ARGBFFFF | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageContrastStretch_PlanarF | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageEndsInContrastStretch_ARGB8888 | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageEndsInContrastStretch_ARGBFFFF | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageEndsInContrastStretch_Planar8 | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageEndsInContrastStretch_PlanarF | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageEqualization_ARGB8888 | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageEqualization_ARGBFFFF | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageEqualization_Planar8 | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageEqualization_PlanarF | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHistogramCalculation_ARGB8888 | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHistogramCalculation_ARGBFFFF | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHistogramCalculation_Planar8 | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHistogramCalculation_PlanarF | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHistogramSpecification_ARGB8888 | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHistogramSpecification_ARGBFFFF | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHistogramSpecification_Planar8 | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageHistogramSpecification_PlanarF | function | vImage/Histogram.h | No wrapper; crate only exposes four vImage image ops |
-| vImageDilate_ARGB8888 | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageDilate_ARGBFFFF | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageDilate_Planar8 | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageDilate_PlanarF | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageErode_ARGB8888 | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageErode_ARGBFFFF | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageErode_Planar8 | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageErode_PlanarF | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMax_ARGB8888 | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMax_ARGBFFFF | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMax_Planar8 | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMax_PlanarF | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMin_ARGB8888 | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMin_ARGBFFFF | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMin_Planar8 | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMin_PlanarF | function | vImage/Morphology.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCreateGammaFunction | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageDestroyGammaFunction | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFloodFill_ARGB16U | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFloodFill_ARGB8888 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFloodFill_Planar16U | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageFloodFill_Planar8 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageGamma_Planar8toPlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageGamma_PlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageGamma_PlanarFtoPlanar8 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageInterpolatedLookupTable_PlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageLookupTable_8to64U | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageLookupTable_Planar16 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageLookupTable_Planar8toPlanar128 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageLookupTable_Planar8toPlanar16 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageLookupTable_Planar8toPlanar24 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageLookupTable_Planar8toPlanar48 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageLookupTable_Planar8toPlanar96 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageLookupTable_Planar8toPlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageLookupTable_PlanarFtoPlanar8 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMDTableUsageHint | typedef | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMatrixMultiply_ARGB8888 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMatrixMultiply_ARGB8888ToPlanar8 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMatrixMultiply_ARGBFFFF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMatrixMultiply_ARGBFFFFToPlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMatrixMultiply_Planar16S | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMatrixMultiply_Planar8 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMatrixMultiply_PlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMultiDimensionalInterpolatedLookupTable_Planar16Q12 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMultiDimensionalInterpolatedLookupTable_PlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMultidimensionalTable_Create | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMultidimensionalTable_Release | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageMultidimensionalTable_Retain | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewiseGamma_Planar16Q12 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewiseGamma_Planar16Q12toPlanar8 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewiseGamma_Planar8 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewiseGamma_Planar8toPlanar16Q12 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewiseGamma_Planar8toPlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewiseGamma_PlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewiseGamma_PlanarFtoPlanar8 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewisePolynomial_Planar8toPlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewisePolynomial_PlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewisePolynomial_PlanarFtoPlanar8 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImagePiecewiseRational_PlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSymmetricPiecewiseGamma_Planar16Q12 | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSymmetricPiecewiseGamma_PlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageSymmetricPiecewisePolynomial_PlanarF | function | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_InterpolationMethod | typedef | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_MultidimensionalTable | typedef | vImage/Transform.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBuffer_CopyToCVPixelBuffer | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBuffer_InitForCopyFromCVPixelBuffer | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBuffer_InitForCopyToCVPixelBuffer | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBuffer_InitWithCVPixelBuffer | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_Copy | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_CopyChannelDescription | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_CopyConversionMatrix | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_Create | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_CreateWithCVPixelBuffer | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_GetAlphaHint | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_GetChannelCount | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_GetChannelDescription | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_GetChannelNames | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_GetChromaSiting | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_GetColorSpace | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_GetConversionMatrix | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_GetFormatCode | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_GetUserData | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_Release | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_Retain | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_SetAlphaHint | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_SetChromaSiting | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_SetColorSpace | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormat_SetUserData | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageChannelDescription | typedef | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_CreateForCGToCVImageFormat | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_CreateForCVToCGImageFormat | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction | function | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageRGBPrimaries | typedef | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageTransferFunction | typedef | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageWhitePoint | typedef | vImage/vImage_CVUtilities.h | No wrapper; crate only exposes four vImage image ops |
-| kvImage_ARGBToYpCbCrMatrix_ITU_R_601_4 | const | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| kvImage_ARGBToYpCbCrMatrix_ITU_R_709_2 | const | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| kvImage_YpCbCrToARGBMatrix_ITU_R_601_4 | const | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| kvImage_YpCbCrToARGBMatrix_ITU_R_709_2 | const | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImageARGBType | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCVImageFormatRef | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConstCVImageFormatRef | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverterRef | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImageYpCbCrType | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_ARGBToYpCbCr | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_ARGBToYpCbCrMatrix | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_AffineTransform | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_AffineTransform_Double | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_PerpsectiveTransform | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_YpCbCrPixelRange | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_YpCbCrToARGB | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_YpCbCrToARGBMatrix | typedef | vImage/vImage_Types.h | No wrapper; crate only exposes four vImage image ops |
-| kvImageDecodeArray_16Q12Format | const | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBuffer_GetSize | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBuffer_Init | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageBuffer_InitWithCGImage | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCGImageFormat_GetComponentCount | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCGImageFormat_IsEqual | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConvert_AnyToAny | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_CreateWithCGColorConversionInfo | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_CreateWithCGImageFormat | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_CreateWithColorSyncCodeFragment | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_GetDestinationBufferOrder | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_GetNumberOfDestinationBuffers | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_GetNumberOfSourceBuffers | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_GetSourceBufferOrder | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_MustOperateOutOfPlace | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_Release | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageConverter_Retain | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImageCreateCGImageFromBuffer | function | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
-| vImage_CGImageFormat | typedef | vImage/vImage_Utilities.h | No wrapper; crate only exposes four vImage image ops |
+| vImageAlphaBlend_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAlphaBlend_NonpremultipliedToPremultiplied_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAlphaBlend_NonpremultipliedToPremultiplied_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAlphaBlend_NonpremultipliedToPremultiplied_Planar8 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAlphaBlend_NonpremultipliedToPremultiplied_PlanarF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAlphaBlend_Planar8 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAlphaBlend_PlanarF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageClipToAlpha_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageClipToAlpha_Planar8 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageClipToAlpha_PlanarF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageClipToAlpha_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageClipToAlpha_RGBAFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlendDarken_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlendLighten_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlendMultiply_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlendScreen_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlendWithPermute_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlendWithPermute_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlend_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlend_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlend_BGRA8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlend_BGRAFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlend_Planar8 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedAlphaBlend_PlanarF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedConstAlphaBlend_ARGB8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedConstAlphaBlend_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedConstAlphaBlend_Planar8 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultipliedConstAlphaBlend_PlanarF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultiplyData_ARGB16Q12 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultiplyData_ARGB16U | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultiplyData_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultiplyData_Planar8 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultiplyData_PlanarF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultiplyData_RGBA16F | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultiplyData_RGBA16Q12 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultiplyData_RGBA16U | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultiplyData_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePremultiplyData_RGBAFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageUnpremultiplyData_ARGB16Q12 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageUnpremultiplyData_ARGB16U | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageUnpremultiplyData_ARGBFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageUnpremultiplyData_Planar8 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageUnpremultiplyData_PlanarF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageUnpremultiplyData_RGBA16F | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageUnpremultiplyData_RGBA16Q12 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageUnpremultiplyData_RGBA16U | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageUnpremultiplyData_RGBA8888 | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageUnpremultiplyData_RGBAFFFF | function | vImage/Alpha.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePNGDecompressionFilter | function | vImage/BasicImageTypes.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBufferFill_ARGB16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBufferFill_ARGB16S | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBufferFill_ARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBufferFill_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBufferFill_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBufferFill_CbCr16S | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBufferFill_CbCr16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBufferFill_CbCr8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageByteSwap_Planar16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageClip_PlanarF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_12UTo16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16Fto16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16Fto16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16Q12to16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16Q12to16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16Q12to8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16Q12toF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16SToF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16UTo12U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16UToF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16UToPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16Uto16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_16Uto16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_420Yp8_Cb8_Cr8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_420Yp8_CbCr8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_422CbYpCrYp16ToARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_422CbYpCrYp16ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_422CbYpCrYp8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_422CbYpCrYp8_AA8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_422CrYpCbYpCbYpCbYpCrYpCrYp10ToARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_422CrYpCbYpCbYpCbYpCrYpCrYp10ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_422YpCbYpCr8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_444AYpCbCr16ToARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_444AYpCbCr16ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_444AYpCbCr8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_444CbYpCrA8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_444CrYpCb10ToARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_444CrYpCb10ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_444CrYpCb8ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_8to16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB1555toARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB1555toPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB1555toRGB565 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16Q12To422CrYpCbYpCbYpCbYpCrYpCrYp10 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16Q12To444CrYpCb10 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16Q12ToARGB2101010 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16Q12ToRGBA1010102 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16Q12ToXRGB2101010 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16UTo422CbYpCrYp16 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16UTo444AYpCbCr16 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16UToARGB2101010 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16UToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16UToRGBA1010102 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16UToXRGB2101010 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16UtoARGB8888_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16UtoPlanar16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB16UtoRGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB2101010ToARGB16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB2101010ToARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB2101010ToARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB2101010ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB2101010ToARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To420Yp8_Cb8_Cr8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To420Yp8_CbCr8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To422CbYpCrYp16 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To422CbYpCrYp8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To422CbYpCrYp8_AA8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To422CrYpCbYpCbYpCbYpCrYpCrYp10 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To422YpCbYpCr8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To444AYpCbCr16 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To444AYpCbCr8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To444CbYpCrA8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To444CrYpCb10 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888To444CrYpCb8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888ToARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888ToARGB2101010 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888ToRGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888ToRGBA1010102 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888ToXRGB2101010 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888toARGB1555 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888toARGB1555_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888toPlanar16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888toPlanarF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888toRGB565 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888toRGB565_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGB8888toRGB888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGBFFFFToARGB2101010 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGBFFFFToXRGB2101010 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGBFFFFtoARGB8888_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGBFFFFtoPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGBFFFFtoPlanarF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGBFFFFtoRGBFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ARGBToYpCbCr_GenerateConversion | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_BGRA16UtoRGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_BGRA8888toRGB565 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_BGRA8888toRGB565_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_BGRA8888toRGB888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_BGRAFFFFtoRGBFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_BGRX8888ToPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_BGRXFFFFToPlanarF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ChunkyToPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_ChunkyToPlanarF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_FTo16S | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_FTo16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Fto16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Indexed1toPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Indexed2toPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Indexed4toPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar16FtoPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar16FtoPlanarF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar16Q12toARGB16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar16Q12toARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar16Q12toRGB16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar16Q12toRGB888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar16UtoARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar16UtoPlanar8_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar16UtoRGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar1toPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar2toPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar4toPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8To16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8ToARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8ToBGRX8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8ToBGRXFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8ToXRGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8ToXRGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toARGB1555 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toIndexed1 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toIndexed2 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toIndexed4 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toPlanar1 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toPlanar16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toPlanar2 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toPlanar4 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toPlanarF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toRGB565 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_Planar8toRGB888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarFToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarFToBGRX8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarFToBGRXFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarFToXRGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarFToXRGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarFtoARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarFtoPlanar16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarFtoPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarFtoPlanar8_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarFtoRGBFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarToChunky8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_PlanarToChunkyF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB16UToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB16UtoARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB16UtoBGRA16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB16UtoPlanar16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB16UtoRGB888_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB16UtoRGBA16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB565toARGB1555 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB565toARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB565toBGRA8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB565toPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB565toRGB888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB565toRGBA5551 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB565toRGBA8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB888toARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB888toBGRA8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB888toPlanar16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB888toPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB888toRGB565_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGB888toRGBA8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA1010102ToARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA1010102ToARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA1010102ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA16UtoRGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA5551toRGB565 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA5551toRGBA8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA8888toRGB565 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA8888toRGB565_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA8888toRGB888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA8888toRGBA5551 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBA8888toRGBA5551_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBAFFFFtoRGBFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBFFFtoARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBFFFtoBGRAFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBFFFtoPlanarF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBFFFtoRGB888_dithered | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_RGBFFFtoRGBAFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_XRGB2101010ToARGB16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_XRGB2101010ToARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_XRGB2101010ToARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_XRGB2101010ToARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_XRGB2101010ToARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_XRGB8888ToPlanar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_XRGBFFFFToPlanarF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_YpCbCrToARGB_GenerateConversion | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCopyBuffer | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageExtractChannel_ARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageExtractChannel_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageExtractChannel_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_ARGB16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_ARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_ARGB8888ToRGB888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_ARGBFFFFToRGBFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_BGRA8888ToRGB888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_BGRAFFFFToRGBFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_RGBA16Q12 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_RGBA16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_RGBA8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_RGBA8888ToRGB888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_RGBAFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFlatten_RGBAFFFFToRGBFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannelsWithPixel_ARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannelsWithPixel_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannelsWithPixel_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannelsWithScalar_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannelsWithScalar_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannelsWithScalar_Planar16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannelsWithScalar_Planar16S | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannelsWithScalar_Planar16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannelsWithScalar_Planar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannelsWithScalar_PlanarF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannels_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageOverwriteChannels_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePermuteChannelsWithMaskedInsert_ARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePermuteChannelsWithMaskedInsert_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePermuteChannelsWithMaskedInsert_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePermuteChannels_ARGB16F | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePermuteChannels_ARGB16U | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePermuteChannels_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePermuteChannels_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePermuteChannels_RGB888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSelectChannels_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSelectChannels_ARGBFFFF | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageTableLookUp_ARGB8888 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageTableLookUp_Planar8 | function | vImage/Conversion.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBoxConvolve_Planar8 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolveFloatKernel_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolveMultiKernel_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolveMultiKernel_ARGBFFFF | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolveWithBias_ARGB16F | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolveWithBias_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolveWithBias_ARGBFFFF | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolveWithBias_Planar16F | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolveWithBias_Planar8 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolveWithBias_PlanarF | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolve_ARGB16F | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolve_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolve_ARGBFFFF | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolve_Planar16F | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolve_Planar8 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvolve_PlanarF | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRichardsonLucyDeConvolve_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRichardsonLucyDeConvolve_ARGBFFFF | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRichardsonLucyDeConvolve_Planar8 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRichardsonLucyDeConvolve_PlanarF | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSepConvolve_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSepConvolve_Planar16F | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSepConvolve_Planar16U | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSepConvolve_Planar8 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSepConvolve_Planar8to16U | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSepConvolve_PlanarF | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageTentConvolve_ARGB8888 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageTentConvolve_Planar8 | function | vImage/Convolution.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpCG_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpCG_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpCG_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpCG_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpCG_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpCG_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpD_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpD_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpD_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpD_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpD_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpD_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpD_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpD_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarpD_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarp_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarp_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarp_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarp_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarp_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarp_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarp_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarp_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageAffineWarp_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageDestroyResamplingFilter | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageGetPerspectiveWarp | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageGetResamplingFilterExtent | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageGetResamplingFilterSize | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalReflect_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalReflect_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalReflect_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalReflect_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalReflect_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalReflect_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalReflect_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalReflect_Planar16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalReflect_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalReflect_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_CbCr16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_CbCr16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShearD_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_CbCr16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_CbCr16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_CbCr8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_Planar16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_Planar16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHorizontalShear_XRGB2101010W | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageNewResamplingFilter | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageNewResamplingFilterForFunctionUsingBuffer | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePerspectiveWarp_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePerspectiveWarp_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePerspectiveWarp_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePerspectiveWarp_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePerspectiveWarp_Planar16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePerspectiveWarp_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate90_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate90_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate90_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate90_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate90_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate90_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate90_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate90_Planar16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate90_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate90_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRotate_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_CbCr16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_CbCr8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_Planar16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_Planar16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageScale_XRGB2101010W | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalReflect_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalReflect_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalReflect_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalReflect_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalReflect_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalReflect_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalReflect_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalReflect_Planar16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalReflect_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalReflect_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_CbCr16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_CbCr16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShearD_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_ARGB16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_ARGB16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_ARGB16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_ARGB8888 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_ARGBFFFF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_CbCr16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_CbCr16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_CbCr16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_CbCr8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_Planar16F | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_Planar16S | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_Planar16U | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_Planar8 | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_PlanarF | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageVerticalShear_XRGB2101010W | function | vImage/Geometry.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageContrastStretch_ARGB8888 | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageContrastStretch_ARGBFFFF | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageContrastStretch_PlanarF | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageEndsInContrastStretch_ARGB8888 | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageEndsInContrastStretch_ARGBFFFF | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageEndsInContrastStretch_Planar8 | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageEndsInContrastStretch_PlanarF | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageEqualization_ARGB8888 | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageEqualization_ARGBFFFF | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageEqualization_Planar8 | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageEqualization_PlanarF | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHistogramCalculation_ARGB8888 | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHistogramCalculation_ARGBFFFF | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHistogramCalculation_Planar8 | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHistogramCalculation_PlanarF | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHistogramSpecification_ARGB8888 | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHistogramSpecification_ARGBFFFF | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHistogramSpecification_Planar8 | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageHistogramSpecification_PlanarF | function | vImage/Histogram.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageDilate_ARGB8888 | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageDilate_ARGBFFFF | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageDilate_Planar8 | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageDilate_PlanarF | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageErode_ARGB8888 | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageErode_ARGBFFFF | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageErode_Planar8 | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageErode_PlanarF | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMax_ARGB8888 | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMax_ARGBFFFF | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMax_Planar8 | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMax_PlanarF | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMin_ARGB8888 | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMin_ARGBFFFF | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMin_Planar8 | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMin_PlanarF | function | vImage/Morphology.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCreateGammaFunction | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageDestroyGammaFunction | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFloodFill_ARGB16U | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFloodFill_ARGB8888 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFloodFill_Planar16U | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageFloodFill_Planar8 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageGamma_Planar8toPlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageGamma_PlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageGamma_PlanarFtoPlanar8 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageInterpolatedLookupTable_PlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageLookupTable_8to64U | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageLookupTable_Planar16 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageLookupTable_Planar8toPlanar128 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageLookupTable_Planar8toPlanar16 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageLookupTable_Planar8toPlanar24 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageLookupTable_Planar8toPlanar48 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageLookupTable_Planar8toPlanar96 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageLookupTable_Planar8toPlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageLookupTable_PlanarFtoPlanar8 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMDTableUsageHint | typedef | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMatrixMultiply_ARGB8888 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMatrixMultiply_ARGB8888ToPlanar8 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMatrixMultiply_ARGBFFFF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMatrixMultiply_ARGBFFFFToPlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMatrixMultiply_Planar16S | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMatrixMultiply_Planar8 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMatrixMultiply_PlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMultiDimensionalInterpolatedLookupTable_Planar16Q12 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMultiDimensionalInterpolatedLookupTable_PlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMultidimensionalTable_Create | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMultidimensionalTable_Release | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageMultidimensionalTable_Retain | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewiseGamma_Planar16Q12 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewiseGamma_Planar16Q12toPlanar8 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewiseGamma_Planar8 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewiseGamma_Planar8toPlanar16Q12 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewiseGamma_Planar8toPlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewiseGamma_PlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewiseGamma_PlanarFtoPlanar8 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewisePolynomial_Planar8toPlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewisePolynomial_PlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewisePolynomial_PlanarFtoPlanar8 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImagePiecewiseRational_PlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSymmetricPiecewiseGamma_Planar16Q12 | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSymmetricPiecewiseGamma_PlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageSymmetricPiecewisePolynomial_PlanarF | function | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_InterpolationMethod | typedef | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_MultidimensionalTable | typedef | vImage/Transform.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBuffer_CopyToCVPixelBuffer | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBuffer_InitForCopyFromCVPixelBuffer | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBuffer_InitForCopyToCVPixelBuffer | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBuffer_InitWithCVPixelBuffer | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_Copy | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_CopyChannelDescription | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_CopyConversionMatrix | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_Create | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_CreateWithCVPixelBuffer | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_GetAlphaHint | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_GetChannelCount | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_GetChannelDescription | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_GetChannelNames | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_GetChromaSiting | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_GetColorSpace | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_GetConversionMatrix | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_GetFormatCode | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_GetUserData | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_Release | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_Retain | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_SetAlphaHint | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_SetChromaSiting | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_SetColorSpace | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormat_SetUserData | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageChannelDescription | typedef | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_CreateForCGToCVImageFormat | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_CreateForCVToCGImageFormat | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction | function | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageRGBPrimaries | typedef | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageTransferFunction | typedef | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageWhitePoint | typedef | vImage/vImage_CVUtilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| kvImage_ARGBToYpCbCrMatrix_ITU_R_601_4 | const | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| kvImage_ARGBToYpCbCrMatrix_ITU_R_709_2 | const | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| kvImage_YpCbCrToARGBMatrix_ITU_R_601_4 | const | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| kvImage_YpCbCrToARGBMatrix_ITU_R_709_2 | const | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageARGBType | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCVImageFormatRef | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConstCVImageFormatRef | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverterRef | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageYpCbCrType | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_ARGBToYpCbCr | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_ARGBToYpCbCrMatrix | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_AffineTransform | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_AffineTransform_Double | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_PerpsectiveTransform | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_YpCbCrPixelRange | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_YpCbCrToARGB | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_YpCbCrToARGBMatrix | typedef | vImage/vImage_Types.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| kvImageDecodeArray_16Q12Format | const | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBuffer_GetSize | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBuffer_Init | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageBuffer_InitWithCGImage | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCGImageFormat_GetComponentCount | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCGImageFormat_IsEqual | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConvert_AnyToAny | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_CreateWithCGColorConversionInfo | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_CreateWithCGImageFormat | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_CreateWithColorSyncCodeFragment | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_GetDestinationBufferOrder | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_GetNumberOfDestinationBuffers | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_GetNumberOfSourceBuffers | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_GetSourceBufferOrder | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_MustOperateOutOfPlace | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_Release | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageConverter_Retain | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImageCreateCGImageFromBuffer | function | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
+| vImage_CGImageFormat | typedef | vImage/vImage_Utilities.h | No wrapper; crate focuses on common ARGB8888/Planar8 vImage workflows |
 | BNNSCopy | function | vecLib/BNNS/bnns.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
 | BNNSCreateNearestNeighbors | function | vecLib/BNNS/bnns.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
 | BNNSCreateRandomGenerator | function | vecLib/BNNS/bnns.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
@@ -689,54 +721,45 @@ COVERAGE_PCT: 2.00%
 | BNNSRandomGeneratorStateSize | function | vecLib/BNNS/bnns.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
 | BNNSTensorGetAllocationSize | function | vecLib/BNNS/bnns.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
 | BNNSTranspose | function | vecLib/BNNS/bnns.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
-| BNNSGraphCompileFromFile | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsDestroy | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsGetGenerateDebugInfo | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsGetOptimizationPreference | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsGetOutputFD | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsGetOutputPath | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsGetTargetSingleThread | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsMakeDefault | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsSetGenerateDebugInfo | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsSetMessageLogCallback | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsSetMessageLogMask | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsSetOptimizationPreference | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsSetOutputFD | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsSetOutputPath | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphCompileOptionsSetTargetSingleThread | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextDestroy | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextEnableNanAndInfChecks | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextExecute | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextGetTensor | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextGetWorkspaceSize | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextMake | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextMakeStreaming | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextSetArgumentType | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextSetBatchSize | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextSetDynamicShapes | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextSetMessageLogCallback | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextSetMessageLogMask | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextSetOutputAllocationCallback | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextSetStreamingAdvanceCount | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphContextSetWorkspaceAllocationCallback | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetArgumentCount | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetArgumentIntents | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetArgumentInterleaveFactors | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetArgumentNames | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetArgumentPosition | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetFunctionCount | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetFunctionNames | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetInputCount | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetInputNames | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetOutputCount | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphGetOutputNames | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| BNNSGraphTensorFillStrides | function | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| bnns_graph_argument_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| bnns_graph_compile_options_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| bnns_graph_context_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| bnns_graph_shape_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| bnns_graph_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
-| bnns_user_message_data_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; BNNS Graph API unsupported |
+| BNNSGraphCompileFromFile | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphCompileOptionsGetOutputFD | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphCompileOptionsGetOutputPath | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphCompileOptionsSetMessageLogCallback | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphCompileOptionsSetMessageLogMask | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphCompileOptionsSetOutputFD | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphCompileOptionsSetOutputPath | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextDestroy | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextEnableNanAndInfChecks | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextExecute | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextGetTensor | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextGetWorkspaceSize | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextMake | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextMakeStreaming | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextSetArgumentType | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextSetBatchSize | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextSetDynamicShapes | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextSetMessageLogCallback | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextSetMessageLogMask | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextSetOutputAllocationCallback | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextSetStreamingAdvanceCount | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphContextSetWorkspaceAllocationCallback | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetArgumentCount | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetArgumentIntents | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetArgumentInterleaveFactors | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetArgumentNames | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetArgumentPosition | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetFunctionCount | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetFunctionNames | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetInputCount | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetInputNames | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetOutputCount | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphGetOutputNames | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| BNNSGraphTensorFillStrides | function | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| bnns_graph_argument_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| bnns_graph_context_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| bnns_graph_shape_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| bnns_graph_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
+| bnns_user_message_data_t | typedef | vecLib/BNNS/bnns_graph.h | No wrapper; crate only wraps BNNS Graph compile-options helpers |
 | BNNSActivation | typedef | vecLib/BNNS/bnns_structures.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
 | BNNSFilterParameters | typedef | vecLib/BNNS/bnns_structures.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
 | BNNSLayerParametersReduction | typedef | vecLib/BNNS/bnns_structures.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
@@ -745,349 +768,336 @@ COVERAGE_PCT: 2.00%
 | BNNSSparsityParameters | typedef | vecLib/BNNS/bnns_structures.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
 | BNNSTensor | typedef | vecLib/BNNS/bnns_structures.h | No wrapper; BNNS descriptors and graph-adjacent APIs unsupported |
 | la_object_t | typedef | vecLib/LinearAlgebra/object.h | No wrapper; current LinearAlgebra APIs unsupported |
-| sparse_commit | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_elementwise_norm_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_elementwise_norm_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_elementwise_norm_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_elementwise_norm_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_block_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_block_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_block_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_block_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_sparse_column_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_sparse_column_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_sparse_column_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_sparse_column_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_sparse_row_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_sparse_row_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_sparse_row_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_extract_sparse_row_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_block_dimension_for_col | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_block_dimension_for_row | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_matrix_nonzero_count | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_matrix_nonzero_count_for_column | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_matrix_nonzero_count_for_row | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_matrix_number_of_columns | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_matrix_number_of_rows | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_matrix_property | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_vector_nonzero_count_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_vector_nonzero_count_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_vector_nonzero_count_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_get_vector_nonzero_count_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_inner_product_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_inner_product_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_inner_product_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_inner_product_sparse_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_inner_product_sparse_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_inner_product_sparse_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_block_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_block_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_block_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_block_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_col_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_col_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_col_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_col_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_entries_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_entries_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_entries_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_entries_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_entry_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_entry_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_entry_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_entry_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_row_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_row_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_row_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_insert_row_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_block_create_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_block_create_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_block_create_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_block_create_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_create_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_create_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_create_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_create_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_destroy | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_product_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_product_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_product_dense_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_product_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_product_sparse_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_product_sparse_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_product_sparse_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_product_sparse_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_trace_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_trace_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_trace_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_trace_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_triangular_solve_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_triangular_solve_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_triangular_solve_dense_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_triangular_solve_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_variable_block_create_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_variable_block_create_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_variable_block_create_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_variable_block_create_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_vector_product_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_vector_product_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_vector_product_dense_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_vector_product_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_operator_norm_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_operator_norm_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_operator_norm_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_operator_norm_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_outer_product_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_outer_product_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_outer_product_dense_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_outer_product_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_pack_vector_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_pack_vector_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_pack_vector_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_pack_vector_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_permute_cols_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_permute_cols_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_permute_cols_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_permute_cols_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_permute_rows_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_permute_rows_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_permute_rows_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_permute_rows_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_set_matrix_property | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_unpack_vector_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_unpack_vector_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_unpack_vector_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_unpack_vector_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_add_with_scale_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_add_with_scale_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_add_with_scale_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_norm_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_norm_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_norm_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_norm_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_triangular_solve_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_triangular_solve_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_triangular_solve_dense_float | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_vector_triangular_solve_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; sparse matrix and solver APIs unsupported |
-| DenseMatrix_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| DenseMatrix_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| DenseMatrix_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| DenseMatrix_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| DenseVector_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| DenseVector_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| DenseVector_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| DenseVector_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseAttributesComplex_t | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseAttributes_t | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseCGOptions | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseCleanup | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseConjugateGradient | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseConvertFromCoordinate | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseConvertFromOpaque | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseCreatePreconditioner | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseCreateSubfactor | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseFactor | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseGMRES | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseGMRESOptions | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseGetConjugateTranspose | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseGetInertia | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseGetStateSize_Complex_Double | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseGetStateSize_Complex_Float | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseGetStateSize_Double | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseGetStateSize_Float | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseGetTranspose | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseIterate | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseIterativeMethod | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseLSMR | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseLSMROptions | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseMatrixStructure | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseMatrixStructureComplex | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseMatrix_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseMatrix_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseMatrix_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseMatrix_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseMultiply | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseMultiplyAdd | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseNumericFactorOptions | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaqueFactorization_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaqueFactorization_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaqueFactorization_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaqueFactorization_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaquePreconditioner_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaquePreconditioner_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaquePreconditioner_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaquePreconditioner_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaqueSubfactor_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaqueSubfactor_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaqueSubfactor_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaqueSubfactor_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseOpaqueSymbolicFactorization | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseRefactor | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseRetain | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseSolve | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseSymbolicFactorOptions | typedef | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SparseUpdateFactor | function | vecLib/Sparse/Solve.h | No wrapper; sparse matrix and solver APIs unsupported |
-| SPARSE_ENUM | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseDestroyOpaqueSymbolic | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFromAttributeComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFromKindComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFromStructureComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetOptionsFromSymbolicFactor | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRetainSymbolic | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSymbolicFactorLU | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSymbolicFactorQR | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSymbolicFactorSymmetric | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseToAttributeComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseToKindComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseToStructureComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseTrap | function | vecLib/Sparse/SolveImplementation.h | No wrapper; sparse matrix and solver APIs unsupported |
-| API_AVAILABLE | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _DenseMatrixFromVector_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _DenseMatrixFromVector_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _DenseMatrixFromVector_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _DenseMatrixFromVector_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SPARSE_VARIANT | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCGIterate_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCGIterate_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCGIterate_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCGIterate_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCGSolve_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCGSolve_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCGSolve_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCGSolve_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseConvertFromCoordinate_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseConvertFromCoordinate_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseConvertFromCoordinate_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseConvertFromCoordinate_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseConvertFromOpaque_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseConvertFromOpaque_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseConvertFromOpaque_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseConvertFromOpaque_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCreatePreconditioner_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCreatePreconditioner_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCreatePreconditioner_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseCreatePreconditioner_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseDestroyOpaqueNumeric_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseDestroyOpaqueNumeric_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseDestroyOpaqueNumeric_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseDestroyOpaqueNumeric_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorHermitian_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorHermitian_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorLU_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorLU_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorLU_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorLU_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorQR_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorQR_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorQR_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorQR_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorSymmetric_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorSymmetric_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorSymmetric_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFactorSymmetric_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFailedFactor_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFailedFactor_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFailedFactor_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseFailedFactor_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGMRESIterate_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGMRESIterate_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGMRESIterate_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGMRESIterate_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGMRESSolve_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGMRESSolve_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGMRESSolve_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGMRESSolve_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetIterativeStateSize_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetIterativeStateSize_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetIterativeStateSize_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetIterativeStateSize_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetOptionsFromNumericFactor_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetOptionsFromNumericFactor_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetOptionsFromNumericFactor_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetOptionsFromNumericFactor_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetWorkspaceRequired_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetWorkspaceRequired_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetWorkspaceRequired_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseGetWorkspaceRequired_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseInvalidSubfactor_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseInvalidSubfactor_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseInvalidSubfactor_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseInvalidSubfactor_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseLSMRIterate_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseLSMRIterate_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseLSMRIterate_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseLSMRIterate_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseLSMRSolve_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseLSMRSolve_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseLSMRSolve_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseLSMRSolve_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseMultiplySubfactor_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseMultiplySubfactor_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseMultiplySubfactor_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseMultiplySubfactor_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorHermitian_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorHermitian_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorLU_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorLU_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorLU_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorLU_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorQR_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorQR_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorQR_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorQR_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorSymmetric_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorSymmetric_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorSymmetric_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseNumericFactorSymmetric_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorHermitian_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorHermitian_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorLU_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorLU_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorLU_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorLU_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorQR_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorQR_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorQR_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorQR_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorSymmetric_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorSymmetric_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorSymmetric_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRefactorSymmetric_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseReleaseOpaquePreconditioner_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseReleaseOpaquePreconditioner_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseReleaseOpaquePreconditioner_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseReleaseOpaquePreconditioner_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRetainNumeric_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRetainNumeric_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRetainNumeric_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseRetainNumeric_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSolveOpaque_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSolveOpaque_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSolveOpaque_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSolveOpaque_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSolveSubfactor_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSolveSubfactor_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSolveSubfactor_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSolveSubfactor_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSpMV_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSpMV_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSpMV_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSpMV_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSubFactorGetDimn_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSubFactorGetDimn_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSubFactorGetDimn_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseSubFactorGetDimn_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseUpdatePartialRefactorLU_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseUpdatePartialRefactorLU_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseUpdatePartialRefactorLU_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| _SparseUpdatePartialRefactorLU_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_double | typedef | vecLib/Sparse/Types.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_double_complex | typedef | vecLib/Sparse/Types.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_float | typedef | vecLib/Sparse/Types.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_float_complex | typedef | vecLib/Sparse/Types.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_matrix_property | typedef | vecLib/Sparse/Types.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_norm | typedef | vecLib/Sparse/Types.h | No wrapper; sparse matrix and solver APIs unsupported |
-| sparse_status | typedef | vecLib/Sparse/Types.h | No wrapper; sparse matrix and solver APIs unsupported |
+| sparse_elementwise_norm_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_elementwise_norm_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_elementwise_norm_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_elementwise_norm_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_block_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_block_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_block_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_block_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_sparse_column_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_sparse_column_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_sparse_column_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_sparse_column_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_sparse_row_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_sparse_row_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_sparse_row_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_extract_sparse_row_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_get_block_dimension_for_col | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_get_block_dimension_for_row | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_get_matrix_nonzero_count_for_column | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_get_matrix_nonzero_count_for_row | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_get_matrix_property | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_get_vector_nonzero_count_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_get_vector_nonzero_count_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_get_vector_nonzero_count_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_get_vector_nonzero_count_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_inner_product_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_inner_product_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_inner_product_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_inner_product_sparse_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_inner_product_sparse_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_inner_product_sparse_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_block_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_block_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_block_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_block_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_col_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_col_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_col_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_col_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_entries_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_entries_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_entries_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_entries_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_entry_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_entry_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_entry_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_row_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_row_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_row_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_insert_row_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_block_create_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_block_create_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_block_create_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_block_create_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_create_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_create_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_create_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_product_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_product_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_product_dense_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_product_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_product_sparse_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_product_sparse_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_product_sparse_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_product_sparse_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_trace_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_trace_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_trace_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_trace_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_triangular_solve_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_triangular_solve_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_triangular_solve_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_variable_block_create_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_variable_block_create_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_variable_block_create_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_variable_block_create_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_vector_product_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_vector_product_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_vector_product_dense_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_vector_product_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_operator_norm_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_operator_norm_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_operator_norm_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_operator_norm_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_outer_product_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_outer_product_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_outer_product_dense_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_outer_product_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_pack_vector_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_pack_vector_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_pack_vector_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_pack_vector_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_permute_cols_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_permute_cols_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_permute_cols_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_permute_cols_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_permute_rows_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_permute_rows_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_permute_rows_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_permute_rows_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_unpack_vector_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_unpack_vector_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_unpack_vector_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_unpack_vector_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_vector_add_with_scale_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_vector_add_with_scale_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_vector_add_with_scale_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_vector_norm_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_vector_norm_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_vector_norm_float | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_vector_norm_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_vector_triangular_solve_dense_double | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_vector_triangular_solve_dense_double_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_vector_triangular_solve_dense_float_complex | function | vecLib/Sparse/BLAS.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| DenseMatrix_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| DenseMatrix_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| DenseMatrix_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| DenseMatrix_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| DenseVector_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| DenseVector_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| DenseVector_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| DenseVector_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseAttributesComplex_t | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseAttributes_t | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseCGOptions | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseCleanup | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseConjugateGradient | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseConvertFromCoordinate | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseConvertFromOpaque | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseCreatePreconditioner | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseCreateSubfactor | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseFactor | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseGMRES | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseGMRESOptions | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseGetConjugateTranspose | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseGetInertia | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseGetStateSize_Complex_Double | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseGetStateSize_Complex_Float | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseGetStateSize_Double | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseGetStateSize_Float | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseGetTranspose | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseIterate | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseIterativeMethod | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseLSMR | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseLSMROptions | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseMatrixStructure | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseMatrixStructureComplex | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseMatrix_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseMatrix_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseMatrix_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseMatrix_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseMultiply | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseMultiplyAdd | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseNumericFactorOptions | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaqueFactorization_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaqueFactorization_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaqueFactorization_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaqueFactorization_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaquePreconditioner_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaquePreconditioner_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaquePreconditioner_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaquePreconditioner_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaqueSubfactor_Complex_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaqueSubfactor_Complex_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaqueSubfactor_Double | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaqueSubfactor_Float | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseOpaqueSymbolicFactorization | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseRefactor | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseRetain | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseSolve | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseSymbolicFactorOptions | typedef | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SparseUpdateFactor | function | vecLib/Sparse/Solve.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| SPARSE_ENUM | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseDestroyOpaqueSymbolic | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFromAttributeComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFromKindComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFromStructureComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetOptionsFromSymbolicFactor | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRetainSymbolic | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSymbolicFactorLU | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSymbolicFactorQR | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSymbolicFactorSymmetric | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseToAttributeComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseToKindComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseToStructureComplex | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseTrap | function | vecLib/Sparse/SolveImplementation.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| API_AVAILABLE | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _DenseMatrixFromVector_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _DenseMatrixFromVector_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _DenseMatrixFromVector_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _DenseMatrixFromVector_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SPARSE_VARIANT | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCGIterate_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCGIterate_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCGIterate_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCGIterate_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCGSolve_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCGSolve_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCGSolve_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCGSolve_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseConvertFromCoordinate_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseConvertFromCoordinate_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseConvertFromCoordinate_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseConvertFromCoordinate_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseConvertFromOpaque_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseConvertFromOpaque_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseConvertFromOpaque_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseConvertFromOpaque_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCreatePreconditioner_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCreatePreconditioner_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCreatePreconditioner_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseCreatePreconditioner_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseDestroyOpaqueNumeric_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseDestroyOpaqueNumeric_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseDestroyOpaqueNumeric_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseDestroyOpaqueNumeric_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorHermitian_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorHermitian_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorLU_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorLU_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorLU_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorLU_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorQR_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorQR_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorQR_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorQR_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorSymmetric_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorSymmetric_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorSymmetric_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFactorSymmetric_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFailedFactor_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFailedFactor_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFailedFactor_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseFailedFactor_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGMRESIterate_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGMRESIterate_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGMRESIterate_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGMRESIterate_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGMRESSolve_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGMRESSolve_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGMRESSolve_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGMRESSolve_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetIterativeStateSize_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetIterativeStateSize_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetIterativeStateSize_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetIterativeStateSize_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetOptionsFromNumericFactor_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetOptionsFromNumericFactor_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetOptionsFromNumericFactor_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetOptionsFromNumericFactor_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetWorkspaceRequired_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetWorkspaceRequired_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetWorkspaceRequired_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseGetWorkspaceRequired_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseInvalidSubfactor_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseInvalidSubfactor_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseInvalidSubfactor_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseInvalidSubfactor_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseLSMRIterate_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseLSMRIterate_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseLSMRIterate_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseLSMRIterate_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseLSMRSolve_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseLSMRSolve_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseLSMRSolve_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseLSMRSolve_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseMultiplySubfactor_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseMultiplySubfactor_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseMultiplySubfactor_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseMultiplySubfactor_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorHermitian_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorHermitian_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorLU_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorLU_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorLU_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorLU_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorQR_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorQR_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorQR_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorQR_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorSymmetric_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorSymmetric_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorSymmetric_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseNumericFactorSymmetric_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorHermitian_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorHermitian_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorLU_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorLU_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorLU_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorLU_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorQR_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorQR_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorQR_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorQR_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorSymmetric_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorSymmetric_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorSymmetric_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRefactorSymmetric_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseReleaseOpaquePreconditioner_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseReleaseOpaquePreconditioner_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseReleaseOpaquePreconditioner_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseReleaseOpaquePreconditioner_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRetainNumeric_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRetainNumeric_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRetainNumeric_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseRetainNumeric_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSolveOpaque_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSolveOpaque_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSolveOpaque_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSolveOpaque_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSolveSubfactor_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSolveSubfactor_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSolveSubfactor_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSolveSubfactor_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSpMV_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSpMV_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSpMV_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSpMV_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSubFactorGetDimn_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSubFactorGetDimn_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSubFactorGetDimn_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseSubFactorGetDimn_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseUpdatePartialRefactorLU_Complex_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseUpdatePartialRefactorLU_Complex_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseUpdatePartialRefactorLU_Double | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| _SparseUpdatePartialRefactorLU_Float | function | vecLib/Sparse/SolveImplementationTyped.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_double | typedef | vecLib/Sparse/Types.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_double_complex | typedef | vecLib/Sparse/Types.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_matrix_float_complex | typedef | vecLib/Sparse/Types.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
+| sparse_norm | typedef | vecLib/Sparse/Types.h | No wrapper; crate only wraps core sparse vector ops plus basic matrix/triangular solve helpers |
 | __CLPK_complex | typedef | vecLib/clapack.h | No wrapper; modern BLAS/LAPACK entry points unsupported |
 | __CLPK_doublecomplex | typedef | vecLib/clapack.h | No wrapper; modern BLAS/LAPACK entry points unsupported |
 | BLASGetThreading | function | vecLib/thread_api.h | No wrapper in crate |
@@ -1232,469 +1242,460 @@ COVERAGE_PCT: 2.00%
 | vU512Neg | function | vecLib/vBigNum.h | No wrapper; vBigNum family unsupported |
 | vU512Sub | function | vecLib/vBigNum.h | No wrapper; vBigNum family unsupported |
 | vU512SubS | function | vecLib/vBigNum.h | No wrapper; vBigNum family unsupported |
-| DSPComplex | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| DSPDoubleComplex | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| DSPDoubleSplitComplex | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| FFTSetupD | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DCT_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DCT_Execute | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_DestroySetup | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_DestroySetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_Execute | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_ExecuteD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_Interleaved_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_Interleaved_CreateSetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_Interleaved_DestroySetup | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_Interleaved_DestroySetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_Interleaved_Execute | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_Interleaved_ExecuteD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_Interleaved_Setup | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_Interleaved_SetupD | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_Setup | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_SetupD | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_zop | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_zop_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_zop_CreateSetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_zrop_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_DFT_zrop_CreateSetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_FFT16_copv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_FFT16_zopv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_FFT32_copv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_FFT32_zopv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquad_CreateSetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquad_DestroySetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquad_SetCoefficientsDouble | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquad_SetCoefficientsSingle | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquad_SetupD | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadmD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_CopyState | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_CopyStateD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_CreateSetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_DestroySetup | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_DestroySetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_ResetState | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_ResetStateD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetActiveFilters | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetActiveFiltersD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetCoefficientsDouble | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetCoefficientsDoubleD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetCoefficientsSingle | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetCoefficientsSingleD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetTargetsDouble | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetTargetsDoubleD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetTargetsSingle | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetTargetsSingleD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_Setup | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_biquadm_SetupD | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_blkman_windowD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_conv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_convD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_create_fftsetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_ctoz | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_ctozD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_deq22 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_deq22D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_desamp | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_desampD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_destroy_fftsetupD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_distancesq | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_distancesqD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_dotpr2 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_dotpr2D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_dotpr2_s1_15 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_dotpr2_s8_24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_dotprD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_dotpr_s1_15 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_dotpr_s8_24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_f3x3 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_f3x3D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_f5x5 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_f5x5D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zip | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zipD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zipt | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_ziptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zop | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zopD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zopt | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zoptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zrip | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zripD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zript | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zriptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zrop | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zropD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zropt | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft2d_zroptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zipD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zipt | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_ziptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zop | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zopD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zopt | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zoptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zrip | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zripD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zript | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zriptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zrop | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zropD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zropt | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fft_zroptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zip | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zipD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zipt | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_ziptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zop | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zopD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zopt | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zoptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zrip | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zripD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zript | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zriptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zrop | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zropD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zropt | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_fftm_zroptD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_hamm_windowD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_hann_window | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_hann_windowD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_imgfir | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_imgfirD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_int24 | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_maxmgv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_maxmgvD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_maxmgvi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_maxmgviD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_maxvD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_maxvi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_maxviD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_meamgv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_meamgvD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_meanvD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_measqv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_measqvD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_minmgv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_minmgvD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_minmgvi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_minmgviD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_minvD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_minvi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_minviD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_mmov | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_mmovD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_mmul | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_mmulD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_mtrans | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_mtransD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_mvessq | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_mvessqD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_normalize | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_normalizeD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_nzcros | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_nzcrosD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_polar | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_polarD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_rect | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_rectD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_rmsqv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_rmsqvD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_svdiv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_svdivD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_sveD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_sve_svesq | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_sve_svesqD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_svemg | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_svemgD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_svesq | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_svesqD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_svs | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_svsD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_uint24 | typedef | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vaam | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vaamD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vabs | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vabsD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vabsi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vaddD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vaddi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vaddsub | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vaddsubD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vam | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vamD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vasbm | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vasbmD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vasm | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vasmD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vavlin | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vavlinD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vclip | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vclipD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vclipc | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vclipcD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vclr | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vclrD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vcmprs | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vcmprsD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vdbcon | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vdbconD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vdist | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vdistD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vdiv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vdivD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vdivi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vdpsp | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_venvlp | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_venvlpD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_veqvi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfill | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfillD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfilli | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfix16 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfix16D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfix32 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfix32D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfix8 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfix8D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixr16 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixr16D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixr32 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixr32D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixr8 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixr8D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixru16 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixru16D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixru32 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixru32D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixru8 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixru8D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixu16 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixu16D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixu32 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixu32D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixu8 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfixu8D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vflt16 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vflt16D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vflt24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vflt32 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vflt32D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vflt8 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vflt8D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfltsm24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfltsmu24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfltu16 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfltu16D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfltu24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfltu32 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfltu32D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfltu8 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfltu8D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfrac | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vfracD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vgathr | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vgathrD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vgathra | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vgathraD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vgen | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vgenD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vgenp | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vgenpD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_viclip | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_viclipD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vindex | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vindexD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vintb | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vintbD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vlim | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vlimD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vlint | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vlintD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vma | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmax | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmaxD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmaxmg | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmaxmgD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmin | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vminD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vminmg | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vminmgD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmma | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmmaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmmsb | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmmsbD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmsa | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmsaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmsb | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmsbD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmul | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vmulD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vnabs | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vnabsD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vneg | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vnegD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vpoly | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vpolyD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vpythg | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vpythgD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vqint | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vqintD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vramp | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmul | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmul2 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmul2D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmul2_s1_15 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmul2_s8_24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmulD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmul_s1_15 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmul_s8_24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmuladd | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmuladd2 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmuladd2D | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmuladd2_s1_15 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmuladd2_s8_24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmuladdD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmuladd_s1_15 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrampmuladd_s8_24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrsum | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrsumD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrvrs | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vrvrsD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsadd | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsaddD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsaddi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsbm | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsbmD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsbsbm | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsbsbmD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsbsm | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsbsmD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsdiv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsdivD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsdivi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsimps | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsimpsD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsma | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmfix24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmfixu24 | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmsa | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmsaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmsb | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmsbD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmsma | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmsmaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmul | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsmulD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsort | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsortD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsorti | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsortiD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vspdp | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsq | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsqD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vssq | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vssqD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vsubD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vswap | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vswapD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vswmax | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vswmaxD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vswsum | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vswsumD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vtabi | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vtabiD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vthr | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vthrD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vthres | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vthresD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vthrsc | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vthrscD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vtmerg | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vtmergD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vtrapz | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_vtrapzD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_wiener | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_wienerD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zaspec | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zaspecD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zcoher | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zcoherD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zconv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zconvD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zcspec | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zcspecD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zdotpr | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zdotprD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zidotpr | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zidotprD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zmma | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zmmaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zmms | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zmmsD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zmmul | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zmmulD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zmsm | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zmsmD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrdesamp | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrdesampD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrdotpr | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrdotprD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrvadd | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrvaddD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrvdiv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrvdivD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrvmul | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrvmulD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrvsub | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zrvsubD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_ztoc | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_ztocD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_ztrans | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_ztransD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvabs | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvabsD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvadd | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvaddD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvcma | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvcmaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvcmul | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvcmulD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvconj | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvconjD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvdiv | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvdivD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvfill | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvfillD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvma | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmags | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmagsD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmgsa | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmgsaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmmaa | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmmaaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmov | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmovD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmul | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvmulD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvneg | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvnegD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvphas | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvphasD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvsma | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvsmaD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvsub | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvsubD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvzsml | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
-| vDSP_zvzsmlD | function | vecLib/vDSP.h | No wrapper; crate only exposes a small f32 vDSP subset |
+| DSPComplex | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| DSPDoubleComplex | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| DSPDoubleSplitComplex | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| FFTSetupD | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DCT_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DCT_Execute | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_DestroySetup | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_DestroySetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_Execute | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_ExecuteD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_Interleaved_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_Interleaved_CreateSetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_Interleaved_DestroySetup | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_Interleaved_DestroySetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_Interleaved_Execute | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_Interleaved_ExecuteD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_Interleaved_Setup | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_Interleaved_SetupD | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_Setup | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_SetupD | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_zop | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_zop_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_zop_CreateSetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_zrop_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_DFT_zrop_CreateSetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_FFT16_copv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_FFT16_zopv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_FFT32_copv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_FFT32_zopv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquad_CreateSetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquad_DestroySetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquad_SetCoefficientsDouble | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquad_SetCoefficientsSingle | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquad_SetupD | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadmD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_CopyState | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_CopyStateD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_CreateSetup | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_CreateSetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_DestroySetup | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_DestroySetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_ResetState | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_ResetStateD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetActiveFilters | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetActiveFiltersD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetCoefficientsDouble | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetCoefficientsDoubleD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetCoefficientsSingle | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetCoefficientsSingleD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetTargetsDouble | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetTargetsDoubleD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetTargetsSingle | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetTargetsSingleD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_Setup | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_biquadm_SetupD | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_conv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_convD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_create_fftsetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_ctoz | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_ctozD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_deq22 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_deq22D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_desamp | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_desampD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_destroy_fftsetupD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_distancesq | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_distancesqD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_dotpr2 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_dotpr2D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_dotpr2_s1_15 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_dotpr2_s8_24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_dotpr_s1_15 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_dotpr_s8_24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_f3x3 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_f3x3D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_f5x5 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_f5x5D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zip | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zipD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zipt | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_ziptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zop | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zopD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zopt | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zoptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zrip | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zripD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zript | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zriptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zrop | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zropD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zropt | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft2d_zroptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zipD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zipt | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_ziptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zop | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zopD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zopt | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zoptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zrip | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zripD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zript | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zriptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zrop | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zropD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zropt | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fft_zroptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zip | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zipD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zipt | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_ziptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zop | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zopD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zopt | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zoptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zrip | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zripD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zript | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zriptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zrop | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zropD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zropt | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_fftm_zroptD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_hann_window | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_hann_windowD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_imgfir | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_imgfirD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_int24 | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_maxmgv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_maxmgvD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_maxmgvi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_maxmgviD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_maxvi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_maxviD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_meamgv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_meamgvD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_measqv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_measqvD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_minmgv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_minmgvD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_minmgvi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_minmgviD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_minvi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_minviD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_mmov | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_mmovD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_mmul | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_mmulD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_mtrans | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_mtransD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_mvessq | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_mvessqD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_normalize | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_normalizeD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_nzcros | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_nzcrosD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_polar | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_polarD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_rect | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_rectD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_rmsqv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_rmsqvD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_svdiv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_svdivD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_sve_svesq | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_sve_svesqD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_svemg | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_svemgD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_svesq | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_svesqD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_svs | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_svsD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_uint24 | typedef | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vaam | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vaamD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vabs | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vabsD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vabsi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vaddi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vaddsub | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vaddsubD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vam | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vamD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vasbm | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vasbmD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vasm | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vasmD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vavlin | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vavlinD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vclip | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vclipD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vclipc | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vclipcD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vclr | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vclrD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vcmprs | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vcmprsD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vdbcon | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vdbconD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vdist | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vdistD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vdiv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vdivD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vdivi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vdpsp | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_venvlp | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_venvlpD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_veqvi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfill | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfillD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfilli | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfix16 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfix16D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfix32 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfix32D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfix8 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfix8D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixr16 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixr16D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixr32 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixr32D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixr8 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixr8D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixru16 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixru16D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixru32 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixru32D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixru8 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixru8D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixu16 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixu16D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixu32 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixu32D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixu8 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfixu8D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vflt16 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vflt16D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vflt24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vflt32 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vflt32D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vflt8 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vflt8D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfltsm24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfltsmu24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfltu16 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfltu16D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfltu24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfltu32 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfltu32D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfltu8 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfltu8D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfrac | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vfracD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vgathr | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vgathrD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vgathra | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vgathraD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vgen | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vgenD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vgenp | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vgenpD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_viclip | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_viclipD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vindex | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vindexD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vintb | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vintbD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vlim | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vlimD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vlint | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vlintD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vma | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmax | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmaxD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmaxmg | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmaxmgD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmin | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vminD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vminmg | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vminmgD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmma | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmmaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmmsb | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmmsbD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmsa | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmsaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmsb | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmsbD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmul | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vmulD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vnabs | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vnabsD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vneg | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vnegD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vpoly | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vpolyD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vpythg | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vpythgD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vqint | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vqintD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vramp | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmul | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmul2 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmul2D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmul2_s1_15 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmul2_s8_24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmulD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmul_s1_15 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmul_s8_24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmuladd | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmuladd2 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmuladd2D | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmuladd2_s1_15 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmuladd2_s8_24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmuladdD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmuladd_s1_15 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrampmuladd_s8_24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrsum | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrsumD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrvrs | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vrvrsD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsadd | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsaddD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsaddi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsbm | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsbmD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsbsbm | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsbsbmD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsbsm | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsbsmD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsdiv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsdivD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsdivi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsimps | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsimpsD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsma | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmfix24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmfixu24 | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmsa | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmsaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmsb | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmsbD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmsma | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmsmaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmul | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsmulD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsort | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsortD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsorti | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsortiD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vspdp | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsq | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vsqD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vssq | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vssqD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vswap | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vswapD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vswmax | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vswmaxD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vswsum | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vswsumD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vtabi | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vtabiD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vthr | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vthrD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vthres | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vthresD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vthrsc | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vthrscD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vtmerg | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vtmergD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vtrapz | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_vtrapzD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_wiener | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_wienerD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zaspec | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zaspecD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zcoher | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zcoherD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zconv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zconvD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zcspec | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zcspecD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zdotpr | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zdotprD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zidotpr | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zidotprD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zmma | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zmmaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zmms | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zmmsD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zmmul | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zmmulD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zmsm | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zmsmD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrdesamp | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrdesampD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrdotpr | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrdotprD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrvadd | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrvaddD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrvdiv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrvdivD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrvmul | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrvmulD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrvsub | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zrvsubD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_ztoc | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_ztocD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_ztrans | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_ztransD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvabs | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvabsD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvadd | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvaddD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvcma | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvcmaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvcmul | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvcmulD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvconj | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvconjD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvdiv | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvdivD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvfill | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvfillD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvma | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmags | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmagsD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmgsa | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmgsaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmmaa | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmmaaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmov | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmovD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmul | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvmulD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvneg | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvnegD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvphas | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvphasD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvsma | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvsmaD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvsub | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvsubD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvzsml | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
+| vDSP_zvzsmlD | function | vecLib/vDSP.h | No wrapper; crate covers common f32/f64 vector ops plus FFT/biquad helpers |
 | vvacos | function | vecLib/vForce.h | No wrapper; crate only exposes sin/cos/exp/log/sqrt for f32 |
 | vvacosf | function | vecLib/vForce.h | No wrapper; crate only exposes sin/cos/exp/log/sqrt for f32 |
 | vvacosh | function | vecLib/vForce.h | No wrapper; crate only exposes sin/cos/exp/log/sqrt for f32 |
