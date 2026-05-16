@@ -1,7 +1,7 @@
+use crate::bridge;
 use crate::error::{Error, Result};
-use crate::ffi;
+use core::ffi::c_void;
 use core::marker::PhantomData;
-use core::ptr;
 
 /// Common `vImage_Flags` values.
 pub mod vimage_flags {
@@ -11,11 +11,7 @@ pub mod vimage_flags {
     pub const HIGH_QUALITY_RESAMPLING: u32 = 32;
 }
 
-fn pixel_count(value: usize) -> Result<u64> {
-    u64::try_from(value).map_err(|_| Error::OperationFailed("image dimension exceeds u64"))
-}
-
-fn vimage_result(status: ffi::vImage_Error) -> Result<()> {
+fn vimage_result(status: isize) -> Result<()> {
     if status == 0 {
         Ok(())
     } else {
@@ -23,9 +19,12 @@ fn vimage_result(status: ffi::vImage_Error) -> Result<()> {
     }
 }
 
-/// Borrowed wrapper around a caller-owned `vImage_Buffer`.
+/// Borrowed wrapper around a caller-owned image buffer.
 pub struct ImageBuffer<'a> {
-    inner: ffi::vImage_Buffer,
+    data: *mut u8,
+    width: usize,
+    height: usize,
+    row_bytes: usize,
     _marker: PhantomData<&'a mut [u8]>,
 }
 
@@ -43,12 +42,10 @@ impl<'a> ImageBuffer<'a> {
         }
 
         Ok(Self {
-            inner: ffi::vImage_Buffer {
-                data: data.as_mut_ptr().cast(),
-                height: pixel_count(height)?,
-                width: pixel_count(width)?,
-                row_bytes: width * 4,
-            },
+            data: data.as_mut_ptr(),
+            width,
+            height,
+            row_bytes: width * 4,
             _marker: PhantomData,
         })
     }
@@ -65,19 +62,28 @@ impl<'a> ImageBuffer<'a> {
         }
 
         Ok(Self {
-            inner: ffi::vImage_Buffer {
-                data: data.as_mut_ptr().cast(),
-                height: pixel_count(height)?,
-                width: pixel_count(width)?,
-                row_bytes: width,
-            },
+            data: data.as_mut_ptr(),
+            width,
+            height,
+            row_bytes: width,
             _marker: PhantomData,
         })
     }
 
-    #[must_use]
-    pub const fn as_ptr(&self) -> *const ffi::vImage_Buffer {
-        &self.inner
+    fn data_ptr(&self) -> *mut c_void {
+        self.data.cast()
+    }
+
+    fn width(&self) -> usize {
+        self.width
+    }
+
+    fn height(&self) -> usize {
+        self.height
+    }
+
+    fn row_bytes(&self) -> usize {
+        self.row_bytes
     }
 }
 
@@ -90,10 +96,15 @@ pub fn rotate_argb8888(
 ) -> Result<()> {
     // SAFETY: Source and destination buffers remain valid for the duration of the call.
     let status = unsafe {
-        ffi::vImageRotate_ARGB8888(
-            src.as_ptr(),
-            dst.as_ptr(),
-            ptr::null_mut(),
+        bridge::acc_vimage_rotate_argb8888(
+            src.data_ptr(),
+            src.width(),
+            src.height(),
+            src.row_bytes(),
+            dst.data_ptr(),
+            dst.width(),
+            dst.height(),
+            dst.row_bytes(),
             angle_radians,
             background_color.as_ptr(),
             flags,
@@ -112,12 +123,15 @@ pub fn box_convolve_argb8888(
 ) -> Result<()> {
     // SAFETY: Source and destination buffers remain valid for the duration of the call.
     let status = unsafe {
-        ffi::vImageBoxConvolve_ARGB8888(
-            src.as_ptr(),
-            dst.as_ptr(),
-            ptr::null_mut(),
-            0,
-            0,
+        bridge::acc_vimage_box_convolve_argb8888(
+            src.data_ptr(),
+            src.width(),
+            src.height(),
+            src.row_bytes(),
+            dst.data_ptr(),
+            dst.width(),
+            dst.height(),
+            dst.row_bytes(),
             kernel_height,
             kernel_width,
             background_color.as_ptr(),
@@ -129,8 +143,19 @@ pub fn box_convolve_argb8888(
 
 pub fn scale_argb8888(src: &ImageBuffer<'_>, dst: &mut ImageBuffer<'_>, flags: u32) -> Result<()> {
     // SAFETY: Source and destination buffers remain valid for the duration of the call.
-    let status =
-        unsafe { ffi::vImageScale_ARGB8888(src.as_ptr(), dst.as_ptr(), ptr::null_mut(), flags) };
+    let status = unsafe {
+        bridge::acc_vimage_scale_argb8888(
+            src.data_ptr(),
+            src.width(),
+            src.height(),
+            src.row_bytes(),
+            dst.data_ptr(),
+            dst.width(),
+            dst.height(),
+            dst.row_bytes(),
+            flags,
+        )
+    };
     vimage_result(status)
 }
 
@@ -140,6 +165,18 @@ pub fn contrast_stretch_planar8(
     flags: u32,
 ) -> Result<()> {
     // SAFETY: Source and destination buffers remain valid for the duration of the call.
-    let status = unsafe { ffi::vImageContrastStretch_Planar8(src.as_ptr(), dst.as_ptr(), flags) };
+    let status = unsafe {
+        bridge::acc_vimage_contrast_stretch_planar8(
+            src.data_ptr(),
+            src.width(),
+            src.height(),
+            src.row_bytes(),
+            dst.data_ptr(),
+            dst.width(),
+            dst.height(),
+            dst.row_bytes(),
+            flags,
+        )
+    };
     vimage_result(status)
 }

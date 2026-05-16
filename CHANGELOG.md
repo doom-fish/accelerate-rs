@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 - 2026-05-16
+
+- Switched the crate to a Swift bridge over Accelerate's C APIs
+- Added optional `raw-ffi` re-exports for the wrapped Accelerate declarations
+- Added `vForce`, `LAPACK`, `Sparse`, `simd`, and `Quadrature` modules
+- Expanded `BNNS` with safe activation helpers while preserving the unsafe filter owner
+- Added per-area examples and smoke tests across all nine logical areas
+- Added `COVERAGE.md` documenting the v0.2.0 Accelerate surface audit
+
 ## 0.1.0 - 2026-05-16
 
 - Initial release of `apple-accelerate`

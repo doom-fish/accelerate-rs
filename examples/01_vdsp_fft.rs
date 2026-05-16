@@ -4,7 +4,10 @@ use apple_accelerate::{
 
 fn main() {
     let added = add_f32(&[1.0, 2.0, 3.0], &[4.0, 5.0, 6.0]).expect("vector add failed");
-    assert_eq!(added, vec![5.0, 7.0, 9.0]);
+    assert!(added
+        .iter()
+        .zip([5.0_f32, 7.0, 9.0])
+        .all(|(actual, expected)| (*actual - expected).abs() < 1.0e-6));
 
     let dot = dot_f32(&[1.0, 2.0, 3.0], &[4.0, 5.0, 6.0]).expect("dot product failed");
     assert!((dot - 32.0).abs() < 1.0e-6);
