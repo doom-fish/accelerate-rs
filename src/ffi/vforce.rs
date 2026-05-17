@@ -20,7 +20,9 @@ unsafe extern "C" {
     improper_ctypes_definitions,
     unnecessary_transmutes
 )]
+#[allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::style, clippy::complexity, clippy::correctness, clippy::perf)]
 mod generated {
+    #![allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::style, clippy::complexity, clippy::correctness, clippy::perf)]
     use super::*;
     include!("generated/vforce_missing.rs");
 }
