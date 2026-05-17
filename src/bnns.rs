@@ -39,6 +39,7 @@ impl Filter {
         layer_params: *const c_void,
         filter_params: *const c_void,
     ) -> Option<Self> {
+        // SAFETY: Caller has verified that `layer_params` and `filter_params` are valid BNNS structs.
         let ptr = unsafe { raw_ffi::BNNSFilterCreateLayerConvolution(layer_params, filter_params) };
         if ptr.is_null() {
             None
@@ -57,6 +58,7 @@ impl Filter {
         layer_params: *const c_void,
         filter_params: *const c_void,
     ) -> Option<Self> {
+        // SAFETY: Caller has verified that `layer_params` and `filter_params` are valid BNNS structs.
         let ptr =
             unsafe { raw_ffi::BNNSFilterCreateLayerFullyConnected(layer_params, filter_params) };
         if ptr.is_null() {
@@ -77,6 +79,7 @@ impl Filter {
     ///
     /// `input` and `output` must match the layout and lengths described when the filter was created.
     pub unsafe fn apply(&self, input: *const c_void, output: *mut c_void) -> i32 {
+        // SAFETY: Caller has verified that `input` and `output` satisfy the filter's documented preconditions.
         unsafe { raw_ffi::BNNSFilterApply(self.ptr, input, output) }
     }
 }

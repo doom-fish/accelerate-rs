@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3 - 2026-05-17
+
+- Added missing SAFETY comments to unsafe blocks in `quadrature_trampoline` callback
+- Added missing SAFETY comments to unsafe FFI calls in `bnns` constructors and apply methods
+
 ## 0.2.2 - 2026-05-17
 
 - Expanded `raw-ffi` to the full audited `Accelerate`/`vecLib`/`vImage` surface for `vDSP`, `vForce`, `BLAS`, `LAPACK`, `BNNS`, `Sparse`, and `vImage`

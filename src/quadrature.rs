@@ -53,8 +53,11 @@ unsafe extern "C" fn quadrature_trampoline(
     x: *const f64,
     y: *mut f64,
 ) {
+    // SAFETY: `context` is a valid pointer to `Box<dyn FnMut(f64) -> f64>` injected by `integrate`.
     let callback = unsafe { &mut *context.cast::<Box<dyn FnMut(f64) -> f64>>() };
+    // SAFETY: `x` is guaranteed by Accelerate to contain `n` valid f64 values for the duration of this callback.
     let xs = unsafe { slice::from_raw_parts(x, n) };
+    // SAFETY: `y` is guaranteed by Accelerate to contain `n` writable f64 values for the duration of this callback.
     let ys = unsafe { slice::from_raw_parts_mut(y, n) };
     for (input, output) in xs.iter().copied().zip(ys.iter_mut()) {
         *output = callback.as_mut()(input);
