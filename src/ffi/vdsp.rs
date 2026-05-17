@@ -121,14 +121,27 @@ unsafe extern "C" {
         length: vDSP_Length,
     );
     pub fn vDSP_sve(input: *const f32, stride: vDSP_Stride, result: *mut f32, length: vDSP_Length);
-    pub fn vDSP_sveD(
-        input: *const f64,
-        stride: vDSP_Stride,
-        result: *mut f64,
-        length: vDSP_Length,
-    );
+    pub fn vDSP_sveD(input: *const f64, stride: vDSP_Stride, result: *mut f64, length: vDSP_Length);
     pub fn vDSP_hamm_window(output: *mut f32, length: vDSP_Length, flags: i32);
     pub fn vDSP_hamm_windowD(output: *mut f64, length: vDSP_Length, flags: i32);
     pub fn vDSP_blkman_window(output: *mut f32, length: vDSP_Length, flags: i32);
     pub fn vDSP_blkman_windowD(output: *mut f64, length: vDSP_Length, flags: i32);
 }
+
+#[allow(
+    missing_docs,
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    unused_imports,
+    dead_code,
+    improper_ctypes,
+    improper_ctypes_definitions,
+    unnecessary_transmutes
+)]
+mod generated {
+    use super::*;
+    include!("generated/vdsp_missing.rs");
+}
+
+pub use generated::*;

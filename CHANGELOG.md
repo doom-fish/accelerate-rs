@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 - 2026-05-17
+
+- Expanded `raw-ffi` to the full audited `Accelerate`/`vecLib`/`vImage` surface for `vDSP`, `vForce`, `BLAS`, `LAPACK`, `BNNS`, `Sparse`, and `vImage`
+- Added generated raw FFI supplements under `src/ffi/generated/` plus `ffi::veclib_extras` for the remaining vecLib helper families surfaced by the SDK audit
+- Added the checked-in `tools/raw-ffi-gen` generator used to refresh the audited raw declarations
+- Refreshed `COVERAGE.md` / `COVERAGE_AUDIT.md` to document the exhaustive raw surface and the remaining sparse header-only audit artifacts
+
 ## 0.2.1 - 2026-05-17
 
 - Added `vImage` ARGB8888 alpha helpers plus ARGB8888 ↔ Planar8 conversion wrappers

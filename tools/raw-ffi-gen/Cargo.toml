@@ -1,0 +1,10 @@
+[package]
+name = "raw-ffi-gen"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+anyhow = "1"
+bindgen = "0.71"
+regex = "1"

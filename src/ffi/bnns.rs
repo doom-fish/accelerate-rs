@@ -48,3 +48,21 @@ unsafe extern "C" {
         options: bnns_graph_compile_options_t,
     ) -> BNNSGraphOptimizationPreference;
 }
+
+#[allow(
+    missing_docs,
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    unused_imports,
+    dead_code,
+    improper_ctypes,
+    improper_ctypes_definitions,
+    unnecessary_transmutes
+)]
+mod generated {
+    use super::*;
+    include!("generated/bnns_missing.rs");
+}
+
+pub use generated::*;

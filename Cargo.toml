@@ -1,11 +1,11 @@
 [package]
 name = "apple-accelerate"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/doom-fish/accelerate-rs"
 repository = "https://github.com/doom-fish/accelerate-rs"
-description = "Safe Rust bindings for Apple's Accelerate framework on macOS using a Swift bridge with optional raw C FFI"
+description = "Safe Rust bindings for Apple's Accelerate framework on macOS with exhaustive optional raw C FFI"
 authors = ["Per Johansson <per@doom.fish>"]
 keywords = ["accelerate", "vdsp", "blas", "vimage", "apple"]
 categories = ["api-bindings", "os::macos-apis", "science"]
@@ -23,6 +23,7 @@ include = [
     "LICENSE-*",
     "CHANGELOG.md",
     "COVERAGE.md",
+    "COVERAGE_AUDIT.md",
 ]
 
 [lints.rust]

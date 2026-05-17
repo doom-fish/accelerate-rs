@@ -1,4 +1,4 @@
-# apple-accelerate v0.2.0 coverage audit
+# apple-accelerate v0.2.2 coverage audit
 
 This audit tracks the requested v0.2.0 surface for `apple-accelerate`: one Rust
 module, one Swift bridge file, at least one example, and at least one test for
@@ -19,8 +19,10 @@ all requested Accelerate logical areas.
 ## Raw FFI
 
 The raw Accelerate declarations remain available behind the `raw-ffi` feature.
-They are organized per-area under `src/ffi/` and re-exported through
-`apple_accelerate::ffi` when the feature is enabled.
+They are organized under `src/ffi/` (with generated supplements in
+`src/ffi/generated/`) and re-exported through `apple_accelerate::ffi` when the
+feature is enabled. The v0.2.2 refresh expands that surface to the full audited
+raw `Accelerate`/`vecLib`/`vImage` declarations covered by `COVERAGE_AUDIT.md`.
 
 ## Deferred
 

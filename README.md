@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-## v0.2 surface
+## v0.2.2 surface
 
 - `vDSP`: FFT setup, biquad setup, vector arithmetic, reductions, and window generation
 - `vForce`: element-wise transcendental and root functions over `f32` slices
@@ -55,7 +55,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 - `vImage`: ARGB8888 rotate / box-convolve / scale and Planar8 contrast stretch
 - `simd`: SIMD4 add / dot / length / normalize helpers
 - `Quadrature`: one-dimensional adaptive numerical integration with Rust closures
-- `raw-ffi` feature: re-exports the underlying C declarations for all wrapped areas
+- `raw-ffi` feature: re-exports exhaustive audited C declarations for `vDSP`, `vForce`, `BLAS`, `LAPACK`, `BNNS`, `Sparse`, `vImage`, and the remaining vecLib helper families surfaced by the SDK audit
 
 ## Smoke examples
 

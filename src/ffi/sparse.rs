@@ -35,7 +35,10 @@ unsafe extern "C" {
         y: *mut f32,
         incy: sparse_stride,
     );
-    pub fn sparse_matrix_create_float(m: sparse_dimension, n: sparse_dimension) -> sparse_matrix_float;
+    pub fn sparse_matrix_create_float(
+        m: sparse_dimension,
+        n: sparse_dimension,
+    ) -> sparse_matrix_float;
     pub fn sparse_insert_entry_float(
         a: sparse_matrix_float,
         val: f32,
@@ -59,9 +62,30 @@ unsafe extern "C" {
         ldb: sparse_dimension,
     ) -> sparse_status;
     pub fn sparse_commit(a: *mut c_void) -> sparse_status;
-    pub fn sparse_set_matrix_property(a: *mut c_void, pname: sparse_matrix_property) -> sparse_status;
+    pub fn sparse_set_matrix_property(
+        a: *mut c_void,
+        pname: sparse_matrix_property,
+    ) -> sparse_status;
     pub fn sparse_get_matrix_number_of_rows(a: *mut c_void) -> sparse_dimension;
     pub fn sparse_get_matrix_number_of_columns(a: *mut c_void) -> sparse_dimension;
     pub fn sparse_get_matrix_nonzero_count(a: *mut c_void) -> i64;
     pub fn sparse_matrix_destroy(a: *mut c_void) -> sparse_status;
 }
+
+#[allow(
+    missing_docs,
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    unused_imports,
+    dead_code,
+    improper_ctypes,
+    improper_ctypes_definitions,
+    unnecessary_transmutes
+)]
+mod generated {
+    use super::*;
+    include!("generated/sparse_missing.rs");
+}
+
+pub use generated::*;
