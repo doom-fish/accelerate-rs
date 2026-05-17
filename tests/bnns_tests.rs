@@ -26,9 +26,7 @@ fn bnns_graph_compile_options_smoke() {
         .expect("single thread");
     assert!(options.target_single_thread());
 
-    options
-        .set_generate_debug_info(true)
-        .expect("debug info");
+    options.set_generate_debug_info(true).expect("debug info");
     assert!(options.generate_debug_info());
 
     options

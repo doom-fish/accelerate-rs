@@ -135,7 +135,9 @@ impl SparseMatrixF32 {
         let row = i64_index(row)?;
         let column = i64_index(column)?;
         // SAFETY: Bounds were validated and `self.ptr` is a live bridge handle.
-        sparse_result(unsafe { bridge::acc_sparse_matrix_f32_insert_entry(self.ptr, value, row, column) })
+        sparse_result(unsafe {
+            bridge::acc_sparse_matrix_f32_insert_entry(self.ptr, value, row, column)
+        })
     }
 
     pub fn commit(&mut self) -> Result<()> {
@@ -244,7 +246,9 @@ pub fn dot_dense_f32(values: &[f32], indices: &[SparseIndex], dense: &[f32]) -> 
 
     let nz = u64_len(values.len())?;
     // SAFETY: Inputs are validated for length, ordering, and dense coverage.
-    Ok(unsafe { bridge::acc_sparse_dot_dense_f32(nz, values.as_ptr(), indices.as_ptr(), dense.as_ptr()) })
+    Ok(unsafe {
+        bridge::acc_sparse_dot_dense_f32(nz, values.as_ptr(), indices.as_ptr(), dense.as_ptr())
+    })
 }
 
 pub fn dot_sparse_f32(

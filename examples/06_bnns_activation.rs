@@ -17,9 +17,7 @@ fn main() {
         options
             .set_target_single_thread(true)
             .expect("single thread");
-        options
-            .set_generate_debug_info(true)
-            .expect("debug info");
+        options.set_generate_debug_info(true).expect("debug info");
         options
             .set_optimization_preference(bnns_graph_optimization_preference::IR_SIZE)
             .expect("optimization preference");

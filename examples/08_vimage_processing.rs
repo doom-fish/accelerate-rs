@@ -18,7 +18,8 @@ fn main() {
     let mut red = vec![0_u8; 2];
     let mut green = vec![0_u8; 2];
     let mut blue = vec![0_u8; 2];
-    let src_interleaved = ImageBuffer::from_argb8888(&mut interleaved, 2, 1).expect("src interleaved");
+    let src_interleaved =
+        ImageBuffer::from_argb8888(&mut interleaved, 2, 1).expect("src interleaved");
     let mut alpha_plane = ImageBuffer::from_planar8(&mut alpha, 2, 1).expect("alpha");
     let mut red_plane = ImageBuffer::from_planar8(&mut red, 2, 1).expect("red");
     let mut green_plane = ImageBuffer::from_planar8(&mut green, 2, 1).expect("green");
@@ -38,7 +39,8 @@ fn main() {
     let green_plane = ImageBuffer::from_planar8(&mut green, 2, 1).expect("green src");
     let blue_plane = ImageBuffer::from_planar8(&mut blue, 2, 1).expect("blue src");
     let mut reinterleaved = vec![0_u8; 8];
-    let mut dst_interleaved = ImageBuffer::from_argb8888(&mut reinterleaved, 2, 1).expect("dst interleaved");
+    let mut dst_interleaved =
+        ImageBuffer::from_argb8888(&mut reinterleaved, 2, 1).expect("dst interleaved");
     convert_planar8_to_argb8888(
         &alpha_plane,
         &red_plane,
