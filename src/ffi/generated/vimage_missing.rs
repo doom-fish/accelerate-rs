@@ -5915,7 +5915,7 @@ unsafe extern "C" {
         flags: vImage_Flags,
     ) -> vImage_Error;
 }
-pub type Boolean = ::core::ffi::c_uchar;
+pub use apple_cf::raw::Boolean;
 pub use apple_cf::raw::CFTypeRef;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
