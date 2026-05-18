@@ -4,21 +4,30 @@ use crate::error::{Error, Result};
 use core::ffi::c_void;
 use core::ptr;
 
+/// Sparse index type used by the `sparse_*_float` routines.
 pub type SparseIndex = i64;
 
 /// `sparse_matrix_property` constants.
 pub mod sparse_matrix_property {
+    /// `sparse_matrix_property` flag for upper-triangular matrices.
     pub const UPPER_TRIANGULAR: i32 = 1;
+    /// `sparse_matrix_property` flag for lower-triangular matrices.
     pub const LOWER_TRIANGULAR: i32 = 2;
+    /// `sparse_matrix_property` flag for upper-symmetric matrices.
     pub const UPPER_SYMMETRIC: i32 = 4;
+    /// `sparse_matrix_property` flag for lower-symmetric matrices.
     pub const LOWER_SYMMETRIC: i32 = 8;
 }
 
 /// `sparse_status` constants.
 pub mod sparse_status {
+    /// `sparse_status` value returned for successful sparse operations.
     pub const SUCCESS: i32 = 0;
+    /// `sparse_status` value returned when a sparse argument is invalid.
     pub const ILLEGAL_PARAMETER: i32 = -1000;
+    /// `sparse_status` value returned when `sparse_set_matrix_property` rejects a property.
     pub const CANNOT_SET_PROPERTY: i32 = -1001;
+    /// `sparse_status` value returned when the sparse runtime reports a system failure.
     pub const SYSTEM_ERROR: i32 = -1002;
 }
 
@@ -101,6 +110,7 @@ impl Drop for SparseMatrixF32 {
 }
 
 impl SparseMatrixF32 {
+    /// Creates a sparse single-precision matrix with `sparse_matrix_create_float`.
     #[must_use]
     pub fn new(rows: usize, columns: usize) -> Option<Self> {
         if rows == 0 || columns == 0 {
@@ -118,11 +128,13 @@ impl SparseMatrixF32 {
         }
     }
 
+    /// Sets a `sparse_matrix_property` on the matrix with `sparse_set_matrix_property`.
     pub fn set_property(&mut self, property: i32) -> Result<()> {
         // SAFETY: `self.ptr` is a live bridge handle.
         sparse_result(unsafe { bridge::acc_sparse_matrix_f32_set_property(self.ptr, property) })
     }
 
+    /// Inserts one matrix entry with `sparse_insert_entry_float`.
     pub fn insert_entry(&mut self, row: usize, column: usize, value: f32) -> Result<()> {
         let rows = self.rows()?;
         let columns = self.columns()?;
@@ -140,26 +152,31 @@ impl SparseMatrixF32 {
         })
     }
 
+    /// Finalizes pending sparse edits with `sparse_commit`.
     pub fn commit(&mut self) -> Result<()> {
         // SAFETY: `self.ptr` is a live bridge handle.
         sparse_result(unsafe { bridge::acc_sparse_matrix_f32_commit(self.ptr) })
     }
 
+    /// Returns the row count reported by `sparse_get_matrix_number_of_rows`.
     pub fn rows(&self) -> Result<usize> {
         // SAFETY: `self.ptr` is a live bridge handle.
         usize_dimension(unsafe { bridge::acc_sparse_matrix_f32_rows(self.ptr) })
     }
 
+    /// Returns the column count reported by `sparse_get_matrix_number_of_columns`.
     pub fn columns(&self) -> Result<usize> {
         // SAFETY: `self.ptr` is a live bridge handle.
         usize_dimension(unsafe { bridge::acc_sparse_matrix_f32_columns(self.ptr) })
     }
 
+    /// Returns the nonzero count reported by `sparse_get_matrix_nonzero_count`.
     pub fn nonzero_count(&self) -> Result<usize> {
         // SAFETY: `self.ptr` is a live bridge handle.
         usize_count(unsafe { bridge::acc_sparse_matrix_f32_nonzero_count(self.ptr) })
     }
 
+    /// Solves a sparse triangular system against a dense vector with `sparse_vector_triangular_solve_dense_float`.
     pub fn triangular_solve_vector(
         &self,
         transpose: i32,
@@ -193,6 +210,7 @@ impl SparseMatrixF32 {
         })
     }
 
+    /// Solves a sparse triangular system against a row-major dense matrix with `sparse_matrix_triangular_solve_dense_float`.
     pub fn triangular_solve_matrix_row_major(
         &self,
         transpose: i32,
@@ -237,6 +255,7 @@ impl SparseMatrixF32 {
     }
 }
 
+/// Wraps `sparse_inner_product_dense_float`.
 pub fn dot_dense_f32(values: &[f32], indices: &[SparseIndex], dense: &[f32]) -> Result<f32> {
     validate_sparse_entries(values, indices)?;
     validate_dense_coverage(indices, dense.len())?;
@@ -251,6 +270,7 @@ pub fn dot_dense_f32(values: &[f32], indices: &[SparseIndex], dense: &[f32]) -> 
     })
 }
 
+/// Wraps `sparse_inner_product_sparse_float`.
 pub fn dot_sparse_f32(
     lhs_values: &[f32],
     lhs_indices: &[SparseIndex],
@@ -278,6 +298,7 @@ pub fn dot_sparse_f32(
     })
 }
 
+/// Wraps `sparse_vector_add_with_scale_dense_float`.
 pub fn add_to_dense_f32(
     values: &[f32],
     indices: &[SparseIndex],

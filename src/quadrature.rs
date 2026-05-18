@@ -3,6 +3,7 @@ use crate::error::{Error, Result};
 use core::ffi::c_void;
 use core::slice;
 
+/// Selects the Accelerate integrator passed to `quadrature_integrate`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Integrator {
     Qng,
@@ -20,6 +21,7 @@ impl Integrator {
     }
 }
 
+/// Options passed to `quadrature_integrate`.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Options {
     pub integrator: Integrator,
@@ -41,6 +43,7 @@ impl Default for Options {
     }
 }
 
+/// Output values returned by `quadrature_integrate`.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct QuadratureOutput {
     pub integral: f64,
@@ -64,6 +67,7 @@ unsafe extern "C" fn quadrature_trampoline(
     }
 }
 
+/// Wraps `quadrature_integrate` for a Rust closure over `[a, b]`.
 pub fn integrate<F>(f: F, a: f64, b: f64, options: Options) -> Result<QuadratureOutput>
 where
     F: FnMut(f64) -> f64 + 'static,

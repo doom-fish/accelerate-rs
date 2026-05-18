@@ -2,9 +2,11 @@
 
 use core::ffi::c_void;
 
+/// Raw FFI type alias for `quadrature_function_array`.
 pub type quadrature_function_array =
     Option<unsafe extern "C" fn(*mut c_void, usize, *const f64, *mut f64)>;
 
+/// Raw FFI enum for `quadrature_status`.
 #[repr(i32)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum quadrature_status {
@@ -17,6 +19,7 @@ pub enum quadrature_status {
     QUADRATURE_INTEGRATE_BAD_BEHAVIOUR_ERROR = -102,
 }
 
+/// Raw FFI enum for `quadrature_integrator`.
 #[repr(i32)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum quadrature_integrator {
@@ -25,12 +28,14 @@ pub enum quadrature_integrator {
     QUADRATURE_INTEGRATE_QAGS = 2,
 }
 
+/// Raw FFI struct for `quadrature_integrate_function`.
 #[repr(C)]
 pub struct quadrature_integrate_function {
     pub fun: quadrature_function_array,
     pub fun_arg: *mut c_void,
 }
 
+/// Raw FFI struct for `quadrature_integrate_options`.
 #[repr(C)]
 pub struct quadrature_integrate_options {
     pub integrator: quadrature_integrator,
@@ -42,6 +47,7 @@ pub struct quadrature_integrate_options {
 
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
+    /// Raw FFI declaration for `quadrature_integrate`.
     pub fn quadrature_integrate(
         f: *const quadrature_integrate_function,
         a: f64,

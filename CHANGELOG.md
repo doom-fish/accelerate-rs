@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.4 - 2026-05-18
+
+- Added API docs across the safe wrapper surface and leaked raw declarations, raising safe-surface public-item coverage to 100.0%
+- Documented the Swift bridge helpers plus the non-generated raw FFI modules with one-line Accelerate references
+
 ## 0.2.3 - 2026-05-17
 
 - Added missing SAFETY comments to unsafe blocks in `quadrature_trampoline` callback

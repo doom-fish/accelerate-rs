@@ -35,14 +35,23 @@
 //! regenerating the bindings.
 
 pub mod blas;
+/// Raw FFI declarations for BNNS routines in Accelerate.
 pub mod bnns;
+/// Raw FFI declarations for LAPACK routines in Accelerate.
 pub mod lapack;
+/// Raw FFI declarations for Accelerate quadrature routines.
 pub mod quadrature;
+/// Raw FFI declarations for Apple SIMD helper types.
 pub mod simd;
+/// Raw FFI declarations for sparse routines in Accelerate.
 pub mod sparse;
+/// Raw FFI declarations for vDSP routines in Accelerate.
 pub mod vdsp;
+/// Raw FFI declarations for vecLib helper routines in Accelerate.
 pub mod veclib_extras;
+/// Raw FFI declarations for vForce routines in Accelerate.
 pub mod vforce;
+/// Raw FFI declarations for vImage routines in Accelerate.
 pub mod vimage;
 
 pub use self::blas::*;

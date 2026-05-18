@@ -1,5 +1,7 @@
+/// Result type used by the safe Accelerate wrappers.
 pub type Result<T> = core::result::Result<T, Error>;
 
+/// Errors returned by the safe Accelerate wrappers.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
     InvalidLength { expected: usize, actual: usize },

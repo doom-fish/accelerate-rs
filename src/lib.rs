@@ -9,17 +9,28 @@ mod bridge;
 #[path = "ffi/mod.rs"]
 mod raw_ffi;
 
+/// Safe wrappers for BLAS routines in Accelerate.
 pub mod blas;
+/// Safe wrappers for BNNS routines in Accelerate.
 pub mod bnns;
+/// Error types returned by the Accelerate wrappers.
 pub mod error;
+/// Safe wrappers for LAPACK routines in Accelerate.
 pub mod lapack;
+/// Safe wrappers for Accelerate quadrature integrators.
 pub mod quadrature;
+/// Safe wrappers for four-lane SIMD helpers backed by Apple SIMD types.
 pub mod simd;
+/// Safe wrappers for sparse linear algebra routines in Accelerate.
 pub mod sparse;
+/// Safe wrappers for vDSP routines in Accelerate.
 pub mod vdsp;
+/// Safe wrappers for vForce vector functions in Accelerate.
 pub mod vforce;
+/// Safe wrappers for vImage routines in Accelerate.
 pub mod vimage;
 
+/// Raw FFI re-exports for Accelerate declarations behind the `raw-ffi` feature.
 #[cfg(feature = "raw-ffi")]
 #[cfg_attr(docsrs, doc(cfg(feature = "raw-ffi")))]
 pub mod ffi {

@@ -6,7 +6,9 @@ use core::ptr;
 
 /// `BNNSGraphOptimizationPreference` constants.
 pub mod graph_optimization_preference {
+    /// `BNNSGraphOptimizationPreference` value that favors runtime performance.
     pub const PERFORMANCE: u32 = 0;
+    /// `BNNSGraphOptimizationPreference` value that favors smaller BNNS IR size.
     pub const IR_SIZE: u32 = 1;
 }
 
@@ -68,6 +70,7 @@ impl Filter {
         }
     }
 
+    /// Returns the raw `BNNSFilter` pointer wrapped by this owner.
     #[must_use]
     pub const fn as_ptr(&self) -> *mut c_void {
         self.ptr
@@ -136,6 +139,7 @@ fn apply_activation(
 }
 
 impl GraphCompileOptions {
+    /// Creates BNNS graph compile options backed by the BNNS graph compile-options API.
     #[must_use]
     pub fn new() -> Option<Self> {
         // SAFETY: Pure constructor over the current runtime environment.
@@ -147,6 +151,7 @@ impl GraphCompileOptions {
         }
     }
 
+    /// Sets the BNNS graph compile option that targets single-thread execution.
     pub fn set_target_single_thread(&mut self, value: bool) -> Result<()> {
         // SAFETY: `self.ptr` is a live bridge handle.
         graph_result(unsafe {
@@ -154,12 +159,14 @@ impl GraphCompileOptions {
         })
     }
 
+    /// Returns whether BNNS graph compilation targets single-thread execution.
     #[must_use]
     pub fn target_single_thread(&self) -> bool {
         // SAFETY: `self.ptr` is a live bridge handle.
         unsafe { bridge::acc_bnns_graph_compile_options_get_target_single_thread(self.ptr) }
     }
 
+    /// Sets the BNNS graph compile option that emits debug information.
     pub fn set_generate_debug_info(&mut self, value: bool) -> Result<()> {
         // SAFETY: `self.ptr` is a live bridge handle.
         graph_result(unsafe {
@@ -167,12 +174,14 @@ impl GraphCompileOptions {
         })
     }
 
+    /// Returns whether the BNNS graph compile option emits debug information.
     #[must_use]
     pub fn generate_debug_info(&self) -> bool {
         // SAFETY: `self.ptr` is a live bridge handle.
         unsafe { bridge::acc_bnns_graph_compile_options_get_generate_debug_info(self.ptr) }
     }
 
+    /// Sets the `BNNSGraphOptimizationPreference` used by BNNS graph compilation.
     pub fn set_optimization_preference(&mut self, preference: u32) -> Result<()> {
         // SAFETY: `self.ptr` is a live bridge handle.
         graph_result(unsafe {
@@ -180,6 +189,7 @@ impl GraphCompileOptions {
         })
     }
 
+    /// Returns the `BNNSGraphOptimizationPreference` used by BNNS graph compilation.
     #[must_use]
     pub fn optimization_preference(&self) -> u32 {
         // SAFETY: `self.ptr` is a live bridge handle.

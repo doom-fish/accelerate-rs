@@ -5,21 +5,29 @@ use core::ptr;
 
 /// `FFTDirection` constants.
 pub mod fft_direction {
+    /// `FFTDirection` value for forward transforms passed to `vDSP_fft_zip`.
     pub const FORWARD: i32 = 1;
+    /// `FFTDirection` value for inverse transforms passed to `vDSP_fft_zip`.
     pub const INVERSE: i32 = -1;
 }
 
 /// `FFTRadix` constants.
 pub mod fft_radix {
+    /// `FFTRadix` value for radix-2 setups passed to `vDSP_create_fftsetup`.
     pub const RADIX2: i32 = 0;
+    /// `FFTRadix` value for radix-3 setups passed to `vDSP_create_fftsetup`.
     pub const RADIX3: i32 = 1;
+    /// `FFTRadix` value for radix-5 setups passed to `vDSP_create_fftsetup`.
     pub const RADIX5: i32 = 2;
 }
 
 /// Window-generation flags.
 pub mod window_flags {
+    /// `vDSP_HALF_WINDOW` flag for `vDSP_hamm_window` and `vDSP_blkman_window`.
     pub const HALF_WINDOW: i32 = 1;
+    /// `vDSP_HANN_DENORM` flag for `vDSP_hamm_window` and `vDSP_blkman_window`.
     pub const HANN_DENORM: i32 = 0;
+    /// `vDSP_HANN_NORM` flag for `vDSP_hamm_window` and `vDSP_blkman_window`.
     pub const HANN_NORM: i32 = 2;
 }
 
@@ -42,6 +50,7 @@ impl Drop for FftSetup {
 }
 
 impl FftSetup {
+    /// Creates an `FFTSetup` with `vDSP_create_fftsetup`.
     #[must_use]
     pub fn new(log2n: usize, radix: i32) -> Option<Self> {
         // SAFETY: Pure constructor over scalar inputs.
@@ -53,6 +62,7 @@ impl FftSetup {
         }
     }
 
+    /// Wraps `vDSP_fft_zip` for split-complex single-precision buffers.
     pub fn fft_zip(
         &self,
         real: &mut [f32],
@@ -115,6 +125,7 @@ impl Drop for BiquadSetup {
 }
 
 impl BiquadSetup {
+    /// Creates a `vDSP_biquad_Setup` with `vDSP_biquad_CreateSetup`.
     #[must_use]
     pub fn new(coefficients: &[f64]) -> Option<Self> {
         if coefficients.is_empty() || coefficients.len() % 5 != 0 {
@@ -132,6 +143,7 @@ impl BiquadSetup {
         }
     }
 
+    /// Wraps `vDSP_biquad` for single-precision input and output buffers.
     pub fn apply(&self, delay: &mut [f32], input: &[f32], output: &mut [f32]) -> Result<()> {
         if delay.is_empty() {
             return Err(Error::InvalidLength {
@@ -267,22 +279,27 @@ fn window_f64(length: usize, flags: i32, f: WindowOpF64) -> Vec<f64> {
     out
 }
 
+/// Wraps `vDSP_vadd`.
 pub fn add_f32(a: &[f32], b: &[f32]) -> Result<Vec<f32>> {
     binary_vector_op_f32(a, b, bridge::acc_vdsp_add_f32)
 }
 
+/// Wraps `vDSP_vaddD`.
 pub fn add_f64(a: &[f64], b: &[f64]) -> Result<Vec<f64>> {
     binary_vector_op_f64(a, b, bridge::acc_vdsp_add_f64)
 }
 
+/// Wraps `vDSP_vsub`.
 pub fn sub_f32(a: &[f32], b: &[f32]) -> Result<Vec<f32>> {
     binary_vector_op_f32(a, b, bridge::acc_vdsp_sub_f32)
 }
 
+/// Wraps `vDSP_vsubD`.
 pub fn sub_f64(a: &[f64], b: &[f64]) -> Result<Vec<f64>> {
     binary_vector_op_f64(a, b, bridge::acc_vdsp_sub_f64)
 }
 
+/// Wraps `vDSP_dotpr`.
 pub fn dot_f32(a: &[f32], b: &[f32]) -> Result<f32> {
     if a.len() != b.len() {
         return Err(Error::InvalidLength {
@@ -301,6 +318,7 @@ pub fn dot_f32(a: &[f32], b: &[f32]) -> Result<f32> {
     }
 }
 
+/// Wraps `vDSP_dotprD`.
 pub fn dot_f64(a: &[f64], b: &[f64]) -> Result<f64> {
     if a.len() != b.len() {
         return Err(Error::InvalidLength {
@@ -319,53 +337,65 @@ pub fn dot_f64(a: &[f64], b: &[f64]) -> Result<f64> {
     }
 }
 
+/// Wraps `vDSP_maxv`.
 pub fn max_f32(values: &[f32]) -> Result<f32> {
     reduce_f32(values, bridge::acc_vdsp_max_f32)
 }
 
+/// Wraps `vDSP_maxvD`.
 pub fn max_f64(values: &[f64]) -> Result<f64> {
     reduce_f64(values, bridge::acc_vdsp_max_f64)
 }
 
+/// Wraps `vDSP_minv`.
 pub fn min_f32(values: &[f32]) -> Result<f32> {
     reduce_f32(values, bridge::acc_vdsp_min_f32)
 }
 
+/// Wraps `vDSP_minvD`.
 pub fn min_f64(values: &[f64]) -> Result<f64> {
     reduce_f64(values, bridge::acc_vdsp_min_f64)
 }
 
+/// Wraps `vDSP_meanv`.
 pub fn mean_f32(values: &[f32]) -> Result<f32> {
     reduce_f32(values, bridge::acc_vdsp_mean_f32)
 }
 
+/// Wraps `vDSP_meanvD`.
 pub fn mean_f64(values: &[f64]) -> Result<f64> {
     reduce_f64(values, bridge::acc_vdsp_mean_f64)
 }
 
+/// Wraps `vDSP_sve`.
 pub fn sum_f32(values: &[f32]) -> Result<f32> {
     reduce_f32(values, bridge::acc_vdsp_sum_f32)
 }
 
+/// Wraps `vDSP_sveD`.
 pub fn sum_f64(values: &[f64]) -> Result<f64> {
     reduce_f64(values, bridge::acc_vdsp_sum_f64)
 }
 
+/// Wraps `vDSP_hamm_window`.
 #[must_use]
 pub fn hamming_window(length: usize, flags: i32) -> Vec<f32> {
     window_f32(length, flags, bridge::acc_vdsp_hamming_window)
 }
 
+/// Wraps `vDSP_hamm_windowD`.
 #[must_use]
 pub fn hamming_window_f64(length: usize, flags: i32) -> Vec<f64> {
     window_f64(length, flags, bridge::acc_vdsp_hamming_window_f64)
 }
 
+/// Wraps `vDSP_blkman_window`.
 #[must_use]
 pub fn blackman_window(length: usize, flags: i32) -> Vec<f32> {
     window_f32(length, flags, bridge::acc_vdsp_blackman_window)
 }
 
+/// Wraps `vDSP_blkman_windowD`.
 #[must_use]
 pub fn blackman_window_f64(length: usize, flags: i32) -> Vec<f64> {
     window_f64(length, flags, bridge::acc_vdsp_blackman_window_f64)

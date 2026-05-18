@@ -33,16 +33,19 @@ pub struct LuDecompositionF32 {
 }
 
 impl LuDecompositionF32 {
+    /// Returns the packed LU factors produced by `sgetrf_`.
     #[must_use]
     pub fn factors(&self) -> &[f32] {
         &self.factors
     }
 
+    /// Returns the pivot indices produced by `sgetrf_`.
     #[must_use]
     pub fn pivots(&self) -> &[i32] {
         &self.pivots
     }
 
+    /// Returns the matrix dimension used with `sgetrf_`.
     #[must_use]
     pub const fn dimension(&self) -> usize {
         self.dimension

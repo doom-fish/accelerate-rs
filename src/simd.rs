@@ -1,6 +1,7 @@
 use crate::bridge;
 use crate::error::{Error, Result};
 
+/// Four-lane `f32` vector used by the SIMD helpers backed by `simd_float4`.
 pub type Float4 = [f32; 4];
 
 fn unary_simd_op(
@@ -17,6 +18,7 @@ fn unary_simd_op(
     }
 }
 
+/// Wraps four-lane vector addition backed by `simd_float4`.
 pub fn add_f32x4(lhs: Float4, rhs: Float4) -> Result<Float4> {
     let mut output = [0.0_f32; 4];
     // SAFETY: All arrays are valid for exactly four `f32` values.
@@ -28,6 +30,7 @@ pub fn add_f32x4(lhs: Float4, rhs: Float4) -> Result<Float4> {
     }
 }
 
+/// Wraps four-lane dot-product evaluation backed by `simd_float4`.
 pub fn dot_f32x4(lhs: Float4, rhs: Float4) -> Result<f32> {
     let mut output = 0.0_f32;
     // SAFETY: All arrays are valid for exactly four `f32` values.
@@ -39,6 +42,7 @@ pub fn dot_f32x4(lhs: Float4, rhs: Float4) -> Result<f32> {
     }
 }
 
+/// Wraps four-lane vector length computation backed by `simd_float4`.
 pub fn length_f32x4(input: Float4) -> Result<f32> {
     let mut output = 0.0_f32;
     // SAFETY: Both arrays are valid for exactly four `f32` values.
@@ -50,6 +54,7 @@ pub fn length_f32x4(input: Float4) -> Result<f32> {
     }
 }
 
+/// Wraps four-lane vector normalization backed by `simd_float4`.
 pub fn normalize_f32x4(input: Float4) -> Result<Float4> {
     if input.iter().all(|value| *value == 0.0) {
         return Err(Error::InvalidValue("cannot normalize the zero vector"));

@@ -18,22 +18,27 @@ fn unary_vector_op(values: &[f32], f: UnaryVectorOp) -> Result<Vec<f32>> {
     }
 }
 
+/// Wraps `vvsinf`.
 pub fn sin_f32(values: &[f32]) -> Result<Vec<f32>> {
     unary_vector_op(values, bridge::acc_vforce_sin_f32)
 }
 
+/// Wraps `vvcosf`.
 pub fn cos_f32(values: &[f32]) -> Result<Vec<f32>> {
     unary_vector_op(values, bridge::acc_vforce_cos_f32)
 }
 
+/// Wraps `vvexpf`.
 pub fn exp_f32(values: &[f32]) -> Result<Vec<f32>> {
     unary_vector_op(values, bridge::acc_vforce_exp_f32)
 }
 
+/// Wraps `vvlogf`.
 pub fn log_f32(values: &[f32]) -> Result<Vec<f32>> {
     unary_vector_op(values, bridge::acc_vforce_log_f32)
 }
 
+/// Wraps `vvsqrtf`.
 pub fn sqrt_f32(values: &[f32]) -> Result<Vec<f32>> {
     unary_vector_op(values, bridge::acc_vforce_sqrt_f32)
 }

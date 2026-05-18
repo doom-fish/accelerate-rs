@@ -3,14 +3,19 @@ use crate::error::{Error, Result};
 
 /// `CBLAS_ORDER` constants.
 pub mod blas_order {
+    /// `CBLAS_ORDER` value for row-major matrices passed to `cblas_sgemv` and `cblas_sgemm`.
     pub const ROW_MAJOR: i32 = 101;
+    /// `CBLAS_ORDER` value for column-major matrices passed to `cblas_sgemv` and `cblas_sgemm`.
     pub const COL_MAJOR: i32 = 102;
 }
 
 /// `CBLAS_TRANSPOSE` constants.
 pub mod blas_transpose {
+    /// `CBLAS_TRANSPOSE` value for `cblas_sgemv` and `cblas_sgemm` without transposition.
     pub const NO_TRANS: i32 = 111;
+    /// `CBLAS_TRANSPOSE` value for `cblas_sgemv` and `cblas_sgemm` with transposition.
     pub const TRANS: i32 = 112;
+    /// `CBLAS_TRANSPOSE` value for `cblas_sgemv` and `cblas_sgemm` with conjugate transposition.
     pub const CONJ_TRANS: i32 = 113;
 }
 

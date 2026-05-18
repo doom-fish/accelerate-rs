@@ -2,10 +2,15 @@
 
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
+    /// Raw FFI declaration for `vvsinf`.
     pub fn vvsinf(y: *mut f32, x: *const f32, n: *const i32);
+    /// Raw FFI declaration for `vvcosf`.
     pub fn vvcosf(y: *mut f32, x: *const f32, n: *const i32);
+    /// Raw FFI declaration for `vvexpf`.
     pub fn vvexpf(y: *mut f32, x: *const f32, n: *const i32);
+    /// Raw FFI declaration for `vvlogf`.
     pub fn vvlogf(y: *mut f32, x: *const f32, n: *const i32);
+    /// Raw FFI declaration for `vvsqrtf`.
     pub fn vvsqrtf(y: *mut f32, x: *const f32, n: *const i32);
 }
 

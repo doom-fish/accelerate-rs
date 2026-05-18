@@ -5,9 +5,13 @@ use core::marker::PhantomData;
 
 /// Common `vImage_Flags` values.
 pub mod vimage_flags {
+    /// `vImage_Flags` value for default behavior.
     pub const NO_FLAGS: u32 = 0;
+    /// `vImage_Flags` value that fills uncovered pixels from the background color.
     pub const BACKGROUND_COLOR_FILL: u32 = 4;
+    /// `vImage_Flags` value that extends edge pixels beyond the source bounds.
     pub const EDGE_EXTEND: u32 = 8;
+    /// `vImage_Flags` value that enables higher-quality resampling.
     pub const HIGH_QUALITY_RESAMPLING: u32 = 32;
 }
 
@@ -39,6 +43,7 @@ pub struct ImageBuffer<'a> {
 }
 
 impl<'a> ImageBuffer<'a> {
+    /// Borrows caller-owned ARGB8888 storage as a `vImage_Buffer`.
     pub fn from_argb8888(data: &'a mut [u8], width: usize, height: usize) -> Result<Self> {
         let expected = width
             .checked_mul(height)
@@ -60,6 +65,7 @@ impl<'a> ImageBuffer<'a> {
         })
     }
 
+    /// Borrows caller-owned Planar8 storage as a `vImage_Buffer`.
     pub fn from_planar8(data: &'a mut [u8], width: usize, height: usize) -> Result<Self> {
         let expected = width
             .checked_mul(height)
@@ -97,6 +103,7 @@ impl<'a> ImageBuffer<'a> {
     }
 }
 
+/// Wraps `vImageRotate_ARGB8888`.
 pub fn rotate_argb8888(
     src: &ImageBuffer<'_>,
     dst: &mut ImageBuffer<'_>,
@@ -123,6 +130,7 @@ pub fn rotate_argb8888(
     vimage_result(status)
 }
 
+/// Wraps `vImageBoxConvolve_ARGB8888`.
 pub fn box_convolve_argb8888(
     src: &ImageBuffer<'_>,
     dst: &mut ImageBuffer<'_>,
@@ -151,6 +159,7 @@ pub fn box_convolve_argb8888(
     vimage_result(status)
 }
 
+/// Wraps `vImageScale_ARGB8888`.
 pub fn scale_argb8888(src: &ImageBuffer<'_>, dst: &mut ImageBuffer<'_>, flags: u32) -> Result<()> {
     // SAFETY: Source and destination buffers remain valid for the duration of the call.
     let status = unsafe {
@@ -169,6 +178,7 @@ pub fn scale_argb8888(src: &ImageBuffer<'_>, dst: &mut ImageBuffer<'_>, flags: u
     vimage_result(status)
 }
 
+/// Wraps `vImageContrastStretch_Planar8`.
 pub fn contrast_stretch_planar8(
     src: &ImageBuffer<'_>,
     dst: &mut ImageBuffer<'_>,
@@ -191,6 +201,7 @@ pub fn contrast_stretch_planar8(
     vimage_result(status)
 }
 
+/// Wraps `vImageAlphaBlend_ARGB8888`.
 pub fn alpha_blend_argb8888(
     src_top: &ImageBuffer<'_>,
     src_bottom: &ImageBuffer<'_>,
@@ -221,6 +232,7 @@ pub fn alpha_blend_argb8888(
     vimage_result(status)
 }
 
+/// Wraps `vImageClipToAlpha_ARGB8888`.
 pub fn clip_to_alpha_argb8888(
     src: &ImageBuffer<'_>,
     dst: &mut ImageBuffer<'_>,
@@ -245,6 +257,7 @@ pub fn clip_to_alpha_argb8888(
     vimage_result(status)
 }
 
+/// Wraps `vImagePremultiplyData_ARGB8888`.
 pub fn premultiply_argb8888(
     src: &ImageBuffer<'_>,
     dst: &mut ImageBuffer<'_>,
@@ -269,6 +282,7 @@ pub fn premultiply_argb8888(
     vimage_result(status)
 }
 
+/// Wraps `vImageUnpremultiplyData_ARGB8888`.
 pub fn unpremultiply_argb8888(
     src: &ImageBuffer<'_>,
     dst: &mut ImageBuffer<'_>,
@@ -293,6 +307,7 @@ pub fn unpremultiply_argb8888(
     vimage_result(status)
 }
 
+/// Wraps `vImageConvert_Planar8toARGB8888`.
 pub fn convert_planar8_to_argb8888(
     src_alpha: &ImageBuffer<'_>,
     src_red: &ImageBuffer<'_>,
@@ -335,6 +350,7 @@ pub fn convert_planar8_to_argb8888(
     vimage_result(status)
 }
 
+/// Wraps `vImageConvert_ARGB8888toPlanar8`.
 pub fn convert_argb8888_to_planar8(
     src: &ImageBuffer<'_>,
     dst_alpha: &mut ImageBuffer<'_>,
