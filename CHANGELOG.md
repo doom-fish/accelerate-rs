@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.1] - 2026-05-18
+
+- Widen apple-cf version bound to `<0.10` so 0.9.x resolves.
+
 ## 0.3.0 - 2026-05-18
 
 - Re-exported the raw `CFTypeRef` and `CFStringRef` vImage aliases from `apple-cf`
