@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 - 2026-05-18
+
+- Re-exported the raw `CFTypeRef` and `CFStringRef` vImage aliases from `apple-cf`
+- Added `apple-cf` as a dependency for the shared Core Foundation raw types
+
 ## 0.2.4 - 2026-05-18
 
 - Added API docs across the safe wrapper surface and leaked raw declarations, raising safe-surface public-item coverage to 100.0%

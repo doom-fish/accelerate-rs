@@ -5916,13 +5916,13 @@ unsafe extern "C" {
     ) -> vImage_Error;
 }
 pub type Boolean = ::core::ffi::c_uchar;
-pub type CFTypeRef = *const ::core::ffi::c_void;
+pub use apple_cf::raw::CFTypeRef;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct __CFString {
     _unused: [u8; 0],
 }
-pub type CFStringRef = *const __CFString;
+pub use apple_cf::raw::CFStringRef;
 pub type CGFloat = f64;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]

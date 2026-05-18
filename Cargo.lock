@@ -4,4 +4,22 @@ version = 3
 
 [[package]]
 name = "apple-accelerate"
-version = "0.2.4"
+version = "0.3.0"
+dependencies = [
+ "apple-cf",
+]
+
+[[package]]
+name = "apple-cf"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8d317f76f208d459dbc68d7c1d2a81ae4bb1ac9ddc67d3fef2d8b547cd4a0208"
+dependencies = [
+ "doom-fish-utils",
+]
+
+[[package]]
+name = "doom-fish-utils"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "79b45884dde8ba9ffd019fe3264bb9a22e3ee87803838cab979252632a1f77a7"
