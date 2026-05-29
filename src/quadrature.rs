@@ -62,8 +62,18 @@ unsafe extern "C" fn quadrature_trampoline(
     let xs = unsafe { slice::from_raw_parts(x, n) };
     // SAFETY: `y` is guaranteed by Accelerate to contain `n` writable f64 values for the duration of this callback.
     let ys = unsafe { slice::from_raw_parts_mut(y, n) };
-    for (input, output) in xs.iter().copied().zip(ys.iter_mut()) {
-        *output = callback.as_mut()(input);
+    // A panic in user code must never unwind across the `extern "C"` boundary
+    // into Accelerate (undefined behaviour). Catch it and fall back to a safe
+    // default so the integrator sees finite output values.
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        for (input, output) in xs.iter().copied().zip(ys.iter_mut()) {
+            *output = callback.as_mut()(input);
+        }
+    }));
+    if result.is_err() {
+        for output in ys.iter_mut() {
+            *output = 0.0;
+        }
     }
 }
 

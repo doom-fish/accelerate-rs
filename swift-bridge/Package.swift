@@ -16,8 +16,7 @@ let package = Package(
     targets: [
         .target(
             name: "AppleAccelerateBridge",
-            path: "Sources/AppleAccelerateBridge",
-            publicHeadersPath: "include"
+            path: "Sources/AppleAccelerateBridge"
         )
     ]
 )
