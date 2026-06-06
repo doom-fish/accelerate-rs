@@ -34,6 +34,7 @@ pub mod window_flags {
 /// Owned `FFTSetup` handle backed by the Swift bridge.
 pub struct FftSetup {
     ptr: *mut c_void,
+    log2n: usize,
 }
 
 unsafe impl Send for FftSetup {}
@@ -58,7 +59,7 @@ impl FftSetup {
         if ptr.is_null() {
             None
         } else {
-            Some(Self { ptr })
+            Some(Self { ptr, log2n })
         }
     }
 
@@ -70,6 +71,14 @@ impl FftSetup {
         log2n: usize,
         direction: i32,
     ) -> Result<()> {
+        // The setup's twiddle-factor tables are only allocated for transforms up
+        // to `self.log2n`. Applying a larger `log2n` would make `vDSP_fft_zip`
+        // read past those tables (out-of-bounds access inside Accelerate).
+        if log2n > self.log2n {
+            return Err(Error::OperationFailed(
+                "FFT log2 length exceeds the FFT setup capacity",
+            ));
+        }
         let shift = u32::try_from(log2n)
             .map_err(|_| Error::OperationFailed("FFT log2 length exceeds u32"))?;
         let expected = 1_usize
@@ -109,6 +118,7 @@ impl FftSetup {
 /// Owned `vDSP_biquad_Setup` handle backed by the Swift bridge.
 pub struct BiquadSetup {
     ptr: *mut c_void,
+    sections: usize,
 }
 
 unsafe impl Send for BiquadSetup {}
@@ -139,16 +149,23 @@ impl BiquadSetup {
         if ptr.is_null() {
             None
         } else {
-            Some(Self { ptr })
+            Some(Self {
+                ptr,
+                sections: coefficients.len() / 5,
+            })
         }
     }
 
     /// Wraps `vDSP_biquad` for single-precision input and output buffers.
     pub fn apply(&self, delay: &mut [f32], input: &[f32], output: &mut [f32]) -> Result<()> {
-        if delay.is_empty() {
+        // `vDSP_biquad` reads and writes exactly `2 * sections + 2` delay
+        // elements. A shorter buffer would cause out-of-bounds access inside
+        // Accelerate, so reject it before crossing the FFI boundary.
+        let expected_delay = 2 * self.sections + 2;
+        if delay.len() != expected_delay {
             return Err(Error::InvalidLength {
-                expected: 1,
-                actual: 0,
+                expected: expected_delay,
+                actual: delay.len(),
             });
         }
         if input.len() != output.len() {
