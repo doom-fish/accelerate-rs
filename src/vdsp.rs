@@ -31,6 +31,8 @@ pub mod window_flags {
     pub const HANN_NORM: i32 = 2;
 }
 
+const MAX_FFT_LOG2N: usize = 40;
+
 /// Owned `FFTSetup` handle backed by the Swift bridge.
 pub struct FftSetup {
     ptr: *mut c_void,
@@ -54,6 +56,14 @@ impl FftSetup {
     /// Creates an `FFTSetup` with `vDSP_create_fftsetup`.
     #[must_use]
     pub fn new(log2n: usize, radix: i32) -> Option<Self> {
+        if log2n > MAX_FFT_LOG2N
+            || !matches!(
+                radix,
+                fft_radix::RADIX2 | fft_radix::RADIX3 | fft_radix::RADIX5
+            )
+        {
+            return None;
+        }
         // SAFETY: Pure constructor over scalar inputs.
         let ptr = unsafe { bridge::acc_vdsp_fft_setup_create(log2n, radix) };
         if ptr.is_null() {
@@ -77,6 +87,11 @@ impl FftSetup {
         if log2n > self.log2n {
             return Err(Error::OperationFailed(
                 "FFT log2 length exceeds the FFT setup capacity",
+            ));
+        }
+        if direction != fft_direction::FORWARD && direction != fft_direction::INVERSE {
+            return Err(Error::InvalidValue(
+                "FFT direction must be fft_direction::FORWARD or fft_direction::INVERSE",
             ));
         }
         let shift = u32::try_from(log2n)
@@ -272,28 +287,32 @@ fn reduce_f64(values: &[f64], f: ReduceOpF64) -> Result<f64> {
     }
 }
 
-#[must_use]
-fn window_f32(length: usize, flags: i32, f: WindowOpF32) -> Vec<f32> {
+fn window_f32(length: usize, flags: i32, f: WindowOpF32) -> Result<Vec<f32>> {
     let mut out = vec![0.0_f32; length];
     if length == 0 {
-        return out;
+        return Ok(out);
     }
 
     // SAFETY: `out` is valid for `length` contiguous `f32` values.
-    let _ = unsafe { f(out.as_mut_ptr(), length, flags) };
-    out
+    if unsafe { f(out.as_mut_ptr(), length, flags) } {
+        Ok(out)
+    } else {
+        Err(Error::OperationFailed("vDSP window generation failed"))
+    }
 }
 
-#[must_use]
-fn window_f64(length: usize, flags: i32, f: WindowOpF64) -> Vec<f64> {
+fn window_f64(length: usize, flags: i32, f: WindowOpF64) -> Result<Vec<f64>> {
     let mut out = vec![0.0_f64; length];
     if length == 0 {
-        return out;
+        return Ok(out);
     }
 
     // SAFETY: `out` is valid for `length` contiguous `f64` values.
-    let _ = unsafe { f(out.as_mut_ptr(), length, flags) };
-    out
+    if unsafe { f(out.as_mut_ptr(), length, flags) } {
+        Ok(out)
+    } else {
+        Err(Error::OperationFailed("vDSP window generation failed"))
+    }
 }
 
 /// Wraps `vDSP_vadd`.
@@ -395,25 +414,21 @@ pub fn sum_f64(values: &[f64]) -> Result<f64> {
 }
 
 /// Wraps `vDSP_hamm_window`.
-#[must_use]
-pub fn hamming_window(length: usize, flags: i32) -> Vec<f32> {
+pub fn hamming_window(length: usize, flags: i32) -> Result<Vec<f32>> {
     window_f32(length, flags, bridge::acc_vdsp_hamming_window)
 }
 
 /// Wraps `vDSP_hamm_windowD`.
-#[must_use]
-pub fn hamming_window_f64(length: usize, flags: i32) -> Vec<f64> {
+pub fn hamming_window_f64(length: usize, flags: i32) -> Result<Vec<f64>> {
     window_f64(length, flags, bridge::acc_vdsp_hamming_window_f64)
 }
 
 /// Wraps `vDSP_blkman_window`.
-#[must_use]
-pub fn blackman_window(length: usize, flags: i32) -> Vec<f32> {
+pub fn blackman_window(length: usize, flags: i32) -> Result<Vec<f32>> {
     window_f32(length, flags, bridge::acc_vdsp_blackman_window)
 }
 
 /// Wraps `vDSP_blkman_windowD`.
-#[must_use]
-pub fn blackman_window_f64(length: usize, flags: i32) -> Vec<f64> {
+pub fn blackman_window_f64(length: usize, flags: i32) -> Result<Vec<f64>> {
     window_f64(length, flags, bridge::acc_vdsp_blackman_window_f64)
 }

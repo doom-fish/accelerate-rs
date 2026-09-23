@@ -22,10 +22,10 @@ fn main() {
     let dot64 = dot_f64(&[1.0, 2.0, 3.0], &[4.0, 5.0, 6.0]).expect("dot product f64 failed");
     assert!((dot64 - 32.0).abs() < 1.0e-12);
 
-    let hamm = hamming_window(8, 0);
-    let hamm64 = hamming_window_f64(8, 0);
-    let blk = blackman_window(8, 0);
-    let blk64 = blackman_window_f64(8, 0);
+    let hamm = hamming_window(8, 0).expect("hamming window failed");
+    let hamm64 = hamming_window_f64(8, 0).expect("hamming window f64 failed");
+    let blk = blackman_window(8, 0).expect("blackman window failed");
+    let blk64 = blackman_window_f64(8, 0).expect("blackman window f64 failed");
     assert_eq!(hamm.len(), 8);
     assert_eq!(hamm64.len(), 8);
     assert_eq!(blk.len(), 8);

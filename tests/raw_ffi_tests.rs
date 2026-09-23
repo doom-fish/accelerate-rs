@@ -79,3 +79,47 @@ fn raw_simd_float4_matches_the_c_layout() {
     assert_eq!(core::mem::size_of::<ffi::simd_float4>(), 16);
     assert_eq!(core::mem::align_of::<ffi::simd_float4>(), 16);
 }
+
+fn raw_fft_zop(radix: i32, factor: usize) -> (Vec<f32>, Vec<f32>) {
+    let log2n = 2;
+    let count = factor << log2n;
+    let mut input_real: Vec<f32> = (0..count)
+        .map(|value| f32::from(u8::try_from(value).expect("small length")))
+        .collect();
+    let mut input_imag = vec![0.0_f32; count];
+    let mut output_real = vec![0.0_f32; count];
+    let mut output_imag = vec![0.0_f32; count];
+    let input = ffi::DSPSplitComplex {
+        realp: input_real.as_mut_ptr(),
+        imagp: input_imag.as_mut_ptr(),
+    };
+    let output = ffi::DSPSplitComplex {
+        realp: output_real.as_mut_ptr(),
+        imagp: output_imag.as_mut_ptr(),
+    };
+    let setup = unsafe { ffi::vDSP_create_fftsetup(log2n, radix) };
+    assert!(!setup.is_null());
+    unsafe {
+        if factor == 3 {
+            ffi::vDSP_fft3_zop(setup, &raw const input, 1, &raw const output, 1, log2n, 1);
+        } else {
+            ffi::vDSP_fft5_zop(setup, &raw const input, 1, &raw const output, 1, log2n, 1);
+        }
+        ffi::vDSP_destroy_fftsetup(setup);
+    }
+    (output_real, output_imag)
+}
+
+#[test]
+fn raw_radix3_and_radix5_transforms_are_declared() {
+    let (real, imag) = raw_fft_zop(apple_accelerate::fft_radix::RADIX3, 3);
+    assert!((real[0] - 66.0).abs() < 1.0e-3);
+    assert!(imag[0].abs() < 1.0e-3);
+    assert!((real[1] + 6.0).abs() < 1.0e-3);
+    assert!((imag[1] - 6.0 / (std::f32::consts::PI / 12.0).tan()).abs() < 1.0e-3);
+
+    let (real, imag) = raw_fft_zop(apple_accelerate::fft_radix::RADIX5, 5);
+    assert!((real[0] - 190.0).abs() < 1.0e-3);
+    assert!((real[1] + 10.0).abs() < 1.0e-3);
+    assert!((imag[1] - 10.0 / (std::f32::consts::PI / 20.0).tan()).abs() < 1.0e-3);
+}

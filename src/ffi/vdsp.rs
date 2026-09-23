@@ -44,6 +44,42 @@ unsafe extern "C" {
         log2n: vDSP_Length,
         direction: FFTDirection,
     );
+    pub fn vDSP_fft3_zop(
+        setup: FFTSetup,
+        a: *const DSPSplitComplex,
+        a_stride: vDSP_Stride,
+        c: *const DSPSplitComplex,
+        c_stride: vDSP_Stride,
+        log2n: vDSP_Length,
+        direction: FFTDirection,
+    );
+    pub fn vDSP_fft3_zopD(
+        setup: FFTSetupD,
+        a: *const DSPDoubleSplitComplex,
+        a_stride: vDSP_Stride,
+        c: *const DSPDoubleSplitComplex,
+        c_stride: vDSP_Stride,
+        log2n: vDSP_Length,
+        direction: FFTDirection,
+    );
+    pub fn vDSP_fft5_zop(
+        setup: FFTSetup,
+        a: *const DSPSplitComplex,
+        a_stride: vDSP_Stride,
+        c: *const DSPSplitComplex,
+        c_stride: vDSP_Stride,
+        log2n: vDSP_Length,
+        direction: FFTDirection,
+    );
+    pub fn vDSP_fft5_zopD(
+        setup: FFTSetupD,
+        a: *const DSPDoubleSplitComplex,
+        a_stride: vDSP_Stride,
+        c: *const DSPDoubleSplitComplex,
+        c_stride: vDSP_Stride,
+        log2n: vDSP_Length,
+        direction: FFTDirection,
+    );
     /// Raw FFI declaration for `vDSP_biquad_CreateSetup`.
     pub fn vDSP_biquad_CreateSetup(
         coefficients: *const f64,

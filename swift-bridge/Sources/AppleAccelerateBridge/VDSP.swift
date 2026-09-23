@@ -5,7 +5,9 @@ private final class FFTSetupHandle {
     let setup: FFTSetup
 
     init?(log2n: Int, radix: Int32) {
-        guard let setup = vDSP_create_fftsetup(vDSP_Length(log2n), FFTRadix(radix)) else {
+        guard let length = vDSP_Length(exactly: log2n),
+              let setup = vDSP_create_fftsetup(length, FFTRadix(radix))
+        else {
             return nil
         }
         self.setup = setup
@@ -49,13 +51,13 @@ public func accVdspFftSetupApply(
     _ log2n: Int,
     _ direction: Int32
 ) -> Bool {
-    guard let handle, let real, let imag else {
+    guard let handle, let real, let imag, let length = vDSP_Length(exactly: log2n) else {
         return false
     }
 
     let setup: FFTSetupHandle = unretained(handle)
     var split = DSPSplitComplex(realp: real, imagp: imag)
-    vDSP_fft_zip(setup.setup, &split, 1, vDSP_Length(log2n), FFTDirection(direction))
+    vDSP_fft_zip(setup.setup, &split, 1, length, FFTDirection(direction))
     return true
 }
 
