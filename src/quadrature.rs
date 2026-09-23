@@ -98,8 +98,8 @@ where
             options.rel_tolerance,
             options.qag_points_per_interval,
             options.max_intervals,
-            &mut status,
-            &mut abs_error,
+            &raw mut status,
+            &raw mut abs_error,
         )
     };
 

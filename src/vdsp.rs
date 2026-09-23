@@ -246,7 +246,7 @@ fn reduce_f32(values: &[f32], f: ReduceOpF32) -> Result<f32> {
 
     let mut out = 0.0_f32;
     // SAFETY: The slice is valid for `values.len()` contiguous `f32` elements.
-    let ok = unsafe { f(values.as_ptr(), &mut out, values.len()) };
+    let ok = unsafe { f(values.as_ptr(), &raw mut out, values.len()) };
     if ok {
         Ok(out)
     } else {
@@ -264,7 +264,7 @@ fn reduce_f64(values: &[f64], f: ReduceOpF64) -> Result<f64> {
 
     let mut out = 0.0_f64;
     // SAFETY: The slice is valid for `values.len()` contiguous `f64` elements.
-    let ok = unsafe { f(values.as_ptr(), &mut out, values.len()) };
+    let ok = unsafe { f(values.as_ptr(), &raw mut out, values.len()) };
     if ok {
         Ok(out)
     } else {
@@ -327,7 +327,7 @@ pub fn dot_f32(a: &[f32], b: &[f32]) -> Result<f32> {
 
     let mut out = 0.0_f32;
     // SAFETY: The slices are valid for `a.len()` contiguous `f32` elements.
-    let ok = unsafe { bridge::acc_vdsp_dot_f32(a.as_ptr(), b.as_ptr(), &mut out, a.len()) };
+    let ok = unsafe { bridge::acc_vdsp_dot_f32(a.as_ptr(), b.as_ptr(), &raw mut out, a.len()) };
     if ok {
         Ok(out)
     } else {
@@ -346,7 +346,7 @@ pub fn dot_f64(a: &[f64], b: &[f64]) -> Result<f64> {
 
     let mut out = 0.0_f64;
     // SAFETY: The slices are valid for `a.len()` contiguous `f64` elements.
-    let ok = unsafe { bridge::acc_vdsp_dot_f64(a.as_ptr(), b.as_ptr(), &mut out, a.len()) };
+    let ok = unsafe { bridge::acc_vdsp_dot_f64(a.as_ptr(), b.as_ptr(), &raw mut out, a.len()) };
     if ok {
         Ok(out)
     } else {

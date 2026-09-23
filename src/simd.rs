@@ -34,7 +34,7 @@ pub fn add_f32x4(lhs: Float4, rhs: Float4) -> Result<Float4> {
 pub fn dot_f32x4(lhs: Float4, rhs: Float4) -> Result<f32> {
     let mut output = 0.0_f32;
     // SAFETY: All arrays are valid for exactly four `f32` values.
-    let ok = unsafe { bridge::acc_simd_dot_f32x4(lhs.as_ptr(), rhs.as_ptr(), &mut output) };
+    let ok = unsafe { bridge::acc_simd_dot_f32x4(lhs.as_ptr(), rhs.as_ptr(), &raw mut output) };
     if ok {
         Ok(output)
     } else {
@@ -46,7 +46,7 @@ pub fn dot_f32x4(lhs: Float4, rhs: Float4) -> Result<f32> {
 pub fn length_f32x4(input: Float4) -> Result<f32> {
     let mut output = 0.0_f32;
     // SAFETY: Both arrays are valid for exactly four `f32` values.
-    let ok = unsafe { bridge::acc_simd_length_f32x4(input.as_ptr(), &mut output) };
+    let ok = unsafe { bridge::acc_simd_length_f32x4(input.as_ptr(), &raw mut output) };
     if ok {
         Ok(output)
     } else {
