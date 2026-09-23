@@ -26,7 +26,7 @@ public func accBlasSgemvRowMajor(
         return false
     }
 
-    cblas_sgemv(CblasRowMajor, CblasNoTrans, rows, columns, alpha, matrix, columns, x, 1, beta, y, 1)
+    cblas_sgemv(CblasRowMajor, CblasNoTrans, rows, columns, alpha, matrix, max(1, columns), x, 1, beta, y, 1)
     return true
 }
 
@@ -54,12 +54,12 @@ public func accBlasSgemmRowMajor(
         innerDimension,
         alpha,
         lhs,
-        innerDimension,
+        max(1, innerDimension),
         rhs,
-        columns,
+        max(1, columns),
         beta,
         output,
-        columns
+        max(1, columns)
     )
     return true
 }

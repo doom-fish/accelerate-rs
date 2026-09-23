@@ -12,7 +12,7 @@ public func accLapackSgetrf(
 
     var m = dimension
     var n = dimension
-    var lda = dimension
+    var lda = max(1, dimension)
     var info: Int32 = 0
     sgetrf_(&m, &n, matrix, &lda, pivots, &info)
     return info
@@ -32,8 +32,8 @@ public func accLapackSgesv(
 
     var n = dimension
     var nrhs = rhsCount
-    var lda = dimension
-    var ldb = dimension
+    var lda = max(1, dimension)
+    var ldb = max(1, dimension)
     var info: Int32 = 0
     sgesv_(&n, &nrhs, matrix, &lda, pivots, rhs, &ldb, &info)
     return info

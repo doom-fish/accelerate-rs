@@ -6,10 +6,9 @@ private func applyUnaryFloatOperation(
     _ length: Int,
     _ operation: (UnsafeMutablePointer<Float>, UnsafePointer<Float>, UnsafePointer<Int32>) -> Void
 ) -> Bool {
-    guard let input, let output else {
+    guard let input, let output, var count = Int32(exactly: length) else {
         return false
     }
-    var count = Int32(length)
     operation(output, input, &count)
     return true
 }

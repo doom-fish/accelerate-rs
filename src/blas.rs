@@ -23,6 +23,16 @@ fn i32_len(value: usize) -> Result<i32> {
     i32::try_from(value).map_err(|_| Error::OperationFailed("dimension exceeds i32"))
 }
 
+fn scale_in_place(values: &mut [f32], beta: f32) {
+    if beta == 0.0 {
+        values.fill(0.0);
+    } else {
+        for value in values {
+            *value *= beta;
+        }
+    }
+}
+
 /// Compute the single-precision dot product of two vectors.
 pub fn sdot(x: &[f32], y: &[f32]) -> Result<f32> {
     if x.len() != y.len() {
@@ -67,6 +77,13 @@ pub fn sgemv_row_major(
             expected: rows,
             actual: y.len(),
         });
+    }
+    if rows == 0 {
+        return Ok(());
+    }
+    if columns == 0 {
+        scale_in_place(y, beta);
+        return Ok(());
     }
 
     let rows_i32 = i32_len(rows)?;
@@ -128,6 +145,13 @@ pub fn sgemm_row_major(
             expected: expected_output,
             actual: output.len(),
         });
+    }
+    if rows == 0 || columns == 0 {
+        return Ok(());
+    }
+    if inner_dimension == 0 {
+        scale_in_place(output, beta);
+        return Ok(());
     }
 
     let rows_i32 = i32_len(rows)?;
