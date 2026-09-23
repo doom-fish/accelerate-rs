@@ -14,6 +14,11 @@ pub struct bnns_graph_compile_options_t {
     pub size: usize,
 }
 
+const _: () = assert!(
+    core::mem::size_of::<bnns_graph_compile_options_t>() == 16
+        && core::mem::align_of::<bnns_graph_compile_options_t>() == 8
+);
+
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     /// Raw FFI declaration for `BNNSFilterCreateLayerConvolution`.

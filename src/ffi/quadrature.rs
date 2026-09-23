@@ -6,17 +6,19 @@ use core::ffi::c_void;
 pub type quadrature_function_array =
     Option<unsafe extern "C" fn(*mut c_void, usize, *const f64, *mut f64)>;
 
-/// Raw FFI enum for `quadrature_status`.
-#[repr(i32)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum quadrature_status {
-    QUADRATURE_SUCCESS = 0,
-    QUADRATURE_ERROR = -1,
-    QUADRATURE_INVALID_ARG_ERROR = -2,
-    QUADRATURE_ALLOC_ERROR = -3,
-    QUADRATURE_INTERNAL_ERROR = -99,
-    QUADRATURE_INTEGRATE_MAX_EVAL_ERROR = -101,
-    QUADRATURE_INTEGRATE_BAD_BEHAVIOUR_ERROR = -102,
+/// Raw FFI integer newtype for `quadrature_status`.
+#[repr(transparent)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct quadrature_status(pub i32);
+
+impl quadrature_status {
+    pub const QUADRATURE_SUCCESS: Self = Self(0);
+    pub const QUADRATURE_ERROR: Self = Self(-1);
+    pub const QUADRATURE_INVALID_ARG_ERROR: Self = Self(-2);
+    pub const QUADRATURE_ALLOC_ERROR: Self = Self(-3);
+    pub const QUADRATURE_INTERNAL_ERROR: Self = Self(-99);
+    pub const QUADRATURE_INTEGRATE_MAX_EVAL_ERROR: Self = Self(-101);
+    pub const QUADRATURE_INTEGRATE_BAD_BEHAVIOUR_ERROR: Self = Self(-102);
 }
 
 /// Raw FFI enum for `quadrature_integrator`.
@@ -44,6 +46,17 @@ pub struct quadrature_integrate_options {
     pub qag_points_per_interval: usize,
     pub max_intervals: usize,
 }
+
+const _: () = assert!(
+    core::mem::size_of::<quadrature_status>() == 4
+        && core::mem::size_of::<quadrature_integrator>() == 4
+        && core::mem::size_of::<quadrature_integrate_function>() == 16
+        && core::mem::align_of::<quadrature_integrate_function>() == 8
+        && core::mem::size_of::<quadrature_integrate_options>() == 40
+        && core::mem::align_of::<quadrature_integrate_options>() == 8
+        && core::mem::offset_of!(quadrature_integrate_options, abs_tolerance) == 8
+        && core::mem::offset_of!(quadrature_integrate_options, max_intervals) == 32
+);
 
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {

@@ -8,18 +8,44 @@ pub struct DSPComplex {
     pub real: f32,
     pub imag: f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DSPComplex"][::core::mem::size_of::<DSPComplex>() - 8usize];
+    ["Alignment of DSPComplex"][::core::mem::align_of::<DSPComplex>() - 4usize];
+    ["Offset of field: DSPComplex::real"][::core::mem::offset_of!(DSPComplex, real) - 0usize];
+    ["Offset of field: DSPComplex::imag"][::core::mem::offset_of!(DSPComplex, imag) - 4usize];
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct DSPDoubleComplex {
     pub real: f64,
     pub imag: f64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DSPDoubleComplex"][::core::mem::size_of::<DSPDoubleComplex>() - 16usize];
+    ["Alignment of DSPDoubleComplex"][::core::mem::align_of::<DSPDoubleComplex>() - 8usize];
+    ["Offset of field: DSPDoubleComplex::real"]
+        [::core::mem::offset_of!(DSPDoubleComplex, real) - 0usize];
+    ["Offset of field: DSPDoubleComplex::imag"]
+        [::core::mem::offset_of!(DSPDoubleComplex, imag) - 8usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct DSPDoubleSplitComplex {
     pub realp: *mut f64,
     pub imagp: *mut f64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DSPDoubleSplitComplex"][::core::mem::size_of::<DSPDoubleSplitComplex>() - 16usize];
+    ["Alignment of DSPDoubleSplitComplex"]
+        [::core::mem::align_of::<DSPDoubleSplitComplex>() - 8usize];
+    ["Offset of field: DSPDoubleSplitComplex::realp"]
+        [::core::mem::offset_of!(DSPDoubleSplitComplex, realp) - 0usize];
+    ["Offset of field: DSPDoubleSplitComplex::imagp"]
+        [::core::mem::offset_of!(DSPDoubleSplitComplex, imagp) - 8usize];
+};
 impl Default for DSPDoubleSplitComplex {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -34,11 +60,23 @@ impl Default for DSPDoubleSplitComplex {
 pub struct vDSP_uint24 {
     pub bytes: [u8; 3usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vDSP_uint24"][::core::mem::size_of::<vDSP_uint24>() - 3usize];
+    ["Alignment of vDSP_uint24"][::core::mem::align_of::<vDSP_uint24>() - 1usize];
+    ["Offset of field: vDSP_uint24::bytes"][::core::mem::offset_of!(vDSP_uint24, bytes) - 0usize];
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct vDSP_int24 {
     pub bytes: [u8; 3usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vDSP_int24"][::core::mem::size_of::<vDSP_int24>() - 3usize];
+    ["Alignment of vDSP_int24"][::core::mem::align_of::<vDSP_int24>() - 1usize];
+    ["Offset of field: vDSP_int24::bytes"][::core::mem::offset_of!(vDSP_int24, bytes) - 0usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct OpaqueFFTSetupD {

@@ -31,6 +31,29 @@ pub struct BNNSActivation {
     pub ioffset_per_channel: *const i32,
     pub ishift_per_channel: *const i32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of BNNSActivation"][::core::mem::size_of::<BNNSActivation>() - 48usize];
+    ["Alignment of BNNSActivation"][::core::mem::align_of::<BNNSActivation>() - 8usize];
+    ["Offset of field: BNNSActivation::function"]
+        [::core::mem::offset_of!(BNNSActivation, function) - 0usize];
+    ["Offset of field: BNNSActivation::alpha"]
+        [::core::mem::offset_of!(BNNSActivation, alpha) - 4usize];
+    ["Offset of field: BNNSActivation::beta"]
+        [::core::mem::offset_of!(BNNSActivation, beta) - 8usize];
+    ["Offset of field: BNNSActivation::iscale"]
+        [::core::mem::offset_of!(BNNSActivation, iscale) - 12usize];
+    ["Offset of field: BNNSActivation::ioffset"]
+        [::core::mem::offset_of!(BNNSActivation, ioffset) - 16usize];
+    ["Offset of field: BNNSActivation::ishift"]
+        [::core::mem::offset_of!(BNNSActivation, ishift) - 20usize];
+    ["Offset of field: BNNSActivation::iscale_per_channel"]
+        [::core::mem::offset_of!(BNNSActivation, iscale_per_channel) - 24usize];
+    ["Offset of field: BNNSActivation::ioffset_per_channel"]
+        [::core::mem::offset_of!(BNNSActivation, ioffset_per_channel) - 32usize];
+    ["Offset of field: BNNSActivation::ishift_per_channel"]
+        [::core::mem::offset_of!(BNNSActivation, ishift_per_channel) - 40usize];
+};
 impl Default for BNNSActivation {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -54,6 +77,32 @@ pub struct BNNSNDArrayDescriptor {
     pub data_scale: f32,
     pub data_bias: f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of BNNSNDArrayDescriptor"][::core::mem::size_of::<BNNSNDArrayDescriptor>() - 176usize];
+    ["Alignment of BNNSNDArrayDescriptor"]
+        [::core::mem::align_of::<BNNSNDArrayDescriptor>() - 8usize];
+    ["Offset of field: BNNSNDArrayDescriptor::flags"]
+        [::core::mem::offset_of!(BNNSNDArrayDescriptor, flags) - 0usize];
+    ["Offset of field: BNNSNDArrayDescriptor::layout"]
+        [::core::mem::offset_of!(BNNSNDArrayDescriptor, layout) - 4usize];
+    ["Offset of field: BNNSNDArrayDescriptor::size"]
+        [::core::mem::offset_of!(BNNSNDArrayDescriptor, size) - 8usize];
+    ["Offset of field: BNNSNDArrayDescriptor::stride"]
+        [::core::mem::offset_of!(BNNSNDArrayDescriptor, stride) - 72usize];
+    ["Offset of field: BNNSNDArrayDescriptor::data"]
+        [::core::mem::offset_of!(BNNSNDArrayDescriptor, data) - 136usize];
+    ["Offset of field: BNNSNDArrayDescriptor::data_type"]
+        [::core::mem::offset_of!(BNNSNDArrayDescriptor, data_type) - 144usize];
+    ["Offset of field: BNNSNDArrayDescriptor::table_data"]
+        [::core::mem::offset_of!(BNNSNDArrayDescriptor, table_data) - 152usize];
+    ["Offset of field: BNNSNDArrayDescriptor::table_data_type"]
+        [::core::mem::offset_of!(BNNSNDArrayDescriptor, table_data_type) - 160usize];
+    ["Offset of field: BNNSNDArrayDescriptor::data_scale"]
+        [::core::mem::offset_of!(BNNSNDArrayDescriptor, data_scale) - 164usize];
+    ["Offset of field: BNNSNDArrayDescriptor::data_bias"]
+        [::core::mem::offset_of!(BNNSNDArrayDescriptor, data_bias) - 168usize];
+};
 impl Default for BNNSNDArrayDescriptor {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -74,6 +123,20 @@ pub struct BNNSTensor {
     pub data_size_in_bytes: usize,
     pub name: *const ::core::ffi::c_char,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of BNNSTensor"][::core::mem::size_of::<BNNSTensor>() - 160usize];
+    ["Alignment of BNNSTensor"][::core::mem::align_of::<BNNSTensor>() - 8usize];
+    ["Offset of field: BNNSTensor::data_type"]
+        [::core::mem::offset_of!(BNNSTensor, data_type) - 0usize];
+    ["Offset of field: BNNSTensor::rank"][::core::mem::offset_of!(BNNSTensor, rank) - 4usize];
+    ["Offset of field: BNNSTensor::shape"][::core::mem::offset_of!(BNNSTensor, shape) - 8usize];
+    ["Offset of field: BNNSTensor::stride"][::core::mem::offset_of!(BNNSTensor, stride) - 72usize];
+    ["Offset of field: BNNSTensor::data"][::core::mem::offset_of!(BNNSTensor, data) - 136usize];
+    ["Offset of field: BNNSTensor::data_size_in_bytes"]
+        [::core::mem::offset_of!(BNNSTensor, data_size_in_bytes) - 144usize];
+    ["Offset of field: BNNSTensor::name"][::core::mem::offset_of!(BNNSTensor, name) - 152usize];
+};
 impl Default for BNNSTensor {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -90,6 +153,19 @@ pub struct BNNSMHAProjectionParameters {
     pub weights: BNNSNDArrayDescriptor,
     pub bias: BNNSNDArrayDescriptor,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of BNNSMHAProjectionParameters"]
+        [::core::mem::size_of::<BNNSMHAProjectionParameters>() - 528usize];
+    ["Alignment of BNNSMHAProjectionParameters"]
+        [::core::mem::align_of::<BNNSMHAProjectionParameters>() - 8usize];
+    ["Offset of field: BNNSMHAProjectionParameters::target_desc"]
+        [::core::mem::offset_of!(BNNSMHAProjectionParameters, target_desc) - 0usize];
+    ["Offset of field: BNNSMHAProjectionParameters::weights"]
+        [::core::mem::offset_of!(BNNSMHAProjectionParameters, weights) - 176usize];
+    ["Offset of field: BNNSMHAProjectionParameters::bias"]
+        [::core::mem::offset_of!(BNNSMHAProjectionParameters, bias) - 352usize];
+};
 impl Default for BNNSMHAProjectionParameters {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -108,6 +184,23 @@ pub struct BNNSLayerParametersReduction {
     pub reduce_func: BNNSReduceFunction,
     pub epsilon: f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of BNNSLayerParametersReduction"]
+        [::core::mem::size_of::<BNNSLayerParametersReduction>() - 536usize];
+    ["Alignment of BNNSLayerParametersReduction"]
+        [::core::mem::align_of::<BNNSLayerParametersReduction>() - 8usize];
+    ["Offset of field: BNNSLayerParametersReduction::i_desc"]
+        [::core::mem::offset_of!(BNNSLayerParametersReduction, i_desc) - 0usize];
+    ["Offset of field: BNNSLayerParametersReduction::o_desc"]
+        [::core::mem::offset_of!(BNNSLayerParametersReduction, o_desc) - 176usize];
+    ["Offset of field: BNNSLayerParametersReduction::w_desc"]
+        [::core::mem::offset_of!(BNNSLayerParametersReduction, w_desc) - 352usize];
+    ["Offset of field: BNNSLayerParametersReduction::reduce_func"]
+        [::core::mem::offset_of!(BNNSLayerParametersReduction, reduce_func) - 528usize];
+    ["Offset of field: BNNSLayerParametersReduction::epsilon"]
+        [::core::mem::offset_of!(BNNSLayerParametersReduction, epsilon) - 532usize];
+};
 impl Default for BNNSLayerParametersReduction {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -125,6 +218,20 @@ pub struct BNNSSparsityParameters {
     pub sparsity_type: BNNSSparsityType,
     pub target_system: BNNSTargetSystem,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of BNNSSparsityParameters"][::core::mem::size_of::<BNNSSparsityParameters>() - 24usize];
+    ["Alignment of BNNSSparsityParameters"]
+        [::core::mem::align_of::<BNNSSparsityParameters>() - 8usize];
+    ["Offset of field: BNNSSparsityParameters::flags"]
+        [::core::mem::offset_of!(BNNSSparsityParameters, flags) - 0usize];
+    ["Offset of field: BNNSSparsityParameters::sparsity_ratio"]
+        [::core::mem::offset_of!(BNNSSparsityParameters, sparsity_ratio) - 8usize];
+    ["Offset of field: BNNSSparsityParameters::sparsity_type"]
+        [::core::mem::offset_of!(BNNSSparsityParameters, sparsity_type) - 16usize];
+    ["Offset of field: BNNSSparsityParameters::target_system"]
+        [::core::mem::offset_of!(BNNSSparsityParameters, target_system) - 20usize];
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct BNNSFilterParameters {
@@ -133,12 +240,32 @@ pub struct BNNSFilterParameters {
     pub alloc_memory: BNNSAlloc,
     pub free_memory: BNNSFree,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of BNNSFilterParameters"][::core::mem::size_of::<BNNSFilterParameters>() - 32usize];
+    ["Alignment of BNNSFilterParameters"][::core::mem::align_of::<BNNSFilterParameters>() - 8usize];
+    ["Offset of field: BNNSFilterParameters::flags"]
+        [::core::mem::offset_of!(BNNSFilterParameters, flags) - 0usize];
+    ["Offset of field: BNNSFilterParameters::n_threads"]
+        [::core::mem::offset_of!(BNNSFilterParameters, n_threads) - 8usize];
+    ["Offset of field: BNNSFilterParameters::alloc_memory"]
+        [::core::mem::offset_of!(BNNSFilterParameters, alloc_memory) - 16usize];
+    ["Offset of field: BNNSFilterParameters::free_memory"]
+        [::core::mem::offset_of!(BNNSFilterParameters, free_memory) - 24usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct bnns_graph_t {
     pub data: *mut ::core::ffi::c_void,
     pub size: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of bnns_graph_t"][::core::mem::size_of::<bnns_graph_t>() - 16usize];
+    ["Alignment of bnns_graph_t"][::core::mem::align_of::<bnns_graph_t>() - 8usize];
+    ["Offset of field: bnns_graph_t::data"][::core::mem::offset_of!(bnns_graph_t, data) - 0usize];
+    ["Offset of field: bnns_graph_t::size"][::core::mem::offset_of!(bnns_graph_t, size) - 8usize];
+};
 impl Default for bnns_graph_t {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -154,6 +281,15 @@ pub struct bnns_graph_context_t {
     pub data: *mut ::core::ffi::c_void,
     pub size: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of bnns_graph_context_t"][::core::mem::size_of::<bnns_graph_context_t>() - 16usize];
+    ["Alignment of bnns_graph_context_t"][::core::mem::align_of::<bnns_graph_context_t>() - 8usize];
+    ["Offset of field: bnns_graph_context_t::data"]
+        [::core::mem::offset_of!(bnns_graph_context_t, data) - 0usize];
+    ["Offset of field: bnns_graph_context_t::size"]
+        [::core::mem::offset_of!(bnns_graph_context_t, size) - 8usize];
+};
 impl Default for bnns_graph_context_t {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -169,6 +305,15 @@ pub struct bnns_graph_shape_t {
     pub rank: usize,
     pub shape: *mut u64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of bnns_graph_shape_t"][::core::mem::size_of::<bnns_graph_shape_t>() - 16usize];
+    ["Alignment of bnns_graph_shape_t"][::core::mem::align_of::<bnns_graph_shape_t>() - 8usize];
+    ["Offset of field: bnns_graph_shape_t::rank"]
+        [::core::mem::offset_of!(bnns_graph_shape_t, rank) - 0usize];
+    ["Offset of field: bnns_graph_shape_t::shape"]
+        [::core::mem::offset_of!(bnns_graph_shape_t, shape) - 8usize];
+};
 impl Default for bnns_graph_shape_t {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -200,6 +345,17 @@ pub struct bnns_user_message_data_t {
     pub size: usize,
     pub data: *mut ::core::ffi::c_void,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of bnns_user_message_data_t"]
+        [::core::mem::size_of::<bnns_user_message_data_t>() - 16usize];
+    ["Alignment of bnns_user_message_data_t"]
+        [::core::mem::align_of::<bnns_user_message_data_t>() - 8usize];
+    ["Offset of field: bnns_user_message_data_t::size"]
+        [::core::mem::offset_of!(bnns_user_message_data_t, size) - 0usize];
+    ["Offset of field: bnns_user_message_data_t::data"]
+        [::core::mem::offset_of!(bnns_user_message_data_t, data) - 8usize];
+};
 impl Default for bnns_user_message_data_t {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -379,6 +535,19 @@ pub union bnns_graph_argument_t__bindgen_ty_1 {
     pub descriptor: *mut BNNSNDArrayDescriptor,
     pub data_ptr: *mut ::core::ffi::c_void,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of bnns_graph_argument_t__bindgen_ty_1"]
+        [::core::mem::size_of::<bnns_graph_argument_t__bindgen_ty_1>() - 8usize];
+    ["Alignment of bnns_graph_argument_t__bindgen_ty_1"]
+        [::core::mem::align_of::<bnns_graph_argument_t__bindgen_ty_1>() - 8usize];
+    ["Offset of field: bnns_graph_argument_t__bindgen_ty_1::tensor"]
+        [::core::mem::offset_of!(bnns_graph_argument_t__bindgen_ty_1, tensor) - 0usize];
+    ["Offset of field: bnns_graph_argument_t__bindgen_ty_1::descriptor"]
+        [::core::mem::offset_of!(bnns_graph_argument_t__bindgen_ty_1, descriptor) - 0usize];
+    ["Offset of field: bnns_graph_argument_t__bindgen_ty_1::data_ptr"]
+        [::core::mem::offset_of!(bnns_graph_argument_t__bindgen_ty_1, data_ptr) - 0usize];
+};
 impl Default for bnns_graph_argument_t__bindgen_ty_1 {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -388,6 +557,14 @@ impl Default for bnns_graph_argument_t__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of bnns_graph_argument_t"][::core::mem::size_of::<bnns_graph_argument_t>() - 16usize];
+    ["Alignment of bnns_graph_argument_t"]
+        [::core::mem::align_of::<bnns_graph_argument_t>() - 8usize];
+    ["Offset of field: bnns_graph_argument_t::data_ptr_size"]
+        [::core::mem::offset_of!(bnns_graph_argument_t, data_ptr_size) - 8usize];
+};
 impl Default for bnns_graph_argument_t {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();

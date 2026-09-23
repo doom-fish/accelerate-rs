@@ -18,6 +18,12 @@ pub struct vImage_Buffer {
     pub row_bytes: usize,
 }
 
+const _: () = assert!(
+    core::mem::size_of::<vImage_Buffer>() == 32
+        && core::mem::align_of::<vImage_Buffer>() == 8
+        && core::mem::offset_of!(vImage_Buffer, row_bytes) == 24
+);
+
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     /// Raw FFI declaration for `vImageRotate_ARGB8888`.

@@ -7,19 +7,24 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 #[derive(Clone, Debug)]
-struct AuditRow {
-    symbol: String,
-    kind: String,
-    header: String,
-}
-
-#[derive(Clone, Debug)]
 struct ModuleConfig {
     output: &'static str,
     existing_module: Option<&'static str>,
     headers: &'static [&'static str],
-    header_prefixes: &'static [&'static str],
+    apple_cf_reexports: &'static [&'static str],
 }
+
+#[derive(Debug, Default)]
+struct Symbols {
+    functions: BTreeSet<String>,
+    types: BTreeSet<String>,
+    vars: BTreeSet<String>,
+}
+
+const C_VECTOR_TYPES: &[&str] = &[
+    "vUInt8", "vSInt8", "vUInt16", "vSInt16", "vUInt32", "vSInt32", "vUInt64", "vSInt64", "vFloat",
+    "vDouble", "vBool32",
+];
 
 const MODULES: &[(&str, ModuleConfig)] = &[
     (
@@ -28,7 +33,7 @@ const MODULES: &[(&str, ModuleConfig)] = &[
             output: "src/ffi/generated/vdsp_missing.rs",
             existing_module: Some("src/ffi/vdsp.rs"),
             headers: &["vecLib/vDSP.h"],
-            header_prefixes: &["vecLib/vDSP.h"],
+            apple_cf_reexports: &[],
         },
     ),
     (
@@ -37,7 +42,7 @@ const MODULES: &[(&str, ModuleConfig)] = &[
             output: "src/ffi/generated/vforce_missing.rs",
             existing_module: Some("src/ffi/vforce.rs"),
             headers: &["vecLib/vForce.h"],
-            header_prefixes: &["vecLib/vForce.h"],
+            apple_cf_reexports: &[],
         },
     ),
     (
@@ -46,7 +51,7 @@ const MODULES: &[(&str, ModuleConfig)] = &[
             output: "src/ffi/generated/lapack_missing.rs",
             existing_module: Some("src/ffi/lapack.rs"),
             headers: &["vecLib/clapack.h"],
-            header_prefixes: &["vecLib/clapack.h"],
+            apple_cf_reexports: &[],
         },
     ),
     (
@@ -59,11 +64,7 @@ const MODULES: &[(&str, ModuleConfig)] = &[
                 "vecLib/BNNS/bnns_structures.h",
                 "vecLib/BNNS/bnns_graph.h",
             ],
-            header_prefixes: &[
-                "vecLib/BNNS/bnns.h",
-                "vecLib/BNNS/bnns_structures.h",
-                "vecLib/BNNS/bnns_graph.h",
-            ],
+            apple_cf_reexports: &[],
         },
     ),
     (
@@ -76,13 +77,7 @@ const MODULES: &[(&str, ModuleConfig)] = &[
                 "vecLib/Sparse/BLAS.h",
                 "vecLib/Sparse/Solve.h",
             ],
-            header_prefixes: &[
-                "vecLib/Sparse/Types.h",
-                "vecLib/Sparse/BLAS.h",
-                "vecLib/Sparse/Solve.h",
-                "vecLib/Sparse/SolveImplementation.h",
-                "vecLib/Sparse/SolveImplementationTyped.h",
-            ],
+            apple_cf_reexports: &[],
         },
     ),
     (
@@ -103,19 +98,7 @@ const MODULES: &[(&str, ModuleConfig)] = &[
                 "vImage/vImage_Types.h",
                 "vImage/vImage_Utilities.h",
             ],
-            header_prefixes: &[
-                "vImage/BasicImageTypes.h",
-                "vImage/Alpha.h",
-                "vImage/Convolution.h",
-                "vImage/Conversion.h",
-                "vImage/Geometry.h",
-                "vImage/Histogram.h",
-                "vImage/Morphology.h",
-                "vImage/Transform.h",
-                "vImage/vImage_CVUtilities.h",
-                "vImage/vImage_Types.h",
-                "vImage/vImage_Utilities.h",
-            ],
+            apple_cf_reexports: &["Boolean", "CFTypeRef", "CFStringRef"],
         },
     ),
     (
@@ -130,13 +113,7 @@ const MODULES: &[(&str, ModuleConfig)] = &[
                 "vecLib/thread_api.h",
                 "vecLib/LinearAlgebra/object.h",
             ],
-            header_prefixes: &[
-                "vecLib/vBigNum.h",
-                "vecLib/vBasicOps.h",
-                "vecLib/vfp.h",
-                "vecLib/thread_api.h",
-                "vecLib/LinearAlgebra/object.h",
-            ],
+            apple_cf_reexports: &[],
         },
     ),
 ];
@@ -147,15 +124,11 @@ fn main() -> Result<()> {
         .and_then(Path::parent)
         .ok_or_else(|| anyhow!("failed to locate repo root from generator manifest"))?
         .to_path_buf();
-    let audit_path = repo_root.join("COVERAGE_AUDIT.md");
-    let audit = fs::read_to_string(&audit_path)
-        .with_context(|| format!("failed to read {}", audit_path.display()))?;
-    let rows = load_gap_rows(&audit)?;
     let sdk_path = macos_sdk_path()?;
 
     for (name, config) in MODULES {
-        let relevant_rows = rows_for_module(&rows, config);
-        generate_module(&repo_root, &sdk_path, name, config, &relevant_rows)?;
+        let symbols = checked_in_symbols(&repo_root, config)?;
+        generate_module(&repo_root, &sdk_path, name, config, &symbols)?;
     }
 
     Ok(())
@@ -175,43 +148,83 @@ fn macos_sdk_path() -> Result<String> {
     Ok(String::from_utf8(output.stdout)?.trim().to_owned())
 }
 
-fn load_gap_rows(audit: &str) -> Result<Vec<AuditRow>> {
-    let Some((_, tail)) = audit.split_once("## 🔴 GAPS") else {
-        return Err(anyhow!("missing audit gaps section"));
-    };
-    let section_body = tail.split("\n## ").next().unwrap_or(tail);
-    Ok(parse_table_rows(section_body))
+fn checked_in_symbols(repo_root: &Path, config: &ModuleConfig) -> Result<Symbols> {
+    let path = repo_root.join(config.output);
+    let file =
+        fs::read_to_string(&path).with_context(|| format!("failed to read {}", path.display()))?;
+    let function = Regex::new(r"\bpub fn ([A-Za-z_][A-Za-z0-9_]*)\s*\(")?;
+    let item = Regex::new(r"\bpub (?:type|struct|union|enum) ([A-Za-z_][A-Za-z0-9_]*)")?;
+    let var = Regex::new(r"\bpub (?:const|static(?: mut)?) ([A-Za-z_][A-Za-z0-9_]*)\s*:")?;
+    let mut symbols = Symbols::default();
+    symbols.functions.extend(
+        function
+            .captures_iter(&file)
+            .map(|capture| capture[1].to_owned()),
+    );
+    symbols.types.extend(
+        item.captures_iter(&file)
+            .map(|capture| capture[1].to_owned()),
+    );
+    symbols.types.extend(
+        config
+            .apple_cf_reexports
+            .iter()
+            .map(|name| (*name).to_owned()),
+    );
+    symbols.vars.extend(
+        var.captures_iter(&file)
+            .map(|capture| capture[1].to_owned()),
+    );
+    Ok(symbols)
 }
 
-fn parse_table_rows(section: &str) -> Vec<AuditRow> {
-    section
-        .lines()
-        .filter(|line| line.starts_with('|'))
-        .filter(|line| !line.starts_with("| ---"))
-        .filter(|line| !line.contains("Symbol | Kind | Header |"))
-        .filter_map(|line| {
-            let parts: Vec<_> = line
-                .trim_matches('|')
-                .split('|')
-                .map(str::trim)
-                .collect();
-            if parts.len() < 4 {
-                return None;
-            }
-            Some(AuditRow {
-                symbol: parts[0].to_owned(),
-                kind: parts[1].to_owned(),
-                header: parts[2].to_owned(),
-            })
-        })
-        .collect()
+fn drop_by_value_vector_functions(bindings: &str) -> Result<(String, Vec<String>)> {
+    let block = Regex::new(
+        r#"(?s)#\[link\(name = "Accelerate", kind = "framework"\)\]\nunsafe extern "C" \{\n.*?\n\}\n"#,
+    )?;
+    let function = Regex::new(r"\bpub fn ([A-Za-z_][A-Za-z0-9_]*)\s*\(")?;
+    let alternatives = C_VECTOR_TYPES
+        .iter()
+        .map(|name| regex_escape(name))
+        .collect::<Vec<_>>()
+        .join("|");
+    let vector = Regex::new(&format!(r"(\*const |\*mut )?\b(?:{alternatives})\b"))?;
+    let mut dropped = Vec::new();
+    let mut kept = String::with_capacity(bindings.len());
+    let mut last = 0;
+    for found in block.find_iter(bindings) {
+        kept.push_str(&bindings[last..found.start()]);
+        let text = found.as_str();
+        let by_value = vector
+            .captures_iter(text)
+            .any(|capture| capture.get(1).is_none());
+        if by_value {
+            dropped.extend(
+                function
+                    .captures_iter(text)
+                    .map(|capture| capture[1].to_owned()),
+            );
+        } else {
+            kept.push_str(text);
+        }
+        last = found.end();
+    }
+    kept.push_str(&bindings[last..]);
+    Ok((kept, dropped))
 }
 
-fn rows_for_module(rows: &[AuditRow], config: &ModuleConfig) -> Vec<AuditRow> {
-    rows.iter()
-        .filter(|row| config.header_prefixes.iter().any(|prefix| row.header == *prefix))
-        .cloned()
-        .collect()
+fn reexport_apple_cf_types(bindings: &str, names: &[&str]) -> Result<String> {
+    let mut output = bindings.to_owned();
+    for name in names {
+        let typedef = Regex::new(&format!(r"(?m)^pub type {} = [^;]*;$", regex_escape(name)))?;
+        if !typedef.is_match(&output) {
+            return Err(anyhow!("expected a generated typedef for {name}"));
+        }
+        output = typedef
+            .replace(&output, format!("pub use apple_cf::raw::{name};").as_str())
+            .into_owned();
+    }
+    Ok(output)
 }
 
 fn existing_type_names(repo_root: &Path, module_path: &str) -> Result<BTreeSet<String>> {
@@ -247,29 +260,10 @@ fn generate_module(
     sdk_path: &str,
     name: &str,
     config: &ModuleConfig,
-    rows: &[AuditRow],
+    symbols: &Symbols,
 ) -> Result<()> {
-    if rows.is_empty() {
-        return Err(anyhow!("module {name} matched no gap rows"));
-    }
-
-    let mut functions = BTreeSet::new();
-    let mut types = BTreeSet::new();
-    let mut vars = BTreeSet::new();
-
-    for row in rows {
-        match row.kind.as_str() {
-            "function" => {
-                functions.insert(row.symbol.clone());
-            }
-            "typedef" => {
-                types.insert(row.symbol.clone());
-            }
-            "const" => {
-                vars.insert(row.symbol.clone());
-            }
-            _ => {}
-        }
+    if symbols.functions.is_empty() && symbols.types.is_empty() && symbols.vars.is_empty() {
+        return Err(anyhow!("module {name} has no checked-in symbols"));
     }
 
     let wrapper_name = format!("{name}_wrapper.h");
@@ -284,7 +278,7 @@ fn generate_module(
         .header_contents(&wrapper_name, &wrapper_contents)
         .use_core()
         .size_t_is_usize(true)
-        .layout_tests(false)
+        .layout_tests(true)
         .generate_comments(false)
         .derive_debug(true)
         .derive_default(true)
@@ -310,26 +304,37 @@ fn generate_module(
         builder = builder.blocklist_type(format!("^{}$", regex_escape(type_name)));
     }
 
-    for symbol in &functions {
+    for symbol in &symbols.functions {
         builder = builder.allowlist_function(format!("^{}$", regex_escape(symbol)));
     }
-    for symbol in &types {
+    for symbol in symbols
+        .types
+        .iter()
+        .filter(|symbol| !C_VECTOR_TYPES.contains(&symbol.as_str()))
+    {
         builder = builder.allowlist_type(format!("^{}$", regex_escape(symbol)));
     }
-    for symbol in &vars {
+    for symbol in &symbols.vars {
         builder = builder.allowlist_var(format!("^{}$", regex_escape(symbol)));
     }
 
     let bindings = builder
         .generate()
         .with_context(|| format!("bindgen failed for module {name}"))?;
-    let output = format!(
-        "// @generated by tools/raw-ffi-gen; do not edit by hand.\n\n{}",
-        bindings.to_string().replace(
-            "unsafe extern \"C\" {",
-            "#[link(name = \"Accelerate\", kind = \"framework\")]\nunsafe extern \"C\" {",
-        )
+    let linked = bindings.to_string().replace(
+        "unsafe extern \"C\" {",
+        "#[link(name = \"Accelerate\", kind = \"framework\")]\nunsafe extern \"C\" {",
     );
+    let (linked, dropped) = drop_by_value_vector_functions(&linked)?;
+    if !dropped.is_empty() {
+        println!(
+            "{name}: omitted {} functions that pass C vector types by value: {}",
+            dropped.len(),
+            dropped.join(", ")
+        );
+    }
+    let linked = reexport_apple_cf_types(&linked, config.apple_cf_reexports)?;
+    let output = format!("// @generated by tools/raw-ffi-gen; do not edit by hand.\n\n{linked}");
 
     let output_path = repo_root.join(config.output);
     fs::write(&output_path, output)

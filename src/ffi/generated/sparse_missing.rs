@@ -1299,6 +1299,11 @@ pub struct SparseAttributes_t {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub __bindgen_padding_0: u16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseAttributes_t"][::core::mem::size_of::<SparseAttributes_t>() - 4usize];
+    ["Alignment of SparseAttributes_t"][::core::mem::align_of::<SparseAttributes_t>() - 4usize];
+};
 impl SparseAttributes_t {
     #[inline]
     pub fn transpose(&self) -> bool {
@@ -1505,6 +1510,13 @@ pub struct SparseAttributesComplex_t {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub __bindgen_padding_0: u16,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseAttributesComplex_t"]
+        [::core::mem::size_of::<SparseAttributesComplex_t>() - 4usize];
+    ["Alignment of SparseAttributesComplex_t"]
+        [::core::mem::align_of::<SparseAttributesComplex_t>() - 4usize];
+};
 impl SparseAttributesComplex_t {
     #[inline]
     pub fn transpose(&self) -> bool {
@@ -1751,6 +1763,24 @@ pub struct SparseMatrixStructure {
     pub attributes: SparseAttributes_t,
     pub blockSize: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseMatrixStructure"][::core::mem::size_of::<SparseMatrixStructure>() - 32usize];
+    ["Alignment of SparseMatrixStructure"]
+        [::core::mem::align_of::<SparseMatrixStructure>() - 8usize];
+    ["Offset of field: SparseMatrixStructure::rowCount"]
+        [::core::mem::offset_of!(SparseMatrixStructure, rowCount) - 0usize];
+    ["Offset of field: SparseMatrixStructure::columnCount"]
+        [::core::mem::offset_of!(SparseMatrixStructure, columnCount) - 4usize];
+    ["Offset of field: SparseMatrixStructure::columnStarts"]
+        [::core::mem::offset_of!(SparseMatrixStructure, columnStarts) - 8usize];
+    ["Offset of field: SparseMatrixStructure::rowIndices"]
+        [::core::mem::offset_of!(SparseMatrixStructure, rowIndices) - 16usize];
+    ["Offset of field: SparseMatrixStructure::attributes"]
+        [::core::mem::offset_of!(SparseMatrixStructure, attributes) - 24usize];
+    ["Offset of field: SparseMatrixStructure::blockSize"]
+        [::core::mem::offset_of!(SparseMatrixStructure, blockSize) - 28usize];
+};
 impl Default for SparseMatrixStructure {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1770,6 +1800,25 @@ pub struct SparseMatrixStructureComplex {
     pub attributes: SparseAttributesComplex_t,
     pub blockSize: u8,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseMatrixStructureComplex"]
+        [::core::mem::size_of::<SparseMatrixStructureComplex>() - 32usize];
+    ["Alignment of SparseMatrixStructureComplex"]
+        [::core::mem::align_of::<SparseMatrixStructureComplex>() - 8usize];
+    ["Offset of field: SparseMatrixStructureComplex::rowCount"]
+        [::core::mem::offset_of!(SparseMatrixStructureComplex, rowCount) - 0usize];
+    ["Offset of field: SparseMatrixStructureComplex::columnCount"]
+        [::core::mem::offset_of!(SparseMatrixStructureComplex, columnCount) - 4usize];
+    ["Offset of field: SparseMatrixStructureComplex::columnStarts"]
+        [::core::mem::offset_of!(SparseMatrixStructureComplex, columnStarts) - 8usize];
+    ["Offset of field: SparseMatrixStructureComplex::rowIndices"]
+        [::core::mem::offset_of!(SparseMatrixStructureComplex, rowIndices) - 16usize];
+    ["Offset of field: SparseMatrixStructureComplex::attributes"]
+        [::core::mem::offset_of!(SparseMatrixStructureComplex, attributes) - 24usize];
+    ["Offset of field: SparseMatrixStructureComplex::blockSize"]
+        [::core::mem::offset_of!(SparseMatrixStructureComplex, blockSize) - 28usize];
+};
 impl Default for SparseMatrixStructureComplex {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1785,6 +1834,15 @@ pub struct SparseMatrix_Double {
     pub structure: SparseMatrixStructure,
     pub data: *mut f64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseMatrix_Double"][::core::mem::size_of::<SparseMatrix_Double>() - 40usize];
+    ["Alignment of SparseMatrix_Double"][::core::mem::align_of::<SparseMatrix_Double>() - 8usize];
+    ["Offset of field: SparseMatrix_Double::structure"]
+        [::core::mem::offset_of!(SparseMatrix_Double, structure) - 0usize];
+    ["Offset of field: SparseMatrix_Double::data"]
+        [::core::mem::offset_of!(SparseMatrix_Double, data) - 32usize];
+};
 impl Default for SparseMatrix_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1800,6 +1858,15 @@ pub struct SparseMatrix_Float {
     pub structure: SparseMatrixStructure,
     pub data: *mut f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseMatrix_Float"][::core::mem::size_of::<SparseMatrix_Float>() - 40usize];
+    ["Alignment of SparseMatrix_Float"][::core::mem::align_of::<SparseMatrix_Float>() - 8usize];
+    ["Offset of field: SparseMatrix_Float::structure"]
+        [::core::mem::offset_of!(SparseMatrix_Float, structure) - 0usize];
+    ["Offset of field: SparseMatrix_Float::data"]
+        [::core::mem::offset_of!(SparseMatrix_Float, data) - 32usize];
+};
 impl Default for SparseMatrix_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1815,6 +1882,17 @@ pub struct SparseMatrix_Complex_Double {
     pub structure: SparseMatrixStructureComplex,
     pub data: *mut __SPARSE_double_complex,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseMatrix_Complex_Double"]
+        [::core::mem::size_of::<SparseMatrix_Complex_Double>() - 40usize];
+    ["Alignment of SparseMatrix_Complex_Double"]
+        [::core::mem::align_of::<SparseMatrix_Complex_Double>() - 8usize];
+    ["Offset of field: SparseMatrix_Complex_Double::structure"]
+        [::core::mem::offset_of!(SparseMatrix_Complex_Double, structure) - 0usize];
+    ["Offset of field: SparseMatrix_Complex_Double::data"]
+        [::core::mem::offset_of!(SparseMatrix_Complex_Double, data) - 32usize];
+};
 impl Default for SparseMatrix_Complex_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1830,6 +1908,17 @@ pub struct SparseMatrix_Complex_Float {
     pub structure: SparseMatrixStructureComplex,
     pub data: *mut __SPARSE_float_complex,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseMatrix_Complex_Float"]
+        [::core::mem::size_of::<SparseMatrix_Complex_Float>() - 40usize];
+    ["Alignment of SparseMatrix_Complex_Float"]
+        [::core::mem::align_of::<SparseMatrix_Complex_Float>() - 8usize];
+    ["Offset of field: SparseMatrix_Complex_Float::structure"]
+        [::core::mem::offset_of!(SparseMatrix_Complex_Float, structure) - 0usize];
+    ["Offset of field: SparseMatrix_Complex_Float::data"]
+        [::core::mem::offset_of!(SparseMatrix_Complex_Float, data) - 32usize];
+};
 impl Default for SparseMatrix_Complex_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1845,6 +1934,15 @@ pub struct DenseVector_Double {
     pub count: ::core::ffi::c_int,
     pub data: *mut f64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DenseVector_Double"][::core::mem::size_of::<DenseVector_Double>() - 16usize];
+    ["Alignment of DenseVector_Double"][::core::mem::align_of::<DenseVector_Double>() - 8usize];
+    ["Offset of field: DenseVector_Double::count"]
+        [::core::mem::offset_of!(DenseVector_Double, count) - 0usize];
+    ["Offset of field: DenseVector_Double::data"]
+        [::core::mem::offset_of!(DenseVector_Double, data) - 8usize];
+};
 impl Default for DenseVector_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1860,6 +1958,15 @@ pub struct DenseVector_Float {
     pub count: ::core::ffi::c_int,
     pub data: *mut f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DenseVector_Float"][::core::mem::size_of::<DenseVector_Float>() - 16usize];
+    ["Alignment of DenseVector_Float"][::core::mem::align_of::<DenseVector_Float>() - 8usize];
+    ["Offset of field: DenseVector_Float::count"]
+        [::core::mem::offset_of!(DenseVector_Float, count) - 0usize];
+    ["Offset of field: DenseVector_Float::data"]
+        [::core::mem::offset_of!(DenseVector_Float, data) - 8usize];
+};
 impl Default for DenseVector_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1875,6 +1982,17 @@ pub struct DenseVector_Complex_Double {
     pub count: ::core::ffi::c_int,
     pub data: *mut __SPARSE_double_complex,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DenseVector_Complex_Double"]
+        [::core::mem::size_of::<DenseVector_Complex_Double>() - 16usize];
+    ["Alignment of DenseVector_Complex_Double"]
+        [::core::mem::align_of::<DenseVector_Complex_Double>() - 8usize];
+    ["Offset of field: DenseVector_Complex_Double::count"]
+        [::core::mem::offset_of!(DenseVector_Complex_Double, count) - 0usize];
+    ["Offset of field: DenseVector_Complex_Double::data"]
+        [::core::mem::offset_of!(DenseVector_Complex_Double, data) - 8usize];
+};
 impl Default for DenseVector_Complex_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1890,6 +2008,17 @@ pub struct DenseVector_Complex_Float {
     pub count: ::core::ffi::c_int,
     pub data: *mut __SPARSE_float_complex,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DenseVector_Complex_Float"]
+        [::core::mem::size_of::<DenseVector_Complex_Float>() - 16usize];
+    ["Alignment of DenseVector_Complex_Float"]
+        [::core::mem::align_of::<DenseVector_Complex_Float>() - 8usize];
+    ["Offset of field: DenseVector_Complex_Float::count"]
+        [::core::mem::offset_of!(DenseVector_Complex_Float, count) - 0usize];
+    ["Offset of field: DenseVector_Complex_Float::data"]
+        [::core::mem::offset_of!(DenseVector_Complex_Float, data) - 8usize];
+};
 impl Default for DenseVector_Complex_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1908,6 +2037,21 @@ pub struct DenseMatrix_Double {
     pub attributes: SparseAttributes_t,
     pub data: *mut f64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DenseMatrix_Double"][::core::mem::size_of::<DenseMatrix_Double>() - 24usize];
+    ["Alignment of DenseMatrix_Double"][::core::mem::align_of::<DenseMatrix_Double>() - 8usize];
+    ["Offset of field: DenseMatrix_Double::rowCount"]
+        [::core::mem::offset_of!(DenseMatrix_Double, rowCount) - 0usize];
+    ["Offset of field: DenseMatrix_Double::columnCount"]
+        [::core::mem::offset_of!(DenseMatrix_Double, columnCount) - 4usize];
+    ["Offset of field: DenseMatrix_Double::columnStride"]
+        [::core::mem::offset_of!(DenseMatrix_Double, columnStride) - 8usize];
+    ["Offset of field: DenseMatrix_Double::attributes"]
+        [::core::mem::offset_of!(DenseMatrix_Double, attributes) - 12usize];
+    ["Offset of field: DenseMatrix_Double::data"]
+        [::core::mem::offset_of!(DenseMatrix_Double, data) - 16usize];
+};
 impl Default for DenseMatrix_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1926,6 +2070,21 @@ pub struct DenseMatrix_Float {
     pub attributes: SparseAttributes_t,
     pub data: *mut f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DenseMatrix_Float"][::core::mem::size_of::<DenseMatrix_Float>() - 24usize];
+    ["Alignment of DenseMatrix_Float"][::core::mem::align_of::<DenseMatrix_Float>() - 8usize];
+    ["Offset of field: DenseMatrix_Float::rowCount"]
+        [::core::mem::offset_of!(DenseMatrix_Float, rowCount) - 0usize];
+    ["Offset of field: DenseMatrix_Float::columnCount"]
+        [::core::mem::offset_of!(DenseMatrix_Float, columnCount) - 4usize];
+    ["Offset of field: DenseMatrix_Float::columnStride"]
+        [::core::mem::offset_of!(DenseMatrix_Float, columnStride) - 8usize];
+    ["Offset of field: DenseMatrix_Float::attributes"]
+        [::core::mem::offset_of!(DenseMatrix_Float, attributes) - 12usize];
+    ["Offset of field: DenseMatrix_Float::data"]
+        [::core::mem::offset_of!(DenseMatrix_Float, data) - 16usize];
+};
 impl Default for DenseMatrix_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1944,6 +2103,23 @@ pub struct DenseMatrix_Complex_Double {
     pub attributes: SparseAttributesComplex_t,
     pub data: *mut __SPARSE_double_complex,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DenseMatrix_Complex_Double"]
+        [::core::mem::size_of::<DenseMatrix_Complex_Double>() - 24usize];
+    ["Alignment of DenseMatrix_Complex_Double"]
+        [::core::mem::align_of::<DenseMatrix_Complex_Double>() - 8usize];
+    ["Offset of field: DenseMatrix_Complex_Double::rowCount"]
+        [::core::mem::offset_of!(DenseMatrix_Complex_Double, rowCount) - 0usize];
+    ["Offset of field: DenseMatrix_Complex_Double::columnCount"]
+        [::core::mem::offset_of!(DenseMatrix_Complex_Double, columnCount) - 4usize];
+    ["Offset of field: DenseMatrix_Complex_Double::columnStride"]
+        [::core::mem::offset_of!(DenseMatrix_Complex_Double, columnStride) - 8usize];
+    ["Offset of field: DenseMatrix_Complex_Double::attributes"]
+        [::core::mem::offset_of!(DenseMatrix_Complex_Double, attributes) - 12usize];
+    ["Offset of field: DenseMatrix_Complex_Double::data"]
+        [::core::mem::offset_of!(DenseMatrix_Complex_Double, data) - 16usize];
+};
 impl Default for DenseMatrix_Complex_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1962,6 +2138,23 @@ pub struct DenseMatrix_Complex_Float {
     pub attributes: SparseAttributesComplex_t,
     pub data: *mut __SPARSE_float_complex,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of DenseMatrix_Complex_Float"]
+        [::core::mem::size_of::<DenseMatrix_Complex_Float>() - 24usize];
+    ["Alignment of DenseMatrix_Complex_Float"]
+        [::core::mem::align_of::<DenseMatrix_Complex_Float>() - 8usize];
+    ["Offset of field: DenseMatrix_Complex_Float::rowCount"]
+        [::core::mem::offset_of!(DenseMatrix_Complex_Float, rowCount) - 0usize];
+    ["Offset of field: DenseMatrix_Complex_Float::columnCount"]
+        [::core::mem::offset_of!(DenseMatrix_Complex_Float, columnCount) - 4usize];
+    ["Offset of field: DenseMatrix_Complex_Float::columnStride"]
+        [::core::mem::offset_of!(DenseMatrix_Complex_Float, columnStride) - 8usize];
+    ["Offset of field: DenseMatrix_Complex_Float::attributes"]
+        [::core::mem::offset_of!(DenseMatrix_Complex_Float, attributes) - 12usize];
+    ["Offset of field: DenseMatrix_Complex_Float::data"]
+        [::core::mem::offset_of!(DenseMatrix_Complex_Float, data) - 16usize];
+};
 impl Default for DenseMatrix_Complex_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -1989,6 +2182,27 @@ pub struct SparseSymbolicFactorOptions {
     pub reportError:
         ::core::option::Option<unsafe extern "C" fn(message: *const ::core::ffi::c_char)>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseSymbolicFactorOptions"]
+        [::core::mem::size_of::<SparseSymbolicFactorOptions>() - 48usize];
+    ["Alignment of SparseSymbolicFactorOptions"]
+        [::core::mem::align_of::<SparseSymbolicFactorOptions>() - 8usize];
+    ["Offset of field: SparseSymbolicFactorOptions::control"]
+        [::core::mem::offset_of!(SparseSymbolicFactorOptions, control) - 0usize];
+    ["Offset of field: SparseSymbolicFactorOptions::orderMethod"]
+        [::core::mem::offset_of!(SparseSymbolicFactorOptions, orderMethod) - 4usize];
+    ["Offset of field: SparseSymbolicFactorOptions::order"]
+        [::core::mem::offset_of!(SparseSymbolicFactorOptions, order) - 8usize];
+    ["Offset of field: SparseSymbolicFactorOptions::ignoreRowsAndColumns"]
+        [::core::mem::offset_of!(SparseSymbolicFactorOptions, ignoreRowsAndColumns) - 16usize];
+    ["Offset of field: SparseSymbolicFactorOptions::malloc"]
+        [::core::mem::offset_of!(SparseSymbolicFactorOptions, malloc) - 24usize];
+    ["Offset of field: SparseSymbolicFactorOptions::free"]
+        [::core::mem::offset_of!(SparseSymbolicFactorOptions, free) - 32usize];
+    ["Offset of field: SparseSymbolicFactorOptions::reportError"]
+        [::core::mem::offset_of!(SparseSymbolicFactorOptions, reportError) - 40usize];
+};
 impl Default for SparseSymbolicFactorOptions {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2007,6 +2221,23 @@ pub struct SparseNumericFactorOptions {
     pub pivotTolerance: f64,
     pub zeroTolerance: f64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseNumericFactorOptions"]
+        [::core::mem::size_of::<SparseNumericFactorOptions>() - 32usize];
+    ["Alignment of SparseNumericFactorOptions"]
+        [::core::mem::align_of::<SparseNumericFactorOptions>() - 8usize];
+    ["Offset of field: SparseNumericFactorOptions::control"]
+        [::core::mem::offset_of!(SparseNumericFactorOptions, control) - 0usize];
+    ["Offset of field: SparseNumericFactorOptions::scalingMethod"]
+        [::core::mem::offset_of!(SparseNumericFactorOptions, scalingMethod) - 4usize];
+    ["Offset of field: SparseNumericFactorOptions::scaling"]
+        [::core::mem::offset_of!(SparseNumericFactorOptions, scaling) - 8usize];
+    ["Offset of field: SparseNumericFactorOptions::pivotTolerance"]
+        [::core::mem::offset_of!(SparseNumericFactorOptions, pivotTolerance) - 16usize];
+    ["Offset of field: SparseNumericFactorOptions::zeroTolerance"]
+        [::core::mem::offset_of!(SparseNumericFactorOptions, zeroTolerance) - 24usize];
+};
 impl Default for SparseNumericFactorOptions {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2031,6 +2262,37 @@ pub struct SparseOpaqueSymbolicFactorization {
     pub factorSize_Float: usize,
     pub factorSize_Double: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaqueSymbolicFactorization"]
+        [::core::mem::size_of::<SparseOpaqueSymbolicFactorization>() - 64usize];
+    ["Alignment of SparseOpaqueSymbolicFactorization"]
+        [::core::mem::align_of::<SparseOpaqueSymbolicFactorization>() - 8usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::status"]
+        [::core::mem::offset_of!(SparseOpaqueSymbolicFactorization, status) - 0usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::rowCount"]
+        [::core::mem::offset_of!(SparseOpaqueSymbolicFactorization, rowCount) - 4usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::columnCount"]
+        [::core::mem::offset_of!(SparseOpaqueSymbolicFactorization, columnCount) - 8usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::attributes"]
+        [::core::mem::offset_of!(SparseOpaqueSymbolicFactorization, attributes) - 12usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::blockSize"]
+        [::core::mem::offset_of!(SparseOpaqueSymbolicFactorization, blockSize) - 16usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::type_"]
+        [::core::mem::offset_of!(SparseOpaqueSymbolicFactorization, type_) - 17usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::factorization"]
+        [::core::mem::offset_of!(SparseOpaqueSymbolicFactorization, factorization) - 24usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::workspaceSize_Float"]
+        [::core::mem::offset_of!(SparseOpaqueSymbolicFactorization, workspaceSize_Float) - 32usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::workspaceSize_Double"][::core::mem::offset_of!(
+        SparseOpaqueSymbolicFactorization,
+        workspaceSize_Double
+    ) - 40usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::factorSize_Float"]
+        [::core::mem::offset_of!(SparseOpaqueSymbolicFactorization, factorSize_Float) - 48usize];
+    ["Offset of field: SparseOpaqueSymbolicFactorization::factorSize_Double"]
+        [::core::mem::offset_of!(SparseOpaqueSymbolicFactorization, factorSize_Double) - 56usize];
+};
 impl Default for SparseOpaqueSymbolicFactorization {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2051,6 +2313,33 @@ pub struct SparseOpaqueFactorization_Double {
     pub solveWorkspaceRequiredStatic: usize,
     pub solveWorkspaceRequiredPerRHS: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaqueFactorization_Double"]
+        [::core::mem::size_of::<SparseOpaqueFactorization_Double>() - 104usize];
+    ["Alignment of SparseOpaqueFactorization_Double"]
+        [::core::mem::align_of::<SparseOpaqueFactorization_Double>() - 8usize];
+    ["Offset of field: SparseOpaqueFactorization_Double::status"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Double, status) - 0usize];
+    ["Offset of field: SparseOpaqueFactorization_Double::attributes"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Double, attributes) - 4usize];
+    ["Offset of field: SparseOpaqueFactorization_Double::symbolicFactorization"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Double, symbolicFactorization) - 8usize];
+    ["Offset of field: SparseOpaqueFactorization_Double::userFactorStorage"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Double, userFactorStorage) - 72usize];
+    ["Offset of field: SparseOpaqueFactorization_Double::numericFactorization"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Double, numericFactorization) - 80usize];
+    ["Offset of field: SparseOpaqueFactorization_Double::solveWorkspaceRequiredStatic"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Double,
+        solveWorkspaceRequiredStatic
+    )
+        - 88usize];
+    ["Offset of field: SparseOpaqueFactorization_Double::solveWorkspaceRequiredPerRHS"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Double,
+        solveWorkspaceRequiredPerRHS
+    )
+        - 96usize];
+};
 impl Default for SparseOpaqueFactorization_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2071,6 +2360,31 @@ pub struct SparseOpaqueFactorization_Float {
     pub solveWorkspaceRequiredStatic: usize,
     pub solveWorkspaceRequiredPerRHS: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaqueFactorization_Float"]
+        [::core::mem::size_of::<SparseOpaqueFactorization_Float>() - 104usize];
+    ["Alignment of SparseOpaqueFactorization_Float"]
+        [::core::mem::align_of::<SparseOpaqueFactorization_Float>() - 8usize];
+    ["Offset of field: SparseOpaqueFactorization_Float::status"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Float, status) - 0usize];
+    ["Offset of field: SparseOpaqueFactorization_Float::attributes"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Float, attributes) - 4usize];
+    ["Offset of field: SparseOpaqueFactorization_Float::symbolicFactorization"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Float, symbolicFactorization) - 8usize];
+    ["Offset of field: SparseOpaqueFactorization_Float::userFactorStorage"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Float, userFactorStorage) - 72usize];
+    ["Offset of field: SparseOpaqueFactorization_Float::numericFactorization"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Float, numericFactorization) - 80usize];
+    ["Offset of field: SparseOpaqueFactorization_Float::solveWorkspaceRequiredStatic"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Float,
+        solveWorkspaceRequiredStatic
+    ) - 88usize];
+    ["Offset of field: SparseOpaqueFactorization_Float::solveWorkspaceRequiredPerRHS"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Float,
+        solveWorkspaceRequiredPerRHS
+    ) - 96usize];
+};
 impl Default for SparseOpaqueFactorization_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2091,6 +2405,41 @@ pub struct SparseOpaqueFactorization_Complex_Double {
     pub solveWorkspaceRequiredStatic: usize,
     pub solveWorkspaceRequiredPerRHS: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaqueFactorization_Complex_Double"]
+        [::core::mem::size_of::<SparseOpaqueFactorization_Complex_Double>() - 104usize];
+    ["Alignment of SparseOpaqueFactorization_Complex_Double"]
+        [::core::mem::align_of::<SparseOpaqueFactorization_Complex_Double>() - 8usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Double::status"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Complex_Double, status) - 0usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Double::attributes"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Complex_Double, attributes) - 4usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Double::symbolicFactorization"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Complex_Double,
+        symbolicFactorization
+    )
+        - 8usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Double::userFactorStorage"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Complex_Double,
+        userFactorStorage
+    ) - 72usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Double::numericFactorization"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Complex_Double,
+        numericFactorization
+    )
+        - 80usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Double::solveWorkspaceRequiredStatic"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Complex_Double,
+        solveWorkspaceRequiredStatic
+    )
+        - 88usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Double::solveWorkspaceRequiredPerRHS"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Complex_Double,
+        solveWorkspaceRequiredPerRHS
+    )
+        - 96usize];
+};
 impl Default for SparseOpaqueFactorization_Complex_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2111,6 +2460,39 @@ pub struct SparseOpaqueFactorization_Complex_Float {
     pub solveWorkspaceRequiredStatic: usize,
     pub solveWorkspaceRequiredPerRHS: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaqueFactorization_Complex_Float"]
+        [::core::mem::size_of::<SparseOpaqueFactorization_Complex_Float>() - 104usize];
+    ["Alignment of SparseOpaqueFactorization_Complex_Float"]
+        [::core::mem::align_of::<SparseOpaqueFactorization_Complex_Float>() - 8usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Float::status"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Complex_Float, status) - 0usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Float::attributes"]
+        [::core::mem::offset_of!(SparseOpaqueFactorization_Complex_Float, attributes) - 4usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Float::symbolicFactorization"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Complex_Float,
+        symbolicFactorization
+    ) - 8usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Float::userFactorStorage"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Complex_Float,
+        userFactorStorage
+    ) - 72usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Float::numericFactorization"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Complex_Float,
+        numericFactorization
+    ) - 80usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Float::solveWorkspaceRequiredStatic"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Complex_Float,
+        solveWorkspaceRequiredStatic
+    )
+        - 88usize];
+    ["Offset of field: SparseOpaqueFactorization_Complex_Float::solveWorkspaceRequiredPerRHS"][::core::mem::offset_of!(
+        SparseOpaqueFactorization_Complex_Float,
+        solveWorkspaceRequiredPerRHS
+    )
+        - 96usize];
+};
 impl Default for SparseOpaqueFactorization_Complex_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2130,6 +2512,23 @@ pub struct SparseOpaqueSubfactor_Double {
     pub workspaceRequiredStatic: usize,
     pub workspaceRequiredPerRHS: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaqueSubfactor_Double"]
+        [::core::mem::size_of::<SparseOpaqueSubfactor_Double>() - 128usize];
+    ["Alignment of SparseOpaqueSubfactor_Double"]
+        [::core::mem::align_of::<SparseOpaqueSubfactor_Double>() - 8usize];
+    ["Offset of field: SparseOpaqueSubfactor_Double::attributes"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Double, attributes) - 0usize];
+    ["Offset of field: SparseOpaqueSubfactor_Double::contents"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Double, contents) - 4usize];
+    ["Offset of field: SparseOpaqueSubfactor_Double::factor"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Double, factor) - 8usize];
+    ["Offset of field: SparseOpaqueSubfactor_Double::workspaceRequiredStatic"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Double, workspaceRequiredStatic) - 112usize];
+    ["Offset of field: SparseOpaqueSubfactor_Double::workspaceRequiredPerRHS"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Double, workspaceRequiredPerRHS) - 120usize];
+};
 impl Default for SparseOpaqueSubfactor_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2148,6 +2547,23 @@ pub struct SparseOpaqueSubfactor_Float {
     pub workspaceRequiredStatic: usize,
     pub workspaceRequiredPerRHS: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaqueSubfactor_Float"]
+        [::core::mem::size_of::<SparseOpaqueSubfactor_Float>() - 128usize];
+    ["Alignment of SparseOpaqueSubfactor_Float"]
+        [::core::mem::align_of::<SparseOpaqueSubfactor_Float>() - 8usize];
+    ["Offset of field: SparseOpaqueSubfactor_Float::attributes"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Float, attributes) - 0usize];
+    ["Offset of field: SparseOpaqueSubfactor_Float::contents"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Float, contents) - 4usize];
+    ["Offset of field: SparseOpaqueSubfactor_Float::factor"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Float, factor) - 8usize];
+    ["Offset of field: SparseOpaqueSubfactor_Float::workspaceRequiredStatic"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Float, workspaceRequiredStatic) - 112usize];
+    ["Offset of field: SparseOpaqueSubfactor_Float::workspaceRequiredPerRHS"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Float, workspaceRequiredPerRHS) - 120usize];
+};
 impl Default for SparseOpaqueSubfactor_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2166,6 +2582,29 @@ pub struct SparseOpaqueSubfactor_Complex_Double {
     pub workspaceRequiredStatic: usize,
     pub workspaceRequiredPerRHS: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaqueSubfactor_Complex_Double"]
+        [::core::mem::size_of::<SparseOpaqueSubfactor_Complex_Double>() - 128usize];
+    ["Alignment of SparseOpaqueSubfactor_Complex_Double"]
+        [::core::mem::align_of::<SparseOpaqueSubfactor_Complex_Double>() - 8usize];
+    ["Offset of field: SparseOpaqueSubfactor_Complex_Double::attributes"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Complex_Double, attributes) - 0usize];
+    ["Offset of field: SparseOpaqueSubfactor_Complex_Double::contents"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Complex_Double, contents) - 4usize];
+    ["Offset of field: SparseOpaqueSubfactor_Complex_Double::factor"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Complex_Double, factor) - 8usize];
+    ["Offset of field: SparseOpaqueSubfactor_Complex_Double::workspaceRequiredStatic"][::core::mem::offset_of!(
+        SparseOpaqueSubfactor_Complex_Double,
+        workspaceRequiredStatic
+    )
+        - 112usize];
+    ["Offset of field: SparseOpaqueSubfactor_Complex_Double::workspaceRequiredPerRHS"][::core::mem::offset_of!(
+        SparseOpaqueSubfactor_Complex_Double,
+        workspaceRequiredPerRHS
+    )
+        - 120usize];
+};
 impl Default for SparseOpaqueSubfactor_Complex_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2184,6 +2623,27 @@ pub struct SparseOpaqueSubfactor_Complex_Float {
     pub workspaceRequiredStatic: usize,
     pub workspaceRequiredPerRHS: usize,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaqueSubfactor_Complex_Float"]
+        [::core::mem::size_of::<SparseOpaqueSubfactor_Complex_Float>() - 128usize];
+    ["Alignment of SparseOpaqueSubfactor_Complex_Float"]
+        [::core::mem::align_of::<SparseOpaqueSubfactor_Complex_Float>() - 8usize];
+    ["Offset of field: SparseOpaqueSubfactor_Complex_Float::attributes"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Complex_Float, attributes) - 0usize];
+    ["Offset of field: SparseOpaqueSubfactor_Complex_Float::contents"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Complex_Float, contents) - 4usize];
+    ["Offset of field: SparseOpaqueSubfactor_Complex_Float::factor"]
+        [::core::mem::offset_of!(SparseOpaqueSubfactor_Complex_Float, factor) - 8usize];
+    ["Offset of field: SparseOpaqueSubfactor_Complex_Float::workspaceRequiredStatic"][::core::mem::offset_of!(
+        SparseOpaqueSubfactor_Complex_Float,
+        workspaceRequiredStatic
+    ) - 112usize];
+    ["Offset of field: SparseOpaqueSubfactor_Complex_Float::workspaceRequiredPerRHS"][::core::mem::offset_of!(
+        SparseOpaqueSubfactor_Complex_Float,
+        workspaceRequiredPerRHS
+    ) - 120usize];
+};
 impl Default for SparseOpaqueSubfactor_Complex_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2248,6 +2708,19 @@ pub struct SparseOpaquePreconditioner_Double {
         ),
     >,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaquePreconditioner_Double"]
+        [::core::mem::size_of::<SparseOpaquePreconditioner_Double>() - 24usize];
+    ["Alignment of SparseOpaquePreconditioner_Double"]
+        [::core::mem::align_of::<SparseOpaquePreconditioner_Double>() - 8usize];
+    ["Offset of field: SparseOpaquePreconditioner_Double::type_"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Double, type_) - 0usize];
+    ["Offset of field: SparseOpaquePreconditioner_Double::mem"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Double, mem) - 8usize];
+    ["Offset of field: SparseOpaquePreconditioner_Double::apply"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Double, apply) - 16usize];
+};
 impl Default for SparseOpaquePreconditioner_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2271,6 +2744,19 @@ pub struct SparseOpaquePreconditioner_Float {
         ),
     >,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaquePreconditioner_Float"]
+        [::core::mem::size_of::<SparseOpaquePreconditioner_Float>() - 24usize];
+    ["Alignment of SparseOpaquePreconditioner_Float"]
+        [::core::mem::align_of::<SparseOpaquePreconditioner_Float>() - 8usize];
+    ["Offset of field: SparseOpaquePreconditioner_Float::type_"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Float, type_) - 0usize];
+    ["Offset of field: SparseOpaquePreconditioner_Float::mem"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Float, mem) - 8usize];
+    ["Offset of field: SparseOpaquePreconditioner_Float::apply"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Float, apply) - 16usize];
+};
 impl Default for SparseOpaquePreconditioner_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2294,6 +2780,19 @@ pub struct SparseOpaquePreconditioner_Complex_Double {
         ),
     >,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaquePreconditioner_Complex_Double"]
+        [::core::mem::size_of::<SparseOpaquePreconditioner_Complex_Double>() - 24usize];
+    ["Alignment of SparseOpaquePreconditioner_Complex_Double"]
+        [::core::mem::align_of::<SparseOpaquePreconditioner_Complex_Double>() - 8usize];
+    ["Offset of field: SparseOpaquePreconditioner_Complex_Double::type_"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Complex_Double, type_) - 0usize];
+    ["Offset of field: SparseOpaquePreconditioner_Complex_Double::mem"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Complex_Double, mem) - 8usize];
+    ["Offset of field: SparseOpaquePreconditioner_Complex_Double::apply"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Complex_Double, apply) - 16usize];
+};
 impl Default for SparseOpaquePreconditioner_Complex_Double {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2317,6 +2816,19 @@ pub struct SparseOpaquePreconditioner_Complex_Float {
         ),
     >,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseOpaquePreconditioner_Complex_Float"]
+        [::core::mem::size_of::<SparseOpaquePreconditioner_Complex_Float>() - 24usize];
+    ["Alignment of SparseOpaquePreconditioner_Complex_Float"]
+        [::core::mem::align_of::<SparseOpaquePreconditioner_Complex_Float>() - 8usize];
+    ["Offset of field: SparseOpaquePreconditioner_Complex_Float::type_"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Complex_Float, type_) - 0usize];
+    ["Offset of field: SparseOpaquePreconditioner_Complex_Float::mem"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Complex_Float, mem) - 8usize];
+    ["Offset of field: SparseOpaquePreconditioner_Complex_Float::apply"]
+        [::core::mem::offset_of!(SparseOpaquePreconditioner_Complex_Float, apply) - 16usize];
+};
 impl Default for SparseOpaquePreconditioner_Complex_Float {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2333,6 +2845,15 @@ pub struct _SparseIterativeMethodBaseOptions {
     pub reportError:
         ::core::option::Option<unsafe extern "C" fn(message: *const ::core::ffi::c_char)>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of _SparseIterativeMethodBaseOptions"]
+        [::core::mem::size_of::<_SparseIterativeMethodBaseOptions>() - 8usize];
+    ["Alignment of _SparseIterativeMethodBaseOptions"]
+        [::core::mem::align_of::<_SparseIterativeMethodBaseOptions>() - 8usize];
+    ["Offset of field: _SparseIterativeMethodBaseOptions::reportError"]
+        [::core::mem::offset_of!(_SparseIterativeMethodBaseOptions, reportError) - 0usize];
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct SparseCGOptions {
@@ -2344,6 +2865,21 @@ pub struct SparseCGOptions {
     pub reportStatus:
         ::core::option::Option<unsafe extern "C" fn(message: *const ::core::ffi::c_char)>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseCGOptions"][::core::mem::size_of::<SparseCGOptions>() - 40usize];
+    ["Alignment of SparseCGOptions"][::core::mem::align_of::<SparseCGOptions>() - 8usize];
+    ["Offset of field: SparseCGOptions::reportError"]
+        [::core::mem::offset_of!(SparseCGOptions, reportError) - 0usize];
+    ["Offset of field: SparseCGOptions::maxIterations"]
+        [::core::mem::offset_of!(SparseCGOptions, maxIterations) - 8usize];
+    ["Offset of field: SparseCGOptions::atol"]
+        [::core::mem::offset_of!(SparseCGOptions, atol) - 16usize];
+    ["Offset of field: SparseCGOptions::rtol"]
+        [::core::mem::offset_of!(SparseCGOptions, rtol) - 24usize];
+    ["Offset of field: SparseCGOptions::reportStatus"]
+        [::core::mem::offset_of!(SparseCGOptions, reportStatus) - 32usize];
+};
 pub type SparseGMRESVariant_t = u8;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -2358,6 +2894,25 @@ pub struct SparseGMRESOptions {
     pub reportStatus:
         ::core::option::Option<unsafe extern "C" fn(message: *const ::core::ffi::c_char)>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseGMRESOptions"][::core::mem::size_of::<SparseGMRESOptions>() - 48usize];
+    ["Alignment of SparseGMRESOptions"][::core::mem::align_of::<SparseGMRESOptions>() - 8usize];
+    ["Offset of field: SparseGMRESOptions::reportError"]
+        [::core::mem::offset_of!(SparseGMRESOptions, reportError) - 0usize];
+    ["Offset of field: SparseGMRESOptions::variant"]
+        [::core::mem::offset_of!(SparseGMRESOptions, variant) - 8usize];
+    ["Offset of field: SparseGMRESOptions::nvec"]
+        [::core::mem::offset_of!(SparseGMRESOptions, nvec) - 12usize];
+    ["Offset of field: SparseGMRESOptions::maxIterations"]
+        [::core::mem::offset_of!(SparseGMRESOptions, maxIterations) - 16usize];
+    ["Offset of field: SparseGMRESOptions::atol"]
+        [::core::mem::offset_of!(SparseGMRESOptions, atol) - 24usize];
+    ["Offset of field: SparseGMRESOptions::rtol"]
+        [::core::mem::offset_of!(SparseGMRESOptions, rtol) - 32usize];
+    ["Offset of field: SparseGMRESOptions::reportStatus"]
+        [::core::mem::offset_of!(SparseGMRESOptions, reportStatus) - 40usize];
+};
 pub type SparseLSMRConvergenceTest_t = ::core::ffi::c_int;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -2375,6 +2930,31 @@ pub struct SparseLSMROptions {
     pub reportStatus:
         ::core::option::Option<unsafe extern "C" fn(message: *const ::core::ffi::c_char)>,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseLSMROptions"][::core::mem::size_of::<SparseLSMROptions>() - 72usize];
+    ["Alignment of SparseLSMROptions"][::core::mem::align_of::<SparseLSMROptions>() - 8usize];
+    ["Offset of field: SparseLSMROptions::reportError"]
+        [::core::mem::offset_of!(SparseLSMROptions, reportError) - 0usize];
+    ["Offset of field: SparseLSMROptions::lambda"]
+        [::core::mem::offset_of!(SparseLSMROptions, lambda) - 8usize];
+    ["Offset of field: SparseLSMROptions::nvec"]
+        [::core::mem::offset_of!(SparseLSMROptions, nvec) - 16usize];
+    ["Offset of field: SparseLSMROptions::convergenceTest"]
+        [::core::mem::offset_of!(SparseLSMROptions, convergenceTest) - 20usize];
+    ["Offset of field: SparseLSMROptions::atol"]
+        [::core::mem::offset_of!(SparseLSMROptions, atol) - 24usize];
+    ["Offset of field: SparseLSMROptions::rtol"]
+        [::core::mem::offset_of!(SparseLSMROptions, rtol) - 32usize];
+    ["Offset of field: SparseLSMROptions::btol"]
+        [::core::mem::offset_of!(SparseLSMROptions, btol) - 40usize];
+    ["Offset of field: SparseLSMROptions::conditionLimit"]
+        [::core::mem::offset_of!(SparseLSMROptions, conditionLimit) - 48usize];
+    ["Offset of field: SparseLSMROptions::maxIterations"]
+        [::core::mem::offset_of!(SparseLSMROptions, maxIterations) - 56usize];
+    ["Offset of field: SparseLSMROptions::reportStatus"]
+        [::core::mem::offset_of!(SparseLSMROptions, reportStatus) - 64usize];
+};
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct SparseIterativeMethod {
@@ -2390,6 +2970,23 @@ pub union SparseIterativeMethod__bindgen_ty_1 {
     pub lsmr: SparseLSMROptions,
     pub padding: [::core::ffi::c_char; 256usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseIterativeMethod__bindgen_ty_1"]
+        [::core::mem::size_of::<SparseIterativeMethod__bindgen_ty_1>() - 256usize];
+    ["Alignment of SparseIterativeMethod__bindgen_ty_1"]
+        [::core::mem::align_of::<SparseIterativeMethod__bindgen_ty_1>() - 8usize];
+    ["Offset of field: SparseIterativeMethod__bindgen_ty_1::base"]
+        [::core::mem::offset_of!(SparseIterativeMethod__bindgen_ty_1, base) - 0usize];
+    ["Offset of field: SparseIterativeMethod__bindgen_ty_1::cg"]
+        [::core::mem::offset_of!(SparseIterativeMethod__bindgen_ty_1, cg) - 0usize];
+    ["Offset of field: SparseIterativeMethod__bindgen_ty_1::gmres"]
+        [::core::mem::offset_of!(SparseIterativeMethod__bindgen_ty_1, gmres) - 0usize];
+    ["Offset of field: SparseIterativeMethod__bindgen_ty_1::lsmr"]
+        [::core::mem::offset_of!(SparseIterativeMethod__bindgen_ty_1, lsmr) - 0usize];
+    ["Offset of field: SparseIterativeMethod__bindgen_ty_1::padding"]
+        [::core::mem::offset_of!(SparseIterativeMethod__bindgen_ty_1, padding) - 0usize];
+};
 impl Default for SparseIterativeMethod__bindgen_ty_1 {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -2399,6 +2996,16 @@ impl Default for SparseIterativeMethod__bindgen_ty_1 {
         }
     }
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of SparseIterativeMethod"][::core::mem::size_of::<SparseIterativeMethod>() - 264usize];
+    ["Alignment of SparseIterativeMethod"]
+        [::core::mem::align_of::<SparseIterativeMethod>() - 8usize];
+    ["Offset of field: SparseIterativeMethod::method"]
+        [::core::mem::offset_of!(SparseIterativeMethod, method) - 0usize];
+    ["Offset of field: SparseIterativeMethod::options"]
+        [::core::mem::offset_of!(SparseIterativeMethod, options) - 8usize];
+};
 impl Default for SparseIterativeMethod {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();

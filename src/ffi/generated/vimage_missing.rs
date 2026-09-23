@@ -12,6 +12,24 @@ pub struct vImage_AffineTransform {
     pub tx: f32,
     pub ty: f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImage_AffineTransform"][::core::mem::size_of::<vImage_AffineTransform>() - 24usize];
+    ["Alignment of vImage_AffineTransform"]
+        [::core::mem::align_of::<vImage_AffineTransform>() - 4usize];
+    ["Offset of field: vImage_AffineTransform::a"]
+        [::core::mem::offset_of!(vImage_AffineTransform, a) - 0usize];
+    ["Offset of field: vImage_AffineTransform::b"]
+        [::core::mem::offset_of!(vImage_AffineTransform, b) - 4usize];
+    ["Offset of field: vImage_AffineTransform::c"]
+        [::core::mem::offset_of!(vImage_AffineTransform, c) - 8usize];
+    ["Offset of field: vImage_AffineTransform::d"]
+        [::core::mem::offset_of!(vImage_AffineTransform, d) - 12usize];
+    ["Offset of field: vImage_AffineTransform::tx"]
+        [::core::mem::offset_of!(vImage_AffineTransform, tx) - 16usize];
+    ["Offset of field: vImage_AffineTransform::ty"]
+        [::core::mem::offset_of!(vImage_AffineTransform, ty) - 20usize];
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct vImage_AffineTransform_Double {
@@ -22,6 +40,25 @@ pub struct vImage_AffineTransform_Double {
     pub tx: f64,
     pub ty: f64,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImage_AffineTransform_Double"]
+        [::core::mem::size_of::<vImage_AffineTransform_Double>() - 48usize];
+    ["Alignment of vImage_AffineTransform_Double"]
+        [::core::mem::align_of::<vImage_AffineTransform_Double>() - 8usize];
+    ["Offset of field: vImage_AffineTransform_Double::a"]
+        [::core::mem::offset_of!(vImage_AffineTransform_Double, a) - 0usize];
+    ["Offset of field: vImage_AffineTransform_Double::b"]
+        [::core::mem::offset_of!(vImage_AffineTransform_Double, b) - 8usize];
+    ["Offset of field: vImage_AffineTransform_Double::c"]
+        [::core::mem::offset_of!(vImage_AffineTransform_Double, c) - 16usize];
+    ["Offset of field: vImage_AffineTransform_Double::d"]
+        [::core::mem::offset_of!(vImage_AffineTransform_Double, d) - 24usize];
+    ["Offset of field: vImage_AffineTransform_Double::tx"]
+        [::core::mem::offset_of!(vImage_AffineTransform_Double, tx) - 32usize];
+    ["Offset of field: vImage_AffineTransform_Double::ty"]
+        [::core::mem::offset_of!(vImage_AffineTransform_Double, ty) - 40usize];
+};
 pub type vImage_CGAffineTransform = vImage_AffineTransform_Double;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -36,6 +73,31 @@ pub struct vImage_PerpsectiveTransform {
     pub vy: f32,
     pub v: f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImage_PerpsectiveTransform"]
+        [::core::mem::size_of::<vImage_PerpsectiveTransform>() - 36usize];
+    ["Alignment of vImage_PerpsectiveTransform"]
+        [::core::mem::align_of::<vImage_PerpsectiveTransform>() - 4usize];
+    ["Offset of field: vImage_PerpsectiveTransform::a"]
+        [::core::mem::offset_of!(vImage_PerpsectiveTransform, a) - 0usize];
+    ["Offset of field: vImage_PerpsectiveTransform::b"]
+        [::core::mem::offset_of!(vImage_PerpsectiveTransform, b) - 4usize];
+    ["Offset of field: vImage_PerpsectiveTransform::c"]
+        [::core::mem::offset_of!(vImage_PerpsectiveTransform, c) - 8usize];
+    ["Offset of field: vImage_PerpsectiveTransform::d"]
+        [::core::mem::offset_of!(vImage_PerpsectiveTransform, d) - 12usize];
+    ["Offset of field: vImage_PerpsectiveTransform::tx"]
+        [::core::mem::offset_of!(vImage_PerpsectiveTransform, tx) - 16usize];
+    ["Offset of field: vImage_PerpsectiveTransform::ty"]
+        [::core::mem::offset_of!(vImage_PerpsectiveTransform, ty) - 20usize];
+    ["Offset of field: vImage_PerpsectiveTransform::vx"]
+        [::core::mem::offset_of!(vImage_PerpsectiveTransform, vx) - 24usize];
+    ["Offset of field: vImage_PerpsectiveTransform::vy"]
+        [::core::mem::offset_of!(vImage_PerpsectiveTransform, vy) - 28usize];
+    ["Offset of field: vImage_PerpsectiveTransform::v"]
+        [::core::mem::offset_of!(vImage_PerpsectiveTransform, v) - 32usize];
+};
 pub type vImage_WarpInterpolation = i32;
 pub type Pixel_8 = u8;
 pub type Pixel_F = f32;
@@ -94,6 +156,23 @@ pub struct vImage_YpCbCrToARGBMatrix {
     pub Cb_G: f32,
     pub Cb_B: f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImage_YpCbCrToARGBMatrix"]
+        [::core::mem::size_of::<vImage_YpCbCrToARGBMatrix>() - 20usize];
+    ["Alignment of vImage_YpCbCrToARGBMatrix"]
+        [::core::mem::align_of::<vImage_YpCbCrToARGBMatrix>() - 4usize];
+    ["Offset of field: vImage_YpCbCrToARGBMatrix::Yp"]
+        [::core::mem::offset_of!(vImage_YpCbCrToARGBMatrix, Yp) - 0usize];
+    ["Offset of field: vImage_YpCbCrToARGBMatrix::Cr_R"]
+        [::core::mem::offset_of!(vImage_YpCbCrToARGBMatrix, Cr_R) - 4usize];
+    ["Offset of field: vImage_YpCbCrToARGBMatrix::Cr_G"]
+        [::core::mem::offset_of!(vImage_YpCbCrToARGBMatrix, Cr_G) - 8usize];
+    ["Offset of field: vImage_YpCbCrToARGBMatrix::Cb_G"]
+        [::core::mem::offset_of!(vImage_YpCbCrToARGBMatrix, Cb_G) - 12usize];
+    ["Offset of field: vImage_YpCbCrToARGBMatrix::Cb_B"]
+        [::core::mem::offset_of!(vImage_YpCbCrToARGBMatrix, Cb_B) - 16usize];
+};
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     pub static mut kvImage_YpCbCrToARGBMatrix_ITU_R_601_4: *const vImage_YpCbCrToARGBMatrix;
@@ -108,6 +187,13 @@ unsafe extern "C" {
 pub struct vImage_YpCbCrToARGB {
     pub opaque: [u8; 128usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImage_YpCbCrToARGB"][::core::mem::size_of::<vImage_YpCbCrToARGB>() - 128usize];
+    ["Alignment of vImage_YpCbCrToARGB"][::core::mem::align_of::<vImage_YpCbCrToARGB>() - 16usize];
+    ["Offset of field: vImage_YpCbCrToARGB::opaque"]
+        [::core::mem::offset_of!(vImage_YpCbCrToARGB, opaque) - 0usize];
+};
 impl Default for vImage_YpCbCrToARGB {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -129,6 +215,29 @@ pub struct vImage_ARGBToYpCbCrMatrix {
     pub G_Cr: f32,
     pub B_Cr: f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImage_ARGBToYpCbCrMatrix"]
+        [::core::mem::size_of::<vImage_ARGBToYpCbCrMatrix>() - 32usize];
+    ["Alignment of vImage_ARGBToYpCbCrMatrix"]
+        [::core::mem::align_of::<vImage_ARGBToYpCbCrMatrix>() - 4usize];
+    ["Offset of field: vImage_ARGBToYpCbCrMatrix::R_Yp"]
+        [::core::mem::offset_of!(vImage_ARGBToYpCbCrMatrix, R_Yp) - 0usize];
+    ["Offset of field: vImage_ARGBToYpCbCrMatrix::G_Yp"]
+        [::core::mem::offset_of!(vImage_ARGBToYpCbCrMatrix, G_Yp) - 4usize];
+    ["Offset of field: vImage_ARGBToYpCbCrMatrix::B_Yp"]
+        [::core::mem::offset_of!(vImage_ARGBToYpCbCrMatrix, B_Yp) - 8usize];
+    ["Offset of field: vImage_ARGBToYpCbCrMatrix::R_Cb"]
+        [::core::mem::offset_of!(vImage_ARGBToYpCbCrMatrix, R_Cb) - 12usize];
+    ["Offset of field: vImage_ARGBToYpCbCrMatrix::G_Cb"]
+        [::core::mem::offset_of!(vImage_ARGBToYpCbCrMatrix, G_Cb) - 16usize];
+    ["Offset of field: vImage_ARGBToYpCbCrMatrix::B_Cb_R_Cr"]
+        [::core::mem::offset_of!(vImage_ARGBToYpCbCrMatrix, B_Cb_R_Cr) - 20usize];
+    ["Offset of field: vImage_ARGBToYpCbCrMatrix::G_Cr"]
+        [::core::mem::offset_of!(vImage_ARGBToYpCbCrMatrix, G_Cr) - 24usize];
+    ["Offset of field: vImage_ARGBToYpCbCrMatrix::B_Cr"]
+        [::core::mem::offset_of!(vImage_ARGBToYpCbCrMatrix, B_Cr) - 28usize];
+};
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     pub static mut kvImage_ARGBToYpCbCrMatrix_ITU_R_601_4: *const vImage_ARGBToYpCbCrMatrix;
@@ -143,6 +252,13 @@ unsafe extern "C" {
 pub struct vImage_ARGBToYpCbCr {
     pub opaque: [u8; 128usize],
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImage_ARGBToYpCbCr"][::core::mem::size_of::<vImage_ARGBToYpCbCr>() - 128usize];
+    ["Alignment of vImage_ARGBToYpCbCr"][::core::mem::align_of::<vImage_ARGBToYpCbCr>() - 16usize];
+    ["Offset of field: vImage_ARGBToYpCbCr::opaque"]
+        [::core::mem::offset_of!(vImage_ARGBToYpCbCr, opaque) - 0usize];
+};
 impl Default for vImage_ARGBToYpCbCr {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -164,6 +280,29 @@ pub struct vImage_YpCbCrPixelRange {
     pub CbCrMax: i32,
     pub CbCrMin: i32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImage_YpCbCrPixelRange"]
+        [::core::mem::size_of::<vImage_YpCbCrPixelRange>() - 32usize];
+    ["Alignment of vImage_YpCbCrPixelRange"]
+        [::core::mem::align_of::<vImage_YpCbCrPixelRange>() - 4usize];
+    ["Offset of field: vImage_YpCbCrPixelRange::Yp_bias"]
+        [::core::mem::offset_of!(vImage_YpCbCrPixelRange, Yp_bias) - 0usize];
+    ["Offset of field: vImage_YpCbCrPixelRange::CbCr_bias"]
+        [::core::mem::offset_of!(vImage_YpCbCrPixelRange, CbCr_bias) - 4usize];
+    ["Offset of field: vImage_YpCbCrPixelRange::YpRangeMax"]
+        [::core::mem::offset_of!(vImage_YpCbCrPixelRange, YpRangeMax) - 8usize];
+    ["Offset of field: vImage_YpCbCrPixelRange::CbCrRangeMax"]
+        [::core::mem::offset_of!(vImage_YpCbCrPixelRange, CbCrRangeMax) - 12usize];
+    ["Offset of field: vImage_YpCbCrPixelRange::YpMax"]
+        [::core::mem::offset_of!(vImage_YpCbCrPixelRange, YpMax) - 16usize];
+    ["Offset of field: vImage_YpCbCrPixelRange::YpMin"]
+        [::core::mem::offset_of!(vImage_YpCbCrPixelRange, YpMin) - 20usize];
+    ["Offset of field: vImage_YpCbCrPixelRange::CbCrMax"]
+        [::core::mem::offset_of!(vImage_YpCbCrPixelRange, CbCrMax) - 24usize];
+    ["Offset of field: vImage_YpCbCrPixelRange::CbCrMin"]
+        [::core::mem::offset_of!(vImage_YpCbCrPixelRange, CbCrMin) - 28usize];
+};
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     pub fn vImagePNGDecompressionFilter(
@@ -5930,6 +6069,13 @@ pub struct CGSize {
     pub width: CGFloat,
     pub height: CGFloat,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of CGSize"][::core::mem::size_of::<CGSize>() - 16usize];
+    ["Alignment of CGSize"][::core::mem::align_of::<CGSize>() - 8usize];
+    ["Offset of field: CGSize::width"][::core::mem::offset_of!(CGSize, width) - 0usize];
+    ["Offset of field: CGSize::height"][::core::mem::offset_of!(CGSize, height) - 8usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct CGColorSpace {
@@ -5965,6 +6111,25 @@ pub struct vImage_CGImageFormat {
     pub decode: *const CGFloat,
     pub renderingIntent: CGColorRenderingIntent,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImage_CGImageFormat"][::core::mem::size_of::<vImage_CGImageFormat>() - 40usize];
+    ["Alignment of vImage_CGImageFormat"][::core::mem::align_of::<vImage_CGImageFormat>() - 8usize];
+    ["Offset of field: vImage_CGImageFormat::bitsPerComponent"]
+        [::core::mem::offset_of!(vImage_CGImageFormat, bitsPerComponent) - 0usize];
+    ["Offset of field: vImage_CGImageFormat::bitsPerPixel"]
+        [::core::mem::offset_of!(vImage_CGImageFormat, bitsPerPixel) - 4usize];
+    ["Offset of field: vImage_CGImageFormat::colorSpace"]
+        [::core::mem::offset_of!(vImage_CGImageFormat, colorSpace) - 8usize];
+    ["Offset of field: vImage_CGImageFormat::bitmapInfo"]
+        [::core::mem::offset_of!(vImage_CGImageFormat, bitmapInfo) - 16usize];
+    ["Offset of field: vImage_CGImageFormat::version"]
+        [::core::mem::offset_of!(vImage_CGImageFormat, version) - 20usize];
+    ["Offset of field: vImage_CGImageFormat::decode"]
+        [::core::mem::offset_of!(vImage_CGImageFormat, decode) - 24usize];
+    ["Offset of field: vImage_CGImageFormat::renderingIntent"]
+        [::core::mem::offset_of!(vImage_CGImageFormat, renderingIntent) - 32usize];
+};
 impl Default for vImage_CGImageFormat {
     fn default() -> Self {
         let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
@@ -6175,6 +6340,21 @@ pub struct vImageChannelDescription {
     pub full: CGFloat,
     pub max: CGFloat,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImageChannelDescription"]
+        [::core::mem::size_of::<vImageChannelDescription>() - 32usize];
+    ["Alignment of vImageChannelDescription"]
+        [::core::mem::align_of::<vImageChannelDescription>() - 8usize];
+    ["Offset of field: vImageChannelDescription::min"]
+        [::core::mem::offset_of!(vImageChannelDescription, min) - 0usize];
+    ["Offset of field: vImageChannelDescription::zero"]
+        [::core::mem::offset_of!(vImageChannelDescription, zero) - 8usize];
+    ["Offset of field: vImageChannelDescription::full"]
+        [::core::mem::offset_of!(vImageChannelDescription, full) - 16usize];
+    ["Offset of field: vImageChannelDescription::max"]
+        [::core::mem::offset_of!(vImageChannelDescription, max) - 24usize];
+};
 pub type vImageMatrixType = u32;
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
@@ -6288,6 +6468,28 @@ pub struct vImageTransferFunction {
     pub c4: CGFloat,
     pub c5: CGFloat,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImageTransferFunction"][::core::mem::size_of::<vImageTransferFunction>() - 64usize];
+    ["Alignment of vImageTransferFunction"]
+        [::core::mem::align_of::<vImageTransferFunction>() - 8usize];
+    ["Offset of field: vImageTransferFunction::c0"]
+        [::core::mem::offset_of!(vImageTransferFunction, c0) - 0usize];
+    ["Offset of field: vImageTransferFunction::c1"]
+        [::core::mem::offset_of!(vImageTransferFunction, c1) - 8usize];
+    ["Offset of field: vImageTransferFunction::c2"]
+        [::core::mem::offset_of!(vImageTransferFunction, c2) - 16usize];
+    ["Offset of field: vImageTransferFunction::c3"]
+        [::core::mem::offset_of!(vImageTransferFunction, c3) - 24usize];
+    ["Offset of field: vImageTransferFunction::gamma"]
+        [::core::mem::offset_of!(vImageTransferFunction, gamma) - 32usize];
+    ["Offset of field: vImageTransferFunction::cutoff"]
+        [::core::mem::offset_of!(vImageTransferFunction, cutoff) - 40usize];
+    ["Offset of field: vImageTransferFunction::c4"]
+        [::core::mem::offset_of!(vImageTransferFunction, c4) - 48usize];
+    ["Offset of field: vImageTransferFunction::c5"]
+        [::core::mem::offset_of!(vImageTransferFunction, c5) - 56usize];
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct vImageRGBPrimaries {
@@ -6300,6 +6502,27 @@ pub struct vImageRGBPrimaries {
     pub blue_y: f32,
     pub white_y: f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImageRGBPrimaries"][::core::mem::size_of::<vImageRGBPrimaries>() - 32usize];
+    ["Alignment of vImageRGBPrimaries"][::core::mem::align_of::<vImageRGBPrimaries>() - 4usize];
+    ["Offset of field: vImageRGBPrimaries::red_x"]
+        [::core::mem::offset_of!(vImageRGBPrimaries, red_x) - 0usize];
+    ["Offset of field: vImageRGBPrimaries::green_x"]
+        [::core::mem::offset_of!(vImageRGBPrimaries, green_x) - 4usize];
+    ["Offset of field: vImageRGBPrimaries::blue_x"]
+        [::core::mem::offset_of!(vImageRGBPrimaries, blue_x) - 8usize];
+    ["Offset of field: vImageRGBPrimaries::white_x"]
+        [::core::mem::offset_of!(vImageRGBPrimaries, white_x) - 12usize];
+    ["Offset of field: vImageRGBPrimaries::red_y"]
+        [::core::mem::offset_of!(vImageRGBPrimaries, red_y) - 16usize];
+    ["Offset of field: vImageRGBPrimaries::green_y"]
+        [::core::mem::offset_of!(vImageRGBPrimaries, green_y) - 20usize];
+    ["Offset of field: vImageRGBPrimaries::blue_y"]
+        [::core::mem::offset_of!(vImageRGBPrimaries, blue_y) - 24usize];
+    ["Offset of field: vImageRGBPrimaries::white_y"]
+        [::core::mem::offset_of!(vImageRGBPrimaries, white_y) - 28usize];
+};
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     pub fn vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction(
@@ -6316,6 +6539,15 @@ pub struct vImageWhitePoint {
     pub white_x: f32,
     pub white_y: f32,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of vImageWhitePoint"][::core::mem::size_of::<vImageWhitePoint>() - 8usize];
+    ["Alignment of vImageWhitePoint"][::core::mem::align_of::<vImageWhitePoint>() - 4usize];
+    ["Offset of field: vImageWhitePoint::white_x"]
+        [::core::mem::offset_of!(vImageWhitePoint, white_x) - 0usize];
+    ["Offset of field: vImageWhitePoint::white_y"]
+        [::core::mem::offset_of!(vImageWhitePoint, white_y) - 4usize];
+};
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     pub fn vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction(

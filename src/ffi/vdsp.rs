@@ -26,6 +26,10 @@ pub struct DSPSplitComplex {
     pub imagp: *mut f32,
 }
 
+const _: () = assert!(
+    core::mem::size_of::<DSPSplitComplex>() == 16 && core::mem::align_of::<DSPSplitComplex>() == 8
+);
+
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     /// Raw FFI declaration for `vDSP_create_fftsetup`.

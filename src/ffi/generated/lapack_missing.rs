@@ -10,9 +10,25 @@ pub struct __CLPK_complex {
     pub r: __CLPK_real,
     pub i: __CLPK_real,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of __CLPK_complex"][::core::mem::size_of::<__CLPK_complex>() - 8usize];
+    ["Alignment of __CLPK_complex"][::core::mem::align_of::<__CLPK_complex>() - 4usize];
+    ["Offset of field: __CLPK_complex::r"][::core::mem::offset_of!(__CLPK_complex, r) - 0usize];
+    ["Offset of field: __CLPK_complex::i"][::core::mem::offset_of!(__CLPK_complex, i) - 4usize];
+};
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct __CLPK_doublecomplex {
     pub r: __CLPK_doublereal,
     pub i: __CLPK_doublereal,
 }
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of __CLPK_doublecomplex"][::core::mem::size_of::<__CLPK_doublecomplex>() - 16usize];
+    ["Alignment of __CLPK_doublecomplex"][::core::mem::align_of::<__CLPK_doublecomplex>() - 8usize];
+    ["Offset of field: __CLPK_doublecomplex::r"]
+        [::core::mem::offset_of!(__CLPK_doublecomplex, r) - 0usize];
+    ["Offset of field: __CLPK_doublecomplex::i"]
+        [::core::mem::offset_of!(__CLPK_doublecomplex, i) - 8usize];
+};
