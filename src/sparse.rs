@@ -67,6 +67,9 @@ fn validate_sparse_entries(values: &[f32], indices: &[SparseIndex]) -> Result<()
             actual: indices.len(),
         });
     }
+    if indices.iter().any(|&index| index < 0) {
+        return Err(Error::InvalidValue("sparse indices must be non-negative"));
+    }
     for window in indices.windows(2) {
         if window[0] >= window[1] {
             return Err(Error::InvalidValue(
@@ -78,12 +81,12 @@ fn validate_sparse_entries(values: &[f32], indices: &[SparseIndex]) -> Result<()
 }
 
 fn validate_dense_coverage(indices: &[SparseIndex], dense_len: usize) -> Result<()> {
-    if let Some(&max_index) = indices.last() {
-        let max_index = usize::try_from(max_index)
+    for &index in indices {
+        let index = usize::try_from(index)
             .map_err(|_| Error::InvalidValue("sparse indices must be non-negative"))?;
-        if max_index >= dense_len {
+        if index >= dense_len {
             return Err(Error::InvalidLength {
-                expected: max_index + 1,
+                expected: index.saturating_add(1),
                 actual: dense_len,
             });
         }

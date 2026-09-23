@@ -64,3 +64,79 @@ fn sparse_indices_must_be_sorted() {
         .expect_err("duplicate indices");
     assert!(error.to_string().contains("strictly increasing"));
 }
+
+#[test]
+fn sparse_negative_leading_index_is_rejected() {
+    let values = [7.0_f32, 1.0];
+    let indices = [-5_i64, 3_i64];
+    let dense = [1.0_f32, 2.0, 3.0, 4.0];
+
+    let error = sparse_dot_dense_f32(&values, &indices, &dense).expect_err("negative index");
+    assert!(error.to_string().contains("non-negative"));
+
+    let mut target = vec![0.0_f32; 4];
+    let error =
+        sparse_add_to_dense_f32(&values, &indices, 1.0, &mut target).expect_err("negative index");
+    assert!(error.to_string().contains("non-negative"));
+    assert_eq!(target, vec![0.0_f32; 4]);
+
+    let error = sparse_dot_sparse_f32(&values, &indices, &[1.0_f32], &[3_i64])
+        .expect_err("negative lhs index");
+    assert!(error.to_string().contains("non-negative"));
+    let error = sparse_dot_sparse_f32(&[1.0_f32], &[3_i64], &values, &indices)
+        .expect_err("negative rhs index");
+    assert!(error.to_string().contains("non-negative"));
+}
+
+#[test]
+fn sparse_every_index_is_validated() {
+    let dense = [1.0_f32, 2.0, 3.0];
+    let mut target = vec![0.0_f32; 3];
+
+    for indices in [
+        [i64::MIN, 0],
+        [-1, 2],
+        [0, 3],
+        [1, i64::MAX],
+        [2, 1],
+        [3, -5],
+    ] {
+        let values = [1.0_f32, 1.0];
+        assert!(
+            sparse_dot_dense_f32(&values, &indices, &dense).is_err(),
+            "dot accepted {indices:?}"
+        );
+        assert!(
+            sparse_add_to_dense_f32(&values, &indices, 1.0, &mut target).is_err(),
+            "add accepted {indices:?}"
+        );
+    }
+    assert_eq!(target, vec![0.0_f32; 3]);
+
+    let error = sparse_dot_dense_f32(&[1.0_f32], &[3_i64], &dense).expect_err("index past end");
+    assert_eq!(
+        error,
+        apple_accelerate::Error::InvalidLength {
+            expected: 4,
+            actual: 3,
+        }
+    );
+}
+
+#[test]
+fn sparse_boundary_indices_are_accepted() {
+    let dense = [1.0_f32, 2.0, 3.0];
+    let dot = sparse_dot_dense_f32(&[1.0_f32, 1.0], &[0_i64, 2_i64], &dense).expect("dot");
+    assert!((dot - 4.0).abs() < 1.0e-6);
+
+    assert!(
+        sparse_dot_dense_f32(&[], &[], &[])
+            .expect("empty dot")
+            .abs()
+            < f32::EPSILON
+    );
+
+    let mut target = vec![0.0_f32; 3];
+    sparse_add_to_dense_f32(&[2.0_f32], &[2_i64], 1.0, &mut target).expect("add");
+    assert_eq!(target, vec![0.0, 0.0, 2.0]);
+}
