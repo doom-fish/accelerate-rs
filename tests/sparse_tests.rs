@@ -140,3 +140,49 @@ fn sparse_boundary_indices_are_accepted() {
     sparse_add_to_dense_f32(&[2.0_f32], &[2_i64], 1.0, &mut target).expect("add");
     assert_eq!(target, vec![0.0, 0.0, 2.0]);
 }
+
+#[test]
+fn sparse_matrix_is_send_and_sync() {
+    fn assert_send_sync<T: Send + Sync>() {}
+    assert_send_sync::<SparseMatrixF32>();
+}
+
+#[test]
+fn sparse_concurrent_solves_with_pending_inserts() {
+    let dimension = 64;
+    let mut matrix = SparseMatrixF32::new(dimension, dimension).expect("matrix");
+    matrix
+        .set_property(sparse_matrix_property::LOWER_TRIANGULAR)
+        .expect("property");
+    for row in 0..dimension {
+        matrix.insert_entry(row, row, 2.0).expect("diagonal");
+        if row > 0 {
+            matrix.insert_entry(row, row - 1, 1.0).expect("subdiagonal");
+        }
+    }
+
+    let matrix = std::sync::Arc::new(matrix);
+    let workers: Vec<_> = (0..8)
+        .map(|_| {
+            let matrix = std::sync::Arc::clone(&matrix);
+            std::thread::spawn(move || {
+                let mut rhs = vec![0.0_f32; dimension];
+                rhs[0] = 2.0;
+                for value in rhs.iter_mut().skip(1) {
+                    *value = 3.0;
+                }
+                matrix
+                    .triangular_solve_vector(blas_transpose::NO_TRANS, 1.0, &mut rhs)
+                    .expect("solve");
+                let nonzeros = matrix.nonzero_count().expect("nnz");
+                (rhs, nonzeros)
+            })
+        })
+        .collect();
+
+    for worker in workers {
+        let (solution, nonzeros) = worker.join().expect("worker");
+        assert_eq!(nonzeros, 2 * dimension - 1);
+        assert!(solution.iter().all(|value| (*value - 1.0).abs() < 1.0e-5));
+    }
+}

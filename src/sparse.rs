@@ -3,6 +3,7 @@ use crate::bridge;
 use crate::error::{Error, Result};
 use core::ffi::c_void;
 use core::ptr;
+use std::sync::{Mutex, MutexGuard, PoisonError};
 
 /// Sparse index type used by the `sparse_*_float` routines.
 pub type SparseIndex = i64;
@@ -97,6 +98,7 @@ fn validate_dense_coverage(indices: &[SparseIndex], dense_len: usize) -> Result<
 /// Owned sparse single-precision matrix handle backed by the Swift bridge.
 pub struct SparseMatrixF32 {
     ptr: *mut c_void,
+    access: Mutex<()>,
 }
 
 unsafe impl Send for SparseMatrixF32 {}
@@ -127,8 +129,15 @@ impl SparseMatrixF32 {
         if ptr.is_null() {
             None
         } else {
-            Some(Self { ptr })
+            Some(Self {
+                ptr,
+                access: Mutex::new(()),
+            })
         }
+    }
+
+    fn lock(&self) -> MutexGuard<'_, ()> {
+        self.access.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
     /// Sets a `sparse_matrix_property` on the matrix with `sparse_set_matrix_property`.
@@ -163,18 +172,21 @@ impl SparseMatrixF32 {
 
     /// Returns the row count reported by `sparse_get_matrix_number_of_rows`.
     pub fn rows(&self) -> Result<usize> {
+        let _access = self.lock();
         // SAFETY: `self.ptr` is a live bridge handle.
         usize_dimension(unsafe { bridge::acc_sparse_matrix_f32_rows(self.ptr) })
     }
 
     /// Returns the column count reported by `sparse_get_matrix_number_of_columns`.
     pub fn columns(&self) -> Result<usize> {
+        let _access = self.lock();
         // SAFETY: `self.ptr` is a live bridge handle.
         usize_dimension(unsafe { bridge::acc_sparse_matrix_f32_columns(self.ptr) })
     }
 
     /// Returns the nonzero count reported by `sparse_get_matrix_nonzero_count`.
     pub fn nonzero_count(&self) -> Result<usize> {
+        let _access = self.lock();
         // SAFETY: `self.ptr` is a live bridge handle.
         usize_count(unsafe { bridge::acc_sparse_matrix_f32_nonzero_count(self.ptr) })
     }
@@ -201,6 +213,7 @@ impl SparseMatrixF32 {
         }
 
         let len = u64_len(values.len())?;
+        let _access = self.lock();
         // SAFETY: The matrix and dense vector satisfy the API preconditions.
         sparse_result(unsafe {
             bridge::acc_sparse_matrix_f32_triangular_solve_vector(
@@ -243,6 +256,7 @@ impl SparseMatrixF32 {
 
         let rhs_count = u64_len(rhs_columns)?;
         let ldb = u64_len(rhs_columns)?;
+        let _access = self.lock();
         // SAFETY: The matrix and dense matrix satisfy the API preconditions.
         sparse_result(unsafe {
             bridge::acc_sparse_matrix_f32_triangular_solve_matrix(
