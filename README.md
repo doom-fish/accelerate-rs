@@ -7,6 +7,12 @@ framework on macOS using a Swift bridge over the C APIs.
 The GitHub repository is `accelerate-rs`; the published crates.io package is
 `apple-accelerate`.
 
+## Requirements
+
+- macOS 11 or later, the deployment target of the Swift bridge.
+- `BnnsGraphCompileOptions` needs macOS 15; `BnnsGraphCompileOptions::new()`
+  returns `None` on older systems.
+
 ## Install
 
 ```bash
@@ -44,18 +50,54 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-## v0.2.2 surface
+## Surface
 
-- `vDSP`: FFT setup, biquad setup, vector arithmetic, reductions, and window generation
-- `vForce`: element-wise transcendental and root functions over `f32` slices
+- `vDSP`: radix-2 FFT (`FftSetup::fft_zip`), biquad filtering, vector arithmetic, reductions, and Hamming/Blackman windows
+- `vForce`: element-wise `sin`, `cos`, `exp`, `log`, and `sqrt` over `f32` slices
 - `BLAS`: `sdot`, row-major `sgemv`, and row-major `sgemm`
-- `LAPACK`: LU factorization and linear solves for column-major single-precision matrices
-- `BNNS`: safe ReLU/sigmoid vector activations plus the existing thin unsafe filter owner
-- `Sparse`: sparse-vector dot products and sparse-to-dense accumulation
-- `vImage`: ARGB8888 rotate / box-convolve / scale and Planar8 contrast stretch
-- `simd`: SIMD4 add / dot / length / normalize helpers
-- `Quadrature`: one-dimensional adaptive numerical integration with Rust closures
-- `raw-ffi` feature: re-exports exhaustive audited C declarations for `vDSP`, `vForce`, `BLAS`, `LAPACK`, `BNNS`, `Sparse`, `vImage`, and the remaining vecLib helper families surfaced by the SDK audit
+- `LAPACK`: LU factorization (singular matrices are reported through `info()`) and linear solves for column-major single-precision matrices
+- `BNNS`: ReLU/sigmoid vector activations, BNNS Graph compile options, and a thin unsafe owner for the legacy BNNS filters
+- `Sparse`: sparse-vector dot products, sparse-to-dense accumulation, and a sparse matrix with triangular solves
+- `vImage`: `ImageBuffer` with a checked `PixelFormat` and row stride; ARGB8888 rotate, box convolve, scale, alpha blend, clip, premultiply and unpremultiply, Planar8 contrast stretch, and ARGB8888 ↔ Planar8 conversion
+- `simd`: four-lane add, dot, length, and normalize
+- `Quadrature`: one-dimensional adaptive integration of Rust closures
+
+## Raw FFI
+
+The `raw-ffi` feature re-exports C declarations under `apple_accelerate::ffi`:
+about 1,580 functions, mostly generated with bindgen from the vDSP, vForce,
+vImage, BNNS, and Sparse headers, plus the vBigNum and BLAS threading helpers.
+It does not cover the whole framework:
+
+- BLAS and LAPACK are declared only for `cblas_sdot`, `cblas_sgemv`,
+  `cblas_sgemm`, `sgetrf_`, and `sgesv_`.
+- vecLib functions that pass C vector types such as `vFloat` or `vUInt32` by
+  value (`vfloorf`, `vexpf`, `vU64Add`, and 105 others) are omitted, because
+  stable Rust cannot declare the C vector calling convention. The array
+  functions in vForce (`vvfloorf`, `vvexpf`, and so on) cover most of the
+  floating-point ones.
+- Some deprecated functions are absent, for example the legacy BNNS layer
+  constructors such as `BNNSFilterCreateLayerActivation`.
+
+`COVERAGE_AUDIT.md` explains what its coverage figures measure.
+
+## Not wrapped
+
+These have no safe wrapper; some are reachable through `raw-ffi`:
+
+- BNNS Graph compilation and execution (`BNNSGraphCompileFromFile`,
+  `BNNSGraphContextMake`, `BNNSGraphContextExecute`) are raw only, and the
+  Swift-only `BNNSGraph.Builder` is not available at all.
+- The Sparse solvers (`SparseFactor`, `SparseSolve`, and the CG, GMRES, and
+  LSMR iterative methods) are raw only.
+- The vDSP DFT routines and the radix-3/5 FFTs (`vDSP_fft3_zop`,
+  `vDSP_fft5_zop`, deprecated since macOS 10.11) are raw only. `FftSetup`
+  accepts radix-3/5 setups but only drives the radix-2 `vDSP_fft_zip`.
+- LAPACK beyond LU factorization and solves. The wrappers call the CLAPACK
+  interface, which Apple deprecated in macOS 13.3 in favour of the new LAPACK
+  headers; moving to it would raise the minimum macOS version.
+- Core ML's `MLTensor` is not part of Accelerate and is out of scope for this
+  crate.
 
 ## Smoke examples
 
