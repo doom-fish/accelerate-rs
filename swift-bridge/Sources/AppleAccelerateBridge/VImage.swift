@@ -1,12 +1,17 @@
 import Accelerate
 
+private let invalidParameter = Int(kvImageInvalidParameter)
+
 private func makeBuffer(
     data: UnsafeMutableRawPointer?,
     width: Int,
     height: Int,
     rowBytes: Int
-) -> vImage_Buffer {
-    vImage_Buffer(
+) -> vImage_Buffer? {
+    guard width >= 0, height >= 0, rowBytes >= 0 else {
+        return nil
+    }
+    return vImage_Buffer(
         data: data,
         height: vImagePixelCount(height),
         width: vImagePixelCount(width),
@@ -28,8 +33,11 @@ public func accVimageRotateARGB8888(
     _ backgroundColor: UnsafePointer<UInt8>?,
     _ flags: UInt32
 ) -> Int {
-    var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes)
-    var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    guard var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes),
+          var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    else {
+        return invalidParameter
+    }
     return vImageRotate_ARGB8888(&src, &dst, nil, angleRadians, backgroundColor, flags)
 }
 
@@ -48,8 +56,11 @@ public func accVimageBoxConvolveARGB8888(
     _ backgroundColor: UnsafePointer<UInt8>?,
     _ flags: UInt32
 ) -> Int {
-    var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes)
-    var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    guard var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes),
+          var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    else {
+        return invalidParameter
+    }
     return vImageBoxConvolve_ARGB8888(&src, &dst, nil, 0, 0, kernelHeight, kernelWidth, backgroundColor, flags)
 }
 
@@ -65,8 +76,11 @@ public func accVimageScaleARGB8888(
     _ dstRowBytes: Int,
     _ flags: UInt32
 ) -> Int {
-    var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes)
-    var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    guard var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes),
+          var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    else {
+        return invalidParameter
+    }
     return vImageScale_ARGB8888(&src, &dst, nil, flags)
 }
 
@@ -82,8 +96,11 @@ public func accVimageContrastStretchPlanar8(
     _ dstRowBytes: Int,
     _ flags: UInt32
 ) -> Int {
-    var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes)
-    var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    guard var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes),
+          var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    else {
+        return invalidParameter
+    }
     return vImageContrastStretch_Planar8(&src, &dst, flags)
 }
 
@@ -103,9 +120,12 @@ public func accVimageAlphaBlendARGB8888(
     _ dstRowBytes: Int,
     _ flags: UInt32
 ) -> Int {
-    var srcTop = makeBuffer(data: srcTopData, width: srcTopWidth, height: srcTopHeight, rowBytes: srcTopRowBytes)
-    var srcBottom = makeBuffer(data: srcBottomData, width: srcBottomWidth, height: srcBottomHeight, rowBytes: srcBottomRowBytes)
-    var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    guard var srcTop = makeBuffer(data: srcTopData, width: srcTopWidth, height: srcTopHeight, rowBytes: srcTopRowBytes),
+          var srcBottom = makeBuffer(data: srcBottomData, width: srcBottomWidth, height: srcBottomHeight, rowBytes: srcBottomRowBytes),
+          var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    else {
+        return invalidParameter
+    }
     return vImageAlphaBlend_ARGB8888(&srcTop, &srcBottom, &dst, flags)
 }
 
@@ -121,8 +141,11 @@ public func accVimageClipToAlphaARGB8888(
     _ dstRowBytes: Int,
     _ flags: UInt32
 ) -> Int {
-    var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes)
-    var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    guard var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes),
+          var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    else {
+        return invalidParameter
+    }
     return vImageClipToAlpha_ARGB8888(&src, &dst, flags)
 }
 
@@ -138,8 +161,11 @@ public func accVimagePremultiplyARGB8888(
     _ dstRowBytes: Int,
     _ flags: UInt32
 ) -> Int {
-    var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes)
-    var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    guard var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes),
+          var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    else {
+        return invalidParameter
+    }
     return vImagePremultiplyData_ARGB8888(&src, &dst, flags)
 }
 
@@ -155,8 +181,11 @@ public func accVimageUnpremultiplyARGB8888(
     _ dstRowBytes: Int,
     _ flags: UInt32
 ) -> Int {
-    var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes)
-    var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    guard var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes),
+          var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    else {
+        return invalidParameter
+    }
     return vImageUnpremultiplyData_ARGB8888(&src, &dst, flags)
 }
 
@@ -184,11 +213,14 @@ public func accVimageConvertPlanar8ToARGB8888(
     _ dstRowBytes: Int,
     _ flags: UInt32
 ) -> Int {
-    var srcAlpha = makeBuffer(data: srcAlphaData, width: srcAlphaWidth, height: srcAlphaHeight, rowBytes: srcAlphaRowBytes)
-    var srcRed = makeBuffer(data: srcRedData, width: srcRedWidth, height: srcRedHeight, rowBytes: srcRedRowBytes)
-    var srcGreen = makeBuffer(data: srcGreenData, width: srcGreenWidth, height: srcGreenHeight, rowBytes: srcGreenRowBytes)
-    var srcBlue = makeBuffer(data: srcBlueData, width: srcBlueWidth, height: srcBlueHeight, rowBytes: srcBlueRowBytes)
-    var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    guard var srcAlpha = makeBuffer(data: srcAlphaData, width: srcAlphaWidth, height: srcAlphaHeight, rowBytes: srcAlphaRowBytes),
+          var srcRed = makeBuffer(data: srcRedData, width: srcRedWidth, height: srcRedHeight, rowBytes: srcRedRowBytes),
+          var srcGreen = makeBuffer(data: srcGreenData, width: srcGreenWidth, height: srcGreenHeight, rowBytes: srcGreenRowBytes),
+          var srcBlue = makeBuffer(data: srcBlueData, width: srcBlueWidth, height: srcBlueHeight, rowBytes: srcBlueRowBytes),
+          var dst = makeBuffer(data: dstData, width: dstWidth, height: dstHeight, rowBytes: dstRowBytes)
+    else {
+        return invalidParameter
+    }
     return vImageConvert_Planar8toARGB8888(&srcAlpha, &srcRed, &srcGreen, &srcBlue, &dst, flags)
 }
 
@@ -216,10 +248,13 @@ public func accVimageConvertARGB8888ToPlanar8(
     _ dstBlueRowBytes: Int,
     _ flags: UInt32
 ) -> Int {
-    var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes)
-    var dstAlpha = makeBuffer(data: dstAlphaData, width: dstAlphaWidth, height: dstAlphaHeight, rowBytes: dstAlphaRowBytes)
-    var dstRed = makeBuffer(data: dstRedData, width: dstRedWidth, height: dstRedHeight, rowBytes: dstRedRowBytes)
-    var dstGreen = makeBuffer(data: dstGreenData, width: dstGreenWidth, height: dstGreenHeight, rowBytes: dstGreenRowBytes)
-    var dstBlue = makeBuffer(data: dstBlueData, width: dstBlueWidth, height: dstBlueHeight, rowBytes: dstBlueRowBytes)
+    guard var src = makeBuffer(data: srcData, width: srcWidth, height: srcHeight, rowBytes: srcRowBytes),
+          var dstAlpha = makeBuffer(data: dstAlphaData, width: dstAlphaWidth, height: dstAlphaHeight, rowBytes: dstAlphaRowBytes),
+          var dstRed = makeBuffer(data: dstRedData, width: dstRedWidth, height: dstRedHeight, rowBytes: dstRedRowBytes),
+          var dstGreen = makeBuffer(data: dstGreenData, width: dstGreenWidth, height: dstGreenHeight, rowBytes: dstGreenRowBytes),
+          var dstBlue = makeBuffer(data: dstBlueData, width: dstBlueWidth, height: dstBlueHeight, rowBytes: dstBlueRowBytes)
+    else {
+        return invalidParameter
+    }
     return vImageConvert_ARGB8888toPlanar8(&src, &dstAlpha, &dstRed, &dstGreen, &dstBlue, flags)
 }

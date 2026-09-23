@@ -64,4 +64,5 @@ pub use crate::vimage::{
     alpha_blend_argb8888, box_convolve_argb8888, clip_to_alpha_argb8888, contrast_stretch_planar8,
     convert_argb8888_to_planar8, convert_planar8_to_argb8888, premultiply_argb8888,
     rotate_argb8888, scale_argb8888, unpremultiply_argb8888, vimage_flags, ImageBuffer,
+    PixelFormat,
 };
