@@ -43,6 +43,7 @@ raw-ffi = []
 
 [dependencies]
 apple-cf = { path = "../apple-cf-rs", version = ">=0.11, <0.12", default-features = false, features = ["cg"] }
+doom-fish-utils = { path = "../doom-fish-utils", version = ">=0.4.1, <0.5" }
 
 [package.metadata.docs.rs]
 default-target = "aarch64-apple-darwin"

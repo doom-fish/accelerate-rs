@@ -3,6 +3,7 @@ pub type Result<T> = core::result::Result<T, Error>;
 
 /// Errors returned by the safe Accelerate wrappers.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
 pub enum Error {
     InvalidLength { expected: usize, actual: usize },
     InvalidValue(&'static str),
@@ -10,6 +11,7 @@ pub enum Error {
     BnnsStatus(i32),
     LapackInfo(i32),
     QuadratureStatus(i32),
+    IntegrandPanicked,
     SparseStatus(i32),
     VImageError(isize),
 }
@@ -26,6 +28,7 @@ impl core::fmt::Display for Error {
             Self::QuadratureStatus(status) => {
                 write!(f, "Quadrature integration failed with status {status}")
             }
+            Self::IntegrandPanicked => f.write_str("the quadrature integrand panicked"),
             Self::SparseStatus(status) => write!(f, "Sparse operation failed with status {status}"),
             Self::VImageError(code) => write!(f, "vImage operation failed with status {code}"),
         }
