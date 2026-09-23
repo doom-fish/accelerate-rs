@@ -15,14 +15,16 @@ The GitHub repository is `accelerate-rs`; the published crates.io package is
 
 ## Install
 
-```bash
-cargo add apple-accelerate
+```toml
+[dependencies]
+apple-accelerate = "0.4"
 ```
 
 Enable the `raw-ffi` feature if you also want the underlying C declarations:
 
-```bash
-cargo add apple-accelerate --features raw-ffi
+```toml
+[dependencies]
+apple-accelerate = { version = "0.4", features = ["raw-ffi"] }
 ```
 
 ## Quick start
