@@ -9,7 +9,7 @@ description = "Safe Rust bindings for Apple's Accelerate framework on macOS with
 authors = ["Per Johansson <per@doom.fish>"]
 keywords = ["accelerate", "vdsp", "blas", "vimage", "apple"]
 categories = ["api-bindings", "os::macos-apis", "science"]
-rust-version = "1.76"
+rust-version = "1.82"
 readme = "README.md"
 include = [
     "build.rs",
@@ -42,7 +42,7 @@ default = []
 raw-ffi = []
 
 [dependencies]
-apple-cf = { version = ">=0.8, <0.10", default-features = false, features = ["cg"] }
+apple-cf = { path = "../apple-cf-rs", version = ">=0.11, <0.12", default-features = false, features = ["cg"] }
 
 [package.metadata.docs.rs]
 default-target = "aarch64-apple-darwin"
