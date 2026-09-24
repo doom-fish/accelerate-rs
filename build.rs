@@ -75,12 +75,8 @@ fn main() {
     if let Ok(output) = Command::new("xcode-select").arg("-p").output() {
         if output.status.success() {
             let xcode_path = String::from_utf8_lossy(&output.stdout).trim().to_owned();
-            let swift_compat_path = format!(
-                "{xcode_path}/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.5/macosx"
-            );
             let swift_lib_path =
                 format!("{xcode_path}/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx");
-            println!("cargo:rustc-link-search=native={swift_compat_path}");
             println!("cargo:rustc-link-search=native={swift_lib_path}");
             println!(
                 "cargo:rustc-link-arg=-Wl,-force_load,{swift_lib_path}/libswiftCompatibilityConcurrency.a"
@@ -89,7 +85,6 @@ fn main() {
                 "cargo:rustc-link-arg=-Wl,-force_load,{swift_lib_path}/libswiftCompatibility56.a"
             );
             println!("cargo:rustc-link-arg={swift_lib_path}/libswiftCompatibilityPacks.a");
-            println!("cargo:rustc-link-arg=-Wl,-rpath,{swift_compat_path}");
             println!("cargo:rustc-link-arg=-Wl,-rpath,{swift_lib_path}");
         }
     }
