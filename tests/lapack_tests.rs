@@ -24,8 +24,8 @@ fn lapack_length_checks() {
 fn lapack_empty_inputs_do_not_reach_lapack() {
     let lu = lu_decompose_f32(&[], 0).expect("empty factorization");
     assert_eq!(lu.dimension(), 0);
-    assert!(lu.factors().is_empty());
-    assert!(lu.pivots().is_empty());
+    assert_eq!(lu.factors(), []);
+    assert_eq!(lu.pivots(), []);
     assert_eq!(lu.info(), 0);
     assert!(!lu.is_singular());
 
@@ -37,9 +37,10 @@ fn lapack_empty_inputs_do_not_reach_lapack() {
             actual: 1,
         }
     );
-    assert!(solve_linear_system_f32(&[], 0, &[])
-        .expect("empty system")
-        .is_empty());
+    assert_eq!(
+        solve_linear_system_f32(&[], 0, &[]).expect("empty system"),
+        [] as [f32; 0]
+    );
 }
 
 #[test]

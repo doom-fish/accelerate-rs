@@ -56,8 +56,8 @@ fn window_functions_report_values_and_accept_empty_lengths() {
     let blackman = blackman_window_f64(4, 0).expect("blackman f64");
     assert!(blackman[0].abs() < 1.0e-12);
     assert!((blackman[2] - 1.0).abs() < 1.0e-12);
-    assert!(hamming_window(0, 0).expect("empty").is_empty());
-    assert!(blackman_window(0, 0).expect("empty").is_empty());
+    assert_eq!(hamming_window(0, 0).expect("empty"), [] as [f32; 0]);
+    assert_eq!(blackman_window(0, 0).expect("empty"), [] as [f32; 0]);
 }
 
 #[test]

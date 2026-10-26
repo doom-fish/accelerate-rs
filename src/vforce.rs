@@ -60,8 +60,9 @@ mod tests {
             .iter()
             .zip(&values)
             .all(|(root, value)| (root * root - value).abs() < 1.0e-5));
-        assert!(unary_vector_op(&[], bridge::acc_vforce_sqrt_f32, 3)
-            .expect("empty")
-            .is_empty());
+        assert_eq!(
+            unary_vector_op(&[], bridge::acc_vforce_sqrt_f32, 3).expect("empty"),
+            [] as [f32; 0]
+        );
     }
 }
