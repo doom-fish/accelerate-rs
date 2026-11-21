@@ -17,14 +17,14 @@ The GitHub repository is `accelerate-rs`; the published crates.io package is
 
 ```toml
 [dependencies]
-apple-accelerate = "0.4"
+apple-accelerate = "0.4.2"
 ```
 
 Enable the `raw-ffi` feature if you also want the underlying C declarations:
 
 ```toml
 [dependencies]
-apple-accelerate = { version = "0.4", features = ["raw-ffi"] }
+apple-accelerate = { version = "0.4.2", features = ["raw-ffi"] }
 ```
 
 ## Quick start

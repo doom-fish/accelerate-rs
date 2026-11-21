@@ -1,7 +1,6 @@
 use crate::bridge;
 use crate::error::{Error, Result};
 use core::ffi::c_void;
-use core::slice;
 use doom_fish_utils::panic_safe::catch_user_panic_result;
 
 /// Selects the Accelerate integrator passed to `quadrature_integrate`.
@@ -64,31 +63,35 @@ unsafe extern "C" fn quadrature_trampoline(
     x: *const f64,
     y: *mut f64,
 ) {
-    if context.is_null() || x.is_null() || y.is_null() || n == 0 {
+    if y.is_null() || n == 0 {
         return;
     }
-    // SAFETY: `context` points to the `Integrand` owned by the `integrate` frame blocked in this synchronous call.
-    let integrand = unsafe { &mut *context.cast::<Integrand<'_>>() };
-    // SAFETY: `x` is guaranteed by Accelerate to contain `n` valid f64 values for the duration of this callback.
-    let xs = unsafe { slice::from_raw_parts(x, n) };
-    // SAFETY: `y` is guaranteed by Accelerate to contain `n` writable f64 values for the duration of this callback.
-    let ys = unsafe { slice::from_raw_parts_mut(y, n) };
     // A panic in user code must never unwind across the `extern "C"` boundary
     // into Accelerate (undefined behaviour). After a panic the closure is not
     // called again: every remaining value is NaN and `integrate` returns an error.
-    if !integrand.panicked {
-        let function = &mut *integrand.function;
-        let completed = catch_user_panic_result("apple_accelerate::quadrature::integrate", || {
-            for (input, output) in xs.iter().copied().zip(ys.iter_mut()) {
-                *output = function(input);
+    if !context.is_null() && !x.is_null() {
+        // SAFETY: `context` points to the `Integrand` owned by the `integrate` frame blocked in this synchronous call.
+        let integrand = unsafe { &mut *context.cast::<Integrand<'_>>() };
+        if !integrand.panicked {
+            let function = &mut *integrand.function;
+            let completed =
+                catch_user_panic_result("apple_accelerate::quadrature::integrate", || {
+                    for index in 0..n {
+                        // SAFETY: `x` is guaranteed by Accelerate to contain `n` valid f64 values for the duration of this callback.
+                        let input = unsafe { x.add(index).read() };
+                        let output = function(input);
+                        unsafe { y.add(index).write(output) };
+                    }
+                });
+            if completed.is_some() {
+                return;
             }
-        });
-        if completed.is_some() {
-            return;
+            integrand.panicked = true;
         }
-        integrand.panicked = true;
     }
-    ys.fill(f64::NAN);
+    for index in 0..n {
+        unsafe { y.add(index).write(f64::NAN) };
+    }
 }
 
 /// Wraps `quadrature_integrate` for a Rust closure over `[a, b]`.
