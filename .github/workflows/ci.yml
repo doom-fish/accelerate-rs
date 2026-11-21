@@ -29,11 +29,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: doom-fish/apple-cf-rs
+          ref: v0.11.7
           path: apple-cf-rs
           persist-credentials: false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: doom-fish/doom-fish-utils
+          ref: v0.4.5
           path: doom-fish-utils
           persist-credentials: false
       - run: rustc --version
