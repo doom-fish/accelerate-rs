@@ -3,6 +3,7 @@
 use core::ffi::c_void;
 
 /// Raw FFI opaque handle type for `sparse_m_float`.
+#[allow(clippy::empty_enums)]
 pub enum sparse_m_float {}
 /// Raw FFI type alias for `sparse_matrix_float`.
 pub type sparse_matrix_float = *mut sparse_m_float;

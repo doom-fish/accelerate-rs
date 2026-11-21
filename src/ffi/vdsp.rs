@@ -10,11 +10,13 @@ pub type FFTDirection = i32;
 pub type FFTRadix = i32;
 
 /// Raw FFI opaque handle type for `OpaqueFFTSetup`.
+#[allow(clippy::empty_enums)]
 pub enum OpaqueFFTSetup {}
 /// Raw FFI type alias for `FFTSetup`.
 pub type FFTSetup = *mut OpaqueFFTSetup;
 
 /// Raw FFI opaque handle type for `vDSP_biquad_SetupStruct`.
+#[allow(clippy::empty_enums)]
 pub enum vDSP_biquad_SetupStruct {}
 /// Raw FFI type alias for `vDSP_biquad_Setup`.
 pub type vDSP_biquad_Setup = *mut vDSP_biquad_SetupStruct;
